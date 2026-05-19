@@ -90,66 +90,93 @@
 \ndsu@bodyalignmentsetup
 \AtBeginDocument{\ndsu@bodyalignmentsetup}
 \setcounter{tocdepth}{3}
+% Maintainable list-spacing controls for ordinary semantic lists.
+\newlength{\ndsuListTopSep}
+\setlength{\ndsuListTopSep}{0.25\baselineskip plus 1pt minus 1pt}
+\newlength{\ndsuListItemSep}
+\setlength{\ndsuListItemSep}{0pt plus 1pt}
+\newlength{\ndsuListParseSep}
+\setlength{\ndsuListParseSep}{0pt}
+\newlength{\ndsuListPartopSep}
+\setlength{\ndsuListPartopSep}{0pt}
+\newlength{\ndsuListLeftMargin}
+\setlength{\ndsuListLeftMargin}{0.5in}
 \setlist[itemize,1]{%
-  topsep=0pt,%
-  partopsep=0pt,%
-  itemsep=0pt,%
-  parsep=0pt,%
+  leftmargin=\ndsuListLeftMargin,%
+  topsep=\ndsuListTopSep,%
+  partopsep=\ndsuListPartopSep,%
+  itemsep=\ndsuListItemSep,%
+  parsep=\ndsuListParseSep,%
   before={\setlength{\parskip}{0pt}}%
 }
 \setlist[enumerate,1]{%
-  topsep=0pt,%
-  partopsep=0pt,%
-  itemsep=0pt,%
-  parsep=0pt,%
+  leftmargin=\ndsuListLeftMargin,%
+  topsep=\ndsuListTopSep,%
+  partopsep=\ndsuListPartopSep,%
+  itemsep=\ndsuListItemSep,%
+  parsep=\ndsuListParseSep,%
   before={\setlength{\parskip}{0pt}}%
 }
 \setlist[description,1]{%
-  topsep=0pt,%
-  partopsep=0pt,%
-  itemsep=0pt,%
-  parsep=0pt,%
+  leftmargin=\ndsuListLeftMargin,%
+  topsep=\ndsuListTopSep,%
+  partopsep=\ndsuListPartopSep,%
+  itemsep=\ndsuListItemSep,%
+  parsep=\ndsuListParseSep,%
   before={\setlength{\parskip}{0pt}}%
 }
 \setlist[itemize,2]{%
-  topsep=0pt,%
+  topsep=\ndsuListTopSep,%
   partopsep=0pt,%
-  itemsep=0pt,%
+  itemsep=\ndsuListItemSep,%
   parsep=0pt,%
   before={\setlength{\parskip}{0pt}}%
 }
 \setlist[enumerate,2]{%
-  topsep=0pt,%
+  topsep=\ndsuListTopSep,%
   partopsep=0pt,%
-  itemsep=0pt,%
+  itemsep=\ndsuListItemSep,%
   parsep=0pt,%
   before={\setlength{\parskip}{0pt}}%
 }
 \setlist[description,2]{%
-  topsep=0pt,%
+  topsep=\ndsuListTopSep,%
   partopsep=0pt,%
-  itemsep=0pt,%
+  itemsep=\ndsuListItemSep,%
   parsep=0pt,%
   before={\setlength{\parskip}{0pt}}%
 }
-\newlength{\ndsu@floattextskip}
-\setlength{\ndsu@floattextskip}{10pt plus 2pt minus 2pt}
-\newlength{\ndsu@floatfloatskip}
-\setlength{\ndsu@floatfloatskip}{8pt plus 2pt minus 2pt}
-\newlength{\ndsu@floatcaptionsep}
-\setlength{\ndsu@floatcaptionsep}{4pt}
-\newlength{\ndsu@longtablepreskip}
-\setlength{\ndsu@longtablepreskip}{8pt plus 2pt minus 2pt}
-\newlength{\ndsu@longtablepostskip}
-\setlength{\ndsu@longtablepostskip}{8pt plus 2pt minus 2pt}
-\setlength{\LTpre}{\ndsu@longtablepreskip}
-\setlength{\LTpost}{\ndsu@longtablepostskip}
-\setlength{\floatsep}{\ndsu@floatfloatskip}
-\setlength{\textfloatsep}{\ndsu@floattextskip}
-\setlength{\intextsep}{\ndsu@floattextskip}
+% Maintainable non-text spacing controls.
+% Maintainers should tune these named lengths instead of adding manual \vspace
+% around individual figures/tables in chapter files.
+\newlength{\ndsuFloatTextSkip}
+\setlength{\ndsuFloatTextSkip}{10pt plus 2pt minus 2pt}
+\newlength{\ndsuFloatFloatSkip}
+\setlength{\ndsuFloatFloatSkip}{8pt plus 2pt minus 2pt}
+\newlength{\ndsuFigureCaptionSkip}
+\setlength{\ndsuFigureCaptionSkip}{6pt plus 1pt minus 1pt}
+\newlength{\ndsuTableCaptionSkip}
+\setlength{\ndsuTableCaptionSkip}{6pt plus 1pt minus 1pt}
+\newlength{\ndsuLongtablePreSkip}
+\setlength{\ndsuLongtablePreSkip}{8pt plus 2pt minus 2pt}
+\newlength{\ndsuLongtablePostSkip}
+\setlength{\ndsuLongtablePostSkip}{8pt plus 2pt minus 2pt}
+\newlength{\ndsuFigureNoteSkip}
+\setlength{\ndsuFigureNoteSkip}{3pt}
+\newlength{\ndsuTableNoteSkip}
+\setlength{\ndsuTableNoteSkip}{3pt}
+\newlength{\ndsuNoteAfterSkip}
+\setlength{\ndsuNoteAfterSkip}{8pt}
+\newlength{\ndsuSchemaCaptionSkip}
+\setlength{\ndsuSchemaCaptionSkip}{6pt plus 1pt minus 1pt}
+\setlength{\LTpre}{\ndsuLongtablePreSkip}
+\setlength{\LTpost}{\ndsuLongtablePostSkip}
+\setlength{\floatsep}{\ndsuFloatFloatSkip}
+\setlength{\textfloatsep}{\ndsuFloatTextSkip}
+\setlength{\intextsep}{\ndsuFloatTextSkip}
 % Keep figures/tables horizontally centered but top-aligned on float-only pages.
 \setlength{\@fptop}{0pt}
-\setlength{\@fpsep}{\ndsu@floatfloatskip}
+\setlength{\@fpsep}{\ndsuFloatFloatSkip}
 \setlength{\@fpbot}{0pt plus 1fil}
 % Displayed math spacing.
 % These lengths affect displayed equations and similar math displays.
@@ -353,11 +380,7 @@
 \newcommand{\includelistofschemas}{\ndsu@includeListOfSchemastrue}
 \newcommand{\includetableofequations}{\includelistofequations}
 \newcommand{\includeabbreviations}{\ndsu@includeAbbreviationstrue}
-\newcommand{\includesymbols}{%
-  \ndsu@includeSymbolstrue
-  \ClassWarning{ndsudisq}{\string\includesymbols\space is reserved for symbols front matter, but is not yet implemented.\MessageBreak
-    It sets a compatibility flag only and does not add content to the front matter}%
-}
+\newcommand{\includesymbols}{\ndsu@includeSymbolstrue}
 \newcommand{\includeappendixtables}{%
   \ndsu@includeAppendixTablestrue
   \ClassWarning{ndsudisq}{\string\includeappendixtables\space is reserved for appendix tables front matter, but is not yet implemented.\MessageBreak
@@ -518,7 +541,13 @@
     margin=0pt,%
     indention=0pt,%
     parindent=0pt,%
-    skip=\ndsu@floatcaptionsep%
+    skip=\ndsuFigureCaptionSkip%
+  }%
+  \captionsetup[table]{%
+    skip=\ndsuTableCaptionSkip%
+  }%
+  \captionsetup[longtable]{%
+    skip=\ndsuTableCaptionSkip%
   }%
 }
 \newcommand{\ndsu@captionlabelsocketsetup}{%
@@ -537,11 +566,15 @@
   font=normalsize,%
   labelfont=bf,%
   textfont=normalfont,%
-  skip=\ndsu@floatcaptionsep%
+  skip=\ndsuFigureCaptionSkip%
 }
 \ndsu@periodcaptionlabels
 \ndsu@captionalignmentsetup
 \ndsu@captionlabelsocketsetup
+% Default placement for ordinary LaTeX floats.
+% This does not force exact placement; it only allows LaTeX to try "here".
+\def\fps@figure{!htbp}
+\def\fps@table{!htbp}
 \AtBeginDocument{%
   \ndsu@periodcaptionlabels
   \ndsu@captionalignmentsetup
@@ -577,24 +610,28 @@
 
 \newcommand{\ndsunoteprefix}{Note.}
 \newcommand{\ndsunoteprefixstyle}[1]{\renewcommand{\ndsunoteprefix}{#1}}
-\newlength{\ndsu@notebeforeskip}
-\setlength{\ndsu@notebeforeskip}{3pt}
-\newlength{\ndsu@noteafterskip}
-\setlength{\ndsu@noteafterskip}{8pt}
-\NewDocumentCommand{\ndsunote}{ m }{%
-  \par\vspace{\ndsu@notebeforeskip}%
+\NewDocumentCommand{\ndsunote}{ O{\ndsuFigureNoteSkip} m }{%
+  \par\vspace{#1}%
   \begingroup
     \singlespacing\normalfont\normalsize\upshape\raggedright%
-    \noindent\textbf{\ndsunoteprefix}~#1\par%
+    \noindent\textbf{\ndsunoteprefix}~#2\par%
   \endgroup
-  \vspace{\ndsu@noteafterskip}%
+  \vspace{\ndsuNoteAfterSkip}%
+}
+\NewDocumentCommand{\ndsucenterednote}{ O{\ndsuFigureNoteSkip} m }{%
+  \par\vspace{#1}%
+  \begingroup
+    \singlespacing\normalfont\normalsize\upshape\centering%
+    \textbf{\ndsunoteprefix}~#2\par%
+  \endgroup
+  \vspace{\ndsuNoteAfterSkip}%
 }
 \@ifundefined{note}
   {\NewDocumentCommand{\note}{ m }{\ndsunote{#1}}}
   {\RenewDocumentCommand{\note}{ m }{\ndsunote{#1}}}
-\newcommand{\ndsufigurenote}[1]{\ndsunote{#1}}
-\newcommand{\ndsutablenote}[1]{\ndsunote{#1}}
-\newcommand{\ndsuschemanote}[1]{\ndsunote{#1}}
+\newcommand{\ndsufigurenote}[1]{\ndsucenterednote[\ndsuFigureNoteSkip]{#1}}
+\newcommand{\ndsutablenote}[1]{\ndsunote[\ndsuTableNoteSkip]{#1}}
+\newcommand{\ndsuschemanote}[1]{\ndsunote[\ndsuFigureNoteSkip]{#1}}
 
 \NewDocumentCommand{\ndsuincludegraphics}{ O{} m m }{\includegraphics[alt={#2},#1]{#3}}
 
@@ -628,6 +665,15 @@
     \group_end:
   }
 \ExplSyntaxOff
+
+\NewDocumentEnvironment{ndsunumberedfigure}{ O{} m }
+  {%
+    \captionsetup{type=figure}%
+    \centering
+    \captionof{figure}{#2}%
+    \IfNoValueF{#1}{\label{#1}}%
+  }
+  {}
 
 \NewDocumentCommand{\ndsudecorativegraphic}{ O{} m }{\includegraphics[artifact,#1]{#2}}
 \NewDocumentCommand{\ndsudecorativeimage}{ O{} m }{\ndsudecorativegraphic[#1]{#2}}
@@ -667,8 +713,8 @@
 \floatstyle{plain}
 \newfloat{schema}{htbp}{los}
 \floatname{schema}{Schema}
-\captionsetup[schema]{justification=raggedright,singlelinecheck=false,skip=\ndsu@floatcaptionsep}
-\AtBeginDocument{\captionsetup[schema]{justification=raggedright,singlelinecheck=false,skip=\ndsu@floatcaptionsep}}
+\captionsetup[schema]{justification=raggedright,singlelinecheck=false,skip=\ndsuSchemaCaptionSkip}
+\AtBeginDocument{\captionsetup[schema]{justification=raggedright,singlelinecheck=false,skip=\ndsuSchemaCaptionSkip}}
 \newcommand{\listschemaname}{LIST OF SCHEMAS}
 
 % --- Math and equation-list helpers ---
@@ -897,7 +943,9 @@
   \ClassWarningNoLine{ndsudisq}{NDSU TRACE NR@chapter is undefined; chapter bookmark capitalization patch was not applied}%
 \fi
 
-\newcommand{\ndsu@tocentryspace}{\baselineskip}
+\newlength{\ndsuGeneratedListEntrySkip}
+\setlength{\ndsuGeneratedListEntrySkip}{0.5\baselineskip plus 1pt minus 1pt}
+\newcommand{\ndsu@tocentryspace}{\ndsuGeneratedListEntrySkip}
 \newcommand{\ndsu@rendertocentry}[4]{%
   \begingroup
     \setstretch{1}\selectfont
@@ -1338,6 +1386,7 @@
     \clearpage
   \fi
   \ifndsu@includeAbbreviations\ndsu@inputoptionalfrontmatter{frontmatter/abbreviations.tex}\fi
+  \ifndsu@includeSymbols\ndsu@inputoptionalfrontmatter{frontmatter/symbols.tex}\fi
   \ifndsu@includePreface\ndsu@inputoptionalfrontmatter{frontmatter/preface.tex}\fi
 }
 \newcommand{\mainmattersetup}{\ndsu@normalhyphenationmode\clearpage\pagenumbering{arabic}\setcounter{page}{1}}
@@ -1367,36 +1416,41 @@
 \newcommand{\printworkscited}{\referencesheading{WORKS CITED}\printreferences}
 \newcommand{\printbibliographyheading}{\referencesheading{BIBLIOGRAPHY}\printreferences}
 
-% --- Abbreviations and code listings ---
-\newlength{\ndsu@abbrevwidth}
-\newlength{\ndsu@abbrevsep}
-\setlength{\ndsu@abbrevwidth}{1.45in}
-\setlength{\ndsu@abbrevsep}{0.05in}
+% --- Abbreviation/symbol lists and code listings ---
+\newlength{\ndsuAbbrevLabelWidth}
+\newlength{\ndsuAbbrevLabelSep}
+\newlength{\ndsuAbbrevItemSep}
+\setlength{\ndsuAbbrevLabelWidth}{1.45in}
+\setlength{\ndsuAbbrevLabelSep}{0.05in}
+\setlength{\ndsuAbbrevItemSep}{0pt plus 1pt}
 \NewDocumentEnvironment{ndsuabbreviations}{ O{3.0in} }
   {%
     \par
     \begingroup
-    \setlength{\ndsu@abbrevwidth}{#1}%
+    \setlength{\ndsuAbbrevLabelWidth}{#1}%
     \setlength{\parindent}{0pt}%
     \setlength{\parskip}{0pt}%
+    \singlespacing
   }
   {%
     \par
     \endgroup
   }
 \newcommand{\ndsuabbr}[2]{%
-  \par
+  \par\vspace{\ndsuAbbrevItemSep}%
   \begingroup
-    \hangindent=\dimexpr\ndsu@abbrevwidth+\ndsu@abbrevsep\relax
+    \hangindent=\dimexpr\ndsuAbbrevLabelWidth+\ndsuAbbrevLabelSep\relax
     \hangafter=1
     \noindent\leavevmode
-    \hbox to \ndsu@abbrevwidth{%
+    \hbox to \ndsuAbbrevLabelWidth{%
       #1\ndsuartifactcontent{\leaders\hbox{.\kern0.35em}\hfill}%
     }%
-    \nobreak\hspace{\ndsu@abbrevsep}%
+    \nobreak\hspace{\ndsuAbbrevLabelSep}%
     \ignorespaces#2\par
   \endgroup
 }
+\NewDocumentEnvironment{ndsusymbols}{ O{3.0in} }{\begin{ndsuabbreviations}[#1]}{\end{ndsuabbreviations}}
+\newcommand{\ndsusym}[2]{\ndsuabbr{#1}{#2}}
 
 \newlength{\ndsu@codebeforeskip}
 \setlength{\ndsu@codebeforeskip}{6pt plus 1pt minus 1pt}
