@@ -1,0 +1,235 @@
+% Focused spacing regression fixture for non-text elements.
+% Compile from the repository root with:
+%   lualatex -interaction=nonstopmode -halt-on-error -output-directory=tests tests/spacing-nontext-regression.tex
+% Run at least three times after cleaning auxiliary files.
+\DocumentMetadata{
+  tagging=on,
+  pdfversion=2.0,
+  pdfstandard=ua-2,
+  lang=en-US,
+  testphase={phase-III,math}
+}
+\documentclass{ndsudisq}
+
+\disquisitiontitle{Spacing Nontext Regression Fixture}
+\disquisitionauthor{Template Test}
+\documenttype{Dissertation}
+\degree{Doctor of Philosophy}
+\majordepartmentlabel{Major Department}
+\program{Test Program}
+\degreeoption{}
+\finaldefense{May 2026}
+\approvaldate{May 18, 2026}
+\departmentchair{Department Chair}
+\committeechair{Committee Chair}
+\committeeone{Committee One}
+\committeetwo{Committee Two}
+\committeethree{Committee Three}
+\subjectinfo{Fixture}
+\keywordsinfo{NDSU, spacing, fixture}
+\disquisitionlanguage{en-US}
+\usecontinuouscaptions
+
+\newcommand{\spacingfiller}{This ordinary body paragraph is intentionally long enough to wrap across multiple lines in the compiled PDF. It gives reviewers a stable double-spaced prose sample before or after a non-text element, making vertical spacing, paragraph indentation, and alignment changes easier to compare by eye.}
+
+\begin{document}
+\mainmattersetup
+
+\chapter{Body Spacing and Nontext Regression}
+\label{chap:spacing-body}
+
+\spacingfiller
+
+\section{Body Paragraphs Around Display Math}
+\label{sec:body-display-math}
+\spacingfiller
+
+\mathalt{The energy E equals m c squared.}
+\begin{equation}
+E = mc^2
+\label{eq:spacing-standard-display}
+\end{equation}
+
+\spacingfiller
+
+A short lead-in line precedes this short display math sample:
+\[
+x+y=z
+\]
+
+\spacingfiller
+
+\section{Body Lists Immediately After Headings}
+\label{sec:body-lists}
+\begin{itemize}
+  \item This first body itemize item is deliberately long enough to wrap onto a second line so reviewers can compare line spacing within an item against the spacing between separate items in the same list.
+  \item This second body itemize item provides a shorter comparison point after the multi-line item.
+  \item This body item includes a nested list to exercise second-level list spacing.
+    \begin{itemize}
+      \item This nested item checks second-level itemize spacing after the parent item text.
+      \item This second nested item checks spacing between adjacent second-level items.
+    \end{itemize}
+\end{itemize}
+
+\spacingfiller
+
+\subsection{Body Enumerate Immediately After a Heading}
+\begin{enumerate}
+  \item This first body enumerate item is deliberately long enough to wrap onto a second line so reviewers can compare wrapped item text, label alignment, and inter-item spacing.
+  \item This second body enumerate item provides a shorter comparison point after the multi-line item.
+\end{enumerate}
+
+\spacingfiller
+
+\subsection{Body Description Immediately After a Heading}
+\begin{description}
+  \item[Wrapped body term] This body description item is deliberately long enough to wrap onto a second line so reviewers can compare description-list looseness with the itemize and enumerate lists above.
+  \item[Short body term] This second body description item provides a shorter comparison point after the multi-line description item.
+\end{description}
+
+\spacingfiller
+
+\section{Floats, Captions, and Notes}
+\label{sec:floats-captions-notes}
+\spacingfiller
+
+\begin{figure}[htbp]
+\centering
+\fbox{\rule{0pt}{1.5in}\rule{0.64\textwidth}{0pt}}
+\caption{Short figure caption.}
+\label{fig:spacing-short-caption}
+\ndsufigurenote{Figure note text used to inspect note placement, note spacing, and note alignment relative to the short single-line caption above.}
+\end{figure}
+
+\spacingfiller
+
+\begin{table}[htbp]
+\centering
+\caption{Longer wrapping table caption for visual comparison of caption alignment, indentation, and spacing when a title extends beyond a single line in the regression fixture.}
+\label{tab:spacing-long-caption}
+\begin{tabular}{lll}
+\toprule
+Column A & Column B & Column C \\
+\midrule
+Alpha & One & First value \\
+Beta & Two & Second value \\
+Gamma & Three & Third value \\
+\bottomrule
+\end{tabular}
+\ndsutablenote{Table note text used to inspect note placement, note spacing, and note alignment relative to a longer wrapping caption and centered tabular material.}
+\end{table}
+
+\spacingfiller
+
+\begin{schema}[htbp]
+\centering
+\fbox{\begin{minipage}{0.68\textwidth}
+\centering
+Schema placeholder: input $\rightarrow$ process $\rightarrow$ output.
+\end{minipage}}
+\caption{Schema caption with enough text to wrap and allow visual comparison with figure and table caption alignment in this fixture.}
+\label{sch:spacing-schema}
+\note{Schema note text. The class provides the generic \texttt{\textbackslash note} command and specialized figure/table note aliases; no schema-specific note alias is currently defined, so this fixture uses the recommended generic note command for schema notes.}
+\end{schema}
+
+\spacingfiller
+
+\begin{figure}[p]
+\centering
+\fbox{\rule{0pt}{7.2in}\rule{0.78\textwidth}{0pt}}
+\caption{Large float likely to occupy a float-only page and reveal whether float pages are top-aligned or vertically centered.}
+\label{fig:spacing-float-page}
+\ndsufigurenote{Large-float note for checking caption and note spacing on a likely float-only page.}
+\end{figure}
+
+\section{Code, Long Tables, and Boxed Placeholders}
+\label{sec:other-nontext-spacing}
+\spacingfiller
+
+\begin{ndsucodelisting}[Template code listing spacing sample]
+for row in rows:
+    normalized = row.strip().lower()
+    if normalized:
+        print(normalized)
+\end{ndsucodelisting}
+\ndsucodenote{Code note used to inspect spacing after the template code-listing environment.}
+
+\spacingfiller
+
+\begin{center}
+\fbox{\begin{minipage}{0.62\textwidth}
+\centering
+Boxed placeholder outside a float.\\
+This simulates figure-like content used by lightweight tests.
+\end{minipage}}
+\end{center}
+
+\spacingfiller
+
+\begin{longtable}{lll}
+\caption{Longtable caption included to check longtable caption spacing and alignment.}\label{tab:spacing-longtable}\\
+\toprule
+Entry & Category & Note \\
+\midrule
+\endfirsthead
+\caption[]{Longtable caption included to check longtable caption spacing and alignment, continued.}\\
+\toprule
+Entry & Category & Note \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+One & A & This row begins the longtable spacing sample. \\
+Two & A & This row provides additional table body rhythm. \\
+Three & B & This row provides additional table body rhythm. \\
+Four & B & This row provides additional table body rhythm. \\
+Five & C & This row provides additional table body rhythm. \\
+Six & C & This row provides additional table body rhythm. \\
+Seven & D & This row provides additional table body rhythm. \\
+Eight & D & This row provides additional table body rhythm. \\
+Nine & E & This row provides additional table body rhythm. \\
+Ten & E & This row ends the compact longtable sample. \\
+\end{longtable}
+
+\spacingfiller
+
+\clearpage
+\chapter{Heading After a Forced Page Break}
+\label{chap:forced-break-heading}
+\spacingfiller
+
+\section{Paragraphs After Forced-Break Chapter Heading}
+\spacingfiller
+
+\appendix
+\chapter{Appendix List Spacing Regression}
+\label{app:list-spacing}
+
+\section{Appendix Itemize Immediately After a Heading}
+\begin{itemize}
+  \item This first appendix itemize item is deliberately long enough to wrap onto a second line so reviewers can compare appendix itemize spacing against body itemize spacing.
+  \item This second appendix itemize item provides a shorter comparison point after the multi-line item.
+\end{itemize}
+
+\spacingfiller
+
+\section{Appendix Enumerate Immediately After a Heading}
+\begin{enumerate}
+  \item This first appendix enumerate item is deliberately long enough to wrap onto a second line so reviewers can compare appendix enumerate spacing against body enumerate spacing.
+  \item This second appendix enumerate item provides a shorter comparison point after the multi-line item.
+\end{enumerate}
+
+\spacingfiller
+
+\section{Appendix Description Immediately After a Heading}
+\begin{description}
+  \item[Wrapped appendix term] This appendix description item is deliberately long enough to wrap onto a second line so reviewers can compare description-list looseness against appendix itemize and enumerate lists.
+  \item[Short appendix term] This second appendix description item provides a shorter comparison point after the multi-line appendix description item.
+\end{description}
+
+\spacingfiller
+
+\end{document}

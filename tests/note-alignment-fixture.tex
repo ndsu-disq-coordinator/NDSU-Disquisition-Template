@@ -1,0 +1,66 @@
+% note-alignment-fixture.tex
+% Small fixture for checking figure/table note and alt-text behavior in ndsudisq.cls.
+\DocumentMetadata{
+  tagging=on,
+  pdfversion=2.0,
+  pdfstandard=ua-2,
+  lang=en-US,
+  testphase={phase-III,math}
+}
+
+\documentclass{ndsudisq}
+
+\disquisitiontitle{Note Alignment Fixture}
+\disquisitionauthor{Template Test}
+\documenttype{Dissertation}
+\degree{Doctor of Philosophy}
+\majordepartmentlabel{Major Department}
+\program{Test Program}
+\degreeoption{}
+\finaldefense{May 2026}
+\approvaldate{May 17, 2026}
+\departmentchair{Department Chair}
+\committeechair{Committee Chair}
+\committeeone{Committee One}
+\committeetwo{Committee Two}
+\committeethree{Committee Three}
+\subjectinfo{Fixture}
+\keywordsinfo{NDSU, note alignment, fixture}
+\disquisitionlanguage{en-US}
+\usecontinuouscaptions
+
+\begin{document}
+\mainmattersetup
+
+\chapter{Note Alignment Fixture}
+
+This paragraph appears before the figure and should retain the template's normal body alignment and indentation. The expected result is: image/table centered, captions unchanged, alt text not visibly printed, visible notes begin with ``Note.'', and visible notes are left aligned.
+
+\begin{figure}[htbp]
+\centering
+\ndsuincludegraphics[width=0.65\textwidth]{Alt text for the fixture image; this should not be visibly printed.}{figures/LaTeX disquisition project file organization.png}
+\caption{Centered figure used to check note alignment.}
+\label{fig:note-alignment-fixture}
+\note{This figure note should begin at the left edge of the figure text block even though the figure content is centered.}
+\end{figure}
+
+This paragraph appears between the figure and table and should not inherit any note alignment declaration.
+
+\begin{table}[htbp]
+\centering
+\caption{Centered table used to check note alignment.}
+\label{tab:note-alignment-fixture}
+\begin{tabular}{ll}
+\toprule
+Item & Value \\
+\midrule
+Alpha & One \\
+Beta & Two \\
+\bottomrule
+\end{tabular}
+\note{This table note should begin at the left edge of the table text block even though the tabular material is centered.}
+\end{table}
+
+This paragraph appears after the table and should retain the template's normal body alignment and indentation.
+
+\end{document}

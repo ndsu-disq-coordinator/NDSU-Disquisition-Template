@@ -1,0 +1,425 @@
+% appendix-b-common-problems-fixes-reviewed.tex
+% User-facing Appendix B for the NDSU disquisition LaTeX template.
+% Include this file after appendix-a-quick-start.tex, after \appendix has been issued.
+
+\chapter{Common Problems and Fixes}
+\label{app:common-problems-fixes}
+
+This appendix helps you diagnose common problems in an Overleaf-centered \LaTeX{} disquisition workflow. It is organized by symptoms: what you may see in Overleaf, in the compile log, or in the generated PDF.
+
+Start with the source files and the compile log. Do not try to repair the generated PDF until source-level problems have been addressed. A source-level fix usually survives recompilation; a PDF-level fix may not.
+
+This is a troubleshooting guide, not a complete \LaTeX{} reference. It covers common patterns students are likely to encounter near the end of the document process.
+
+\section{How to use this appendix}
+\label{sec:how-to-use-common-problems}
+
+Find the symptom that most closely matches what you see. Each entry uses the same pattern:
+
+\begin{description}
+  \item[What you may see] The visible symptom in Overleaf, the log, or the PDF.
+  \item[Likely cause] A common reason the problem happens.
+  \item[Fix in the source] What to change in the source files, bibliography file, image files, or template-provided fields.
+  \item[Check] How to confirm that the problem has been corrected.
+\end{description}
+
+When several errors appear, start with the first serious error in the log. Later messages may be side effects of the first problem.
+
+\section{First checks before troubleshooting}
+\label{sec:first-checks-before-troubleshooting}
+
+Before changing several files, check the basics:
+
+\begin{itemize}
+  \item Is the full Overleaf project open?
+  \item Is Overleaf compiling \texttt{main.tex}?
+  \item Is the compiler set to the value specified by the repository instructions?
+  \item Did the problem begin after a specific edit?
+  \item Did you recently rename, move, upload, delete, or replace a file?
+  \item Did you check the first serious error in the log?
+  \item Did you recompile after making a source-level fix?
+  \item If references, citations, or contents look stale, did you try a clean rebuild?
+\end{itemize}
+
+If the project compiled before and now fails, focus first on the changes made since the last successful compile.
+
+\section{Project and Overleaf setup problems}
+\label{sec:project-overleaf-setup-problems}
+
+\subsection{The project opens, but files are missing}
+\label{subsec:project-opens-files-missing}
+
+\textbf{What you may see:} The project opens in Overleaf, but chapter files, images, bibliography files, or template files are not present.
+
+\textbf{Likely cause:} The project was copied incompletely or only one source file was uploaded.
+
+\textbf{Fix in the source:} Restore the full project from the repository or upload the missing folders and files. Do not rebuild the template by copying only chapter files into a blank project.
+
+\textbf{Check:} Confirm that the project contains the expected source files, image folder, bibliography file, and template files. Compile \texttt{main.tex} again.
+
+\subsection{Overleaf is compiling the wrong file}
+\label{subsec:overleaf-compiling-wrong-file}
+
+\textbf{What you may see:} The PDF is incomplete, only one chapter appears, or the project fails with errors about missing document setup.
+
+\textbf{Likely cause:} Overleaf is compiling a chapter, appendix, or support file instead of \texttt{main.tex}.
+
+\textbf{Fix in the source:} Do not change the chapter file to make it compile by itself. Set the main document to \texttt{main.tex}.
+
+\textbf{Check:} Recompile and confirm that the PDF includes the title page, front matter, chapters, and expected template formatting.
+
+\subsection{The PDF preview does not update}
+\label{subsec:pdf-preview-does-not-update}
+
+\textbf{What you may see:} Edits are visible in the source but not in the PDF preview.
+
+\textbf{Likely cause:} The project has not recompiled, the compile stopped at an error, or generated files are stale.
+
+\textbf{Fix in the source:} Recompile, check the log, and resolve the first serious error. If the source is otherwise correct, try a clean rebuild in Overleaf.
+
+\textbf{Check:} Confirm that the PDF timestamp or preview reflects the current source.
+
+\section{Compilation errors}
+\label{sec:compilation-errors}
+
+\subsection{Undefined control sequence}
+\label{subsec:undefined-control-sequence}
+
+\textbf{What you may see:} The log reports \texttt{Undefined control sequence} followed by a command name.
+
+\textbf{Likely cause:} A command is misspelled, copied from another template, or not supported by this project.
+
+\textbf{Fix in the source:} Check the spelling. Replace copied commands with commands shown in the repository examples. Do not add packages casually to make an outside example work.
+
+\textbf{Check:} Compile again and confirm that the same command no longer appears as the first error.
+
+\subsection{Missing brace or extra brace}
+\label{subsec:missing-extra-brace}
+
+\textbf{What you may see:} The log reports a missing or extra brace, or a command seems to capture more text than intended.
+
+\textbf{Likely cause:} A command argument was not closed or an extra brace was typed.
+
+\textbf{Fix in the source:} Check recent headings, captions, citations, labels, links, and figure commands. Make sure each opening brace has the correct closing brace.
+
+\textbf{Check:} Recompile and confirm that the error no longer appears.
+
+\subsection{Environment ended incorrectly}
+\label{subsec:environment-ended-incorrectly}
+
+\textbf{What you may see:} The log reports mismatched \verb|\begin| and \verb|\end| commands.
+
+\textbf{Likely cause:} A list, figure, table, quotation, or equation environment was not closed correctly.
+
+\textbf{Fix in the source:} Match each \verb|\begin{...}| with the corresponding \verb|\end{...}|. Check nested environments carefully.
+
+\textbf{Check:} Recompile and confirm that the environment error is gone.
+
+\subsection{File not found}
+\label{subsec:file-not-found-error}
+
+\textbf{What you may see:} The log reports that a source file, image file, bibliography file, or template file cannot be found.
+
+\textbf{Likely cause:} A file was moved, renamed, deleted, uploaded to the wrong folder, or referenced with the wrong capitalization.
+
+\textbf{Fix in the source:} Restore the missing file or update the path in the source. Use simple file names and consistent capitalization.
+
+\textbf{Check:} Recompile and confirm that the missing-file message is resolved.
+
+\subsection{Emergency stop}
+\label{subsec:emergency-stop}
+
+\textbf{What you may see:} The log reports \texttt{Emergency stop}.
+
+\textbf{Likely cause:} An earlier error prevented compilation from continuing.
+
+\textbf{Fix in the source:} Scroll upward in the log and fix the first serious error before the emergency stop message.
+
+\textbf{Check:} Recompile and confirm that the first serious error has changed or disappeared.
+
+\section{Warnings that need review}
+\label{sec:warnings-need-review}
+
+\subsection{Undefined references or citations}
+\label{subsec:undefined-references-citations}
+
+\textbf{What you may see:} A reference or citation appears as question marks or a placeholder.
+
+\textbf{Likely cause:} The label or citation key is missing, misspelled, duplicated, or not yet resolved by compilation.
+
+\textbf{Fix in the source:} Check the exact spelling of labels and citation keys. Confirm that the bibliography file contains the cited entry. Compile again or perform a clean rebuild if needed.
+
+\textbf{Check:} The PDF should show the correct number, citation, or reference after recompilation.
+
+\subsection{Label multiply defined}
+\label{subsec:label-multiply-defined}
+
+\textbf{What you may see:} The log reports that a label is multiply defined.
+
+\textbf{Likely cause:} The same label was used for more than one chapter, section, figure, table, or equation.
+
+\textbf{Fix in the source:} Rename one of the labels and update any references to it.
+
+\textbf{Check:} Recompile and confirm that the warning is gone and references point to the intended item.
+
+\subsection{Overfull box}
+\label{subsec:overfull-box}
+
+\textbf{What you may see:} The log reports an overfull box, or text, a URL, a figure, or a table extends into the margin.
+
+\textbf{Likely cause:} Something is too wide for the line or page.
+
+\textbf{Fix in the source:} Check the affected page. Common fixes include shortening link text, resizing a figure, simplifying a table, splitting wide content, or moving detailed material to an appendix.
+
+\textbf{Check:} Recompile and review the page visually. Do not overcorrect harmless warnings with manual spacing.
+
+\section{Figures and image problems}
+\label{sec:figure-image-problems}
+
+\subsection{Figure does not appear where expected}
+\label{subsec:figure-not-where-expected}
+
+\textbf{What you may see:} A figure appears later than expected or on another page.
+
+\textbf{Likely cause:} Figures can float so \LaTeX{} can place them where they fit.
+
+\textbf{Fix in the source:} Do not force placement with repeated spacing commands. Check the figure size and surrounding text. If placement is important, use the figure-placement approach shown in the repository examples.
+
+\textbf{Check:} Recompile and confirm that the figure appears in an acceptable location.
+
+\subsection{Figure is blurry, cropped, or unreadable}
+\label{subsec:figure-blurry-cropped-unreadable}
+
+\textbf{What you may see:} The figure appears, but details or text are difficult to read.
+
+\textbf{Likely cause:} The source image is low resolution, scaled too small, cropped, or designed with text that is too small.
+
+\textbf{Fix in the source:} Use a clearer source image or redesign the figure. Avoid relying on screenshots of dense text.
+
+\textbf{Check:} Review the compiled PDF at normal reading size.
+
+\subsection{Alternative text or figure description is missing}
+\label{subsec:figure-description-missing}
+
+\textbf{What you may see:} A reviewer or checker reports that a meaningful image lacks a description.
+
+\textbf{Likely cause:} The figure was inserted without the template's figure-description workflow.
+
+\textbf{Fix in the source:} Add the description using the command or environment shown in the repository examples. Describe the purpose and essential information of the image.
+
+\textbf{Check:} Recompile and repeat the relevant review.
+
+\subsection{Alternative descriptions fail for equations}
+\label{subsec:formula-alternative-descriptions-fail}
+
+\textbf{What you may see:} PAC or another checker reports Alternative Descriptions failures even though figure descriptions appear to be present.
+
+\textbf{Likely cause:} The failed items may be Formula tags for inline math or equations that do not have an /Alt fallback.
+
+\textbf{Fix in the source:} Keep equations as \LaTeX{} math, not screenshots. Confirm that \texttt{main.tex} uses the template's PDF/UA-1 math tagging setup. For important display equations, keep any source-level equation description command immediately before the display equation.
+
+\textbf{Check:} Recompile with LuaLaTeX, inspect whether Formula tags have /Alt, and rerun the relevant PDF review. Do not claim the PDF is compliant unless all automated and manual checks pass.
+
+\section{Table problems}
+\label{sec:table-problems}
+
+\subsection{Table runs off the page or is too small to read}
+\label{subsec:table-runs-off-page}
+
+\textbf{What you may see:} A table extends into the margin, becomes too small, or remains difficult to read in landscape orientation.
+
+\textbf{Likely cause:} The table is too wide or complex for the page.
+
+\textbf{Fix in the source:} Simplify the table, split it into smaller tables, move details to an appendix, or redesign the data presentation. Use landscape only when it improves readability.
+
+\textbf{Check:} Recompile and review the table at normal reading size.
+
+\subsection{Table has unclear headers or structure}
+\label{subsec:table-unclear-headers}
+
+\textbf{What you may see:} The table is visually aligned but difficult to interpret.
+
+\textbf{Likely cause:} Headers are missing, grouping is unclear, or the table was created with spacing rather than a real table structure.
+
+\textbf{Fix in the source:} Use a real table structure with clear column and row headers. Avoid screenshots and manually spaced text when possible.
+
+\textbf{Check:} Review whether the table is understandable without relying only on visual layout.
+
+\section{Citation and bibliography problems}
+\label{sec:citation-bibliography-problems}
+
+\subsection{Citation appears as a question mark or placeholder}
+\label{subsec:citation-question-mark}
+
+\textbf{What you may see:} A citation does not resolve in the PDF.
+
+\textbf{Likely cause:} The citation key is misspelled, the bibliography entry is missing, or the bibliography has not updated.
+
+\textbf{Fix in the source:} Match the citation key to the bibliography entry exactly. Check the bibliography file and compile again.
+
+\textbf{Check:} Confirm that the citation and reference list entry appear correctly.
+
+\subsection{Reference list is missing or does not update}
+\label{subsec:reference-list-missing}
+
+\textbf{What you may see:} The bibliography is absent, incomplete, or stale.
+
+\textbf{Likely cause:} The bibliography file is not included correctly, the bibliography processor did not run, or compilation stopped before bibliography output was created.
+
+\textbf{Fix in the source:} Check that the bibliography file exists and that \texttt{main.tex} uses the repository's bibliography pattern. Recompile or perform a clean rebuild.
+
+\textbf{Check:} Review the reference list and the log.
+
+\section{Cross-reference problems}
+\label{sec:cross-reference-problems}
+
+\subsection{Reference points to the wrong item}
+\label{subsec:reference-wrong-item}
+
+\textbf{What you may see:} A figure, table, equation, chapter, or section reference points to the wrong place.
+
+\textbf{Likely cause:} A label was reused, placed with the wrong item, or copied without being renamed.
+
+\textbf{Fix in the source:} Give each item a unique label and update the reference command.
+
+\textbf{Check:} Recompile and click the reference in the PDF.
+
+\subsection{Numbers were typed manually}
+\label{subsec:numbers-typed-manually}
+
+\textbf{What you may see:} Text refers to a figure, table, chapter, or equation number that no longer matches the document.
+
+\textbf{Likely cause:} The number was typed by hand instead of generated with a reference command.
+
+\textbf{Fix in the source:} Replace manual numbers with labels and reference commands.
+
+\textbf{Check:} Recompile and confirm that the reference updates automatically.
+
+\section{Front matter and page numbering problems}
+\label{sec:front-matter-page-numbering-problems}
+
+\subsection{Title page or front matter information is wrong}
+\label{subsec:title-page-information-wrong}
+
+\textbf{What you may see:} The title, author, program, degree, date, abstract, acknowledgments, or other front matter appears incorrectly.
+
+\textbf{Likely cause:} A document information field still contains sample text or was edited in the wrong place.
+
+\textbf{Fix in the source:} Update the template-provided document information fields. Do not manually rebuild the title page.
+
+\textbf{Check:} Recompile and review the title page, front matter, PDF title, and table of contents as applicable.
+
+\subsection{Table of contents or lists look stale}
+\label{subsec:toc-lists-stale}
+
+\textbf{What you may see:} The table of contents, list of figures, list of tables, list of equations, or list of schemas is missing entries or shows old entries.
+
+\textbf{Likely cause:} The document needs another compilation pass, the source uses fake headings or captions, a schema that should appear in the List of Schemas does not have a caption, or generated files are stale.
+
+\textbf{Fix in the source:} Use real heading and caption commands. Recompile or perform a clean rebuild.
+
+\textbf{Check:} Confirm that the generated lists match the document.
+
+\subsection{Page numbering changes unexpectedly}
+\label{subsec:page-numbering-unexpected}
+
+\textbf{What you may see:} Front matter or main matter page numbering does not appear as expected.
+
+\textbf{Likely cause:} Manual page numbering commands were added, pages were inserted outside the template pattern, or the template-controlled sequence was interrupted.
+
+\textbf{Fix in the source:} Remove manual page numbering changes unless the repository instructions require them. Let the template control page numbering.
+
+\textbf{Check:} Recompile and review the front matter, first chapter, appendices, and contents.
+
+\section{Landscape pages and wide content problems}
+\label{sec:landscape-wide-problems}
+
+\subsection{Landscape page does not solve the problem}
+\label{subsec:landscape-does-not-solve}
+
+\textbf{What you may see:} A wide table or figure is still hard to read after rotation.
+
+\textbf{Likely cause:} The content is too complex, not just too wide.
+
+\textbf{Fix in the source:} Split, simplify, or redesign the content. Consider moving detailed material to an appendix.
+
+\textbf{Check:} Review readability and note whether extra PDF review is needed.
+
+\subsection{Rotated content creates accessibility concerns}
+\label{subsec:rotated-content-accessibility-concerns}
+
+\textbf{What you may see:} The page looks acceptable visually, but reading order or checker results are unclear.
+
+\textbf{Likely cause:} Rotated or complex layout can make PDF structure harder to verify.
+
+\textbf{Fix in the source:} Use the template's landscape workflow and keep the content as simple as possible.
+
+\textbf{Check:} Recompile and include the page in PDF review.
+
+\section{Accessibility-related problems}
+\label{sec:accessibility-related-problems}
+
+\subsection{PDF title or document language is missing or wrong}
+\label{subsec:pdf-title-language-wrong}
+
+\textbf{What you may see:} A checker or reviewer reports missing or incorrect document properties.
+
+\textbf{Likely cause:} The document information fields were not completed or are not being passed to the generated PDF as expected.
+
+\textbf{Fix in the source:} Update the template-provided document information and language fields.
+
+\textbf{Check:} Recompile and repeat the relevant PDF review.
+
+\subsection{Heading structure is confusing}
+\label{subsec:heading-structure-confusing}
+
+\textbf{What you may see:} Bookmarks, table of contents entries, or structure review suggests that headings are missing or out of order.
+
+\textbf{Likely cause:} Fake headings were used, heading levels were skipped, or a heading command was used for visual effect rather than structure.
+
+\textbf{Fix in the source:} Use real heading commands in logical order.
+
+\textbf{Check:} Recompile and review the table of contents, bookmarks, and relevant structure review.
+
+\subsection{Link text is not meaningful}
+\label{subsec:link-text-not-meaningful}
+
+\textbf{What you may see:} A reviewer notes repeated link text, bare URLs, or links labeled only as ``click here.''
+
+\textbf{Likely cause:} The link text does not describe the destination or purpose.
+
+\textbf{Fix in the source:} Rewrite the link so meaningful text is linked.
+
+\textbf{Check:} Recompile and confirm that the link still works and the linked text is understandable.
+
+\subsection{Accessibility checker reports a problem}
+\label{subsec:checker-reports-problem}
+
+\textbf{What you may see:} An automated checker reports an issue with metadata, tags, reading order, figures, tables, links, or another PDF feature.
+
+\textbf{Likely cause:} The problem may come from source content, template behavior, package behavior, or PDF-level structure.
+
+\textbf{Fix in the source:} First determine whether the issue can be corrected in the source. If not, record the issue for PDF review or remediation.
+
+\textbf{Check:} Recompile, rerun the relevant review, and record the result. Do not claim accessibility or conformance unless the relevant checks support that claim.
+
+\section{When to ask for help}
+\label{sec:when-to-ask-for-help}
+
+Ask for help when the same first error remains after checking the relevant source file, when the log points into template or package internals, when the document compiled before but now fails and you cannot identify the change, when a figure or table needs unusual formatting, or when a PDF accessibility issue does not appear fixable in the source.
+
+When you ask for help, include the project context. Useful information includes:
+
+\begin{itemize}
+  \item whether you are using Overleaf or another system;
+  \item \texttt{main.tex} or the main file name;
+  \item the compiler setting;
+  \item what you expected to happen;
+  \item what happened instead;
+  \item the first serious error in the log;
+  \item recent changes;
+  \item the source file, line number, or PDF page if known;
+  \item what you already tried.
+\end{itemize}
+
+Do not send only the final PDF when the problem may be in the source. The source file, log message, and recent changes are often needed to diagnose the issue.

@@ -1,0 +1,34 @@
+\chapter{Producing and Reviewing the PDF}
+\label{chap:producing-reviewing}
+
+After your source files are in place, the next step is to compile the project and review the generated PDF. A compiled PDF is an important milestone, but it is not automatically a finished document. The PDF still needs to be checked for formatting, front matter, page numbering, generated lists, citations, references, links, figures, tables, equations, appendices, and accessibility-related issues. The most useful habit is to treat compiling and reviewing as a cycle. Edit the source, compile the project, review the PDF and the log, fix the source, and compile again. This process can feel repetitive, but it is how a long \LaTeX{} document becomes stable.
+
+\section{Compiling the project in Overleaf}
+\label{sec:compile-overleaf}
+
+This template is built assuming that most students will use Overleaf. In Overleaf, open the complete project, not just one \texttt{.tex} file. The project should include \texttt{main.tex}, \texttt{ndsudisq.cls}, the \texttt{frontmatter/} folder, the \texttt{chapters/} folder, the \texttt{appendices/} folder, the \texttt{figures/} folder, and \texttt{references.bib}. If any of those files or folders are missing, the project may not compile correctly. Compile \texttt{main.tex}, not an individual chapter or appendix file. The main file loads the template, supplies document information, includes the chapters and appendices, and connects the bibliography file. Chapter files depend on that setup, so they may not compile correctly by themselves.
+
+Use LuaLaTeX as the compiler unless the repository instructions say otherwise. This template also uses \texttt{biblatex} with Biber for citations and references. Overleaf usually manages the repeated compilation steps needed for the table of contents, cross-references, citations, generated lists, and bibliography. If references or citations look stale, recompile again or use Overleaf's clean rebuild option before changing unrelated source files. Local \LaTeX{} systems can also be used by experienced users, but this guide does not provide local installation instructions. If you use a local system, use the same main file, compiler, and bibliography workflow expected by the template.
+
+\section{Reading the log}
+\label{sec:reading-log}
+
+When compilation fails or the PDF looks wrong, start with the log. The first serious error is usually more useful than later messages because later messages may be caused by the first problem. Common source problems include a misspelled command, a missing brace, a mismatched environment, a missing image file, a missing bibliography entry, a duplicate label, an unresolved reference, or content that is too wide for the page.
+
+Do not try to fix every problem by adding manual spacing or editing the generated PDF. First ask what changed in the source. If you recently edited a figure, table, equation, citation, heading, or front matter field, start there. A source-level correction is usually easier to repeat and will remain in place when the PDF is regenerated. Warnings also need judgment. Some warnings are temporary, especially before a second compilation pass. Others point to problems that should be fixed before review, such as unresolved citations, duplicate labels, missing files, broken links, or overfull boxes that visibly push text, figures, tables, equations, or URLs into the margin. If several warnings appear at once, focus first on the warnings connected to visible problems or broken references.
+
+\section{Reviewing the compiled PDF}
+\label{sec:review-compiled-pdf}
+
+After the project compiles, review the visible PDF from the beginning. Check the title page, approval page, abstract, acknowledgments, dedication if used, table of contents, generated lists, chapters, references, and appendices. Confirm that front matter uses roman numerals, the first main chapter begins with Arabic page number 1, and the table of contents entries match the actual document.
+
+Then review the content that often creates formatting problems. Figures should appear with useful captions, readable images, and meaningful descriptions in the source. Tables should be readable, should not run into the margin, and should appear in the List of Tables if that list is enabled. Equations should be introduced in prose, numbered when needed, and referenced correctly. Citations should resolve in the text and appear in the References section. Links should use meaningful text and should open the intended destination.
+
+If optional generated lists are enabled, check that they contain real entries. A List of Figures needs numbered figures with captions. A List of Tables needs numbered tables with captions. A List of Equations needs equation list entries. A References section needs cited sources or another intentional bibliography instruction. An empty generated section usually means that the switch is enabled but the corresponding source content is missing or not compiling as expected. If something is wrong in the PDF, return to the source first. Fix the relevant source file, compile again, and review the result. Avoid editing the generated PDF directly while the source is still changing.
+
+\section{Revising toward a stable PDF}
+\label{sec:revising-stable-pdf}
+
+A stable PDF is not necessarily final, but it should compile without major errors, show the expected front matter, include the intended chapters and appendices, resolve citations and cross-references, and display figures, tables, equations, and links in a reviewable form. A stable PDF gives you a reliable base for final formatting review and accessibility review. Before moving to accessibility review or PDF remediation, make the source as stable as practical. Replace placeholder text, remove unused examples, confirm document information, resolve major warnings, review the table of contents, check generated lists, and verify that the References section contains the expected entries. If the source changes later, regenerate the PDF and review again.
+
+The next chapter focuses on accessibility review and PDF remediation. That work should come after source-level problems have been addressed as much as possible. Source fixes usually survive recompilation. PDF-level fixes may need to be repeated if the PDF is regenerated.

@@ -1,0 +1,171 @@
+% Focused regression fixture for chapter-based numbering of equations,
+% figures, tables, longtables, schemas, and appendix floats.
+% Compile from the repository root with:
+%   lualatex -interaction=nonstopmode -halt-on-error -output-directory=tests tests/chapter-counter-fixture.tex
+% Run at least three times after cleaning auxiliary files.
+\DocumentMetadata{
+  tagging=on,
+  pdfversion=2.0,
+  pdfstandard=ua-2,
+  lang=en-US,
+  testphase={phase-III,math}
+}
+\documentclass{ndsudisq}
+
+\disquisitiontitle{Chapter Counter Regression Fixture}
+\disquisitionauthor{Template Test}
+\documenttype{Dissertation}
+\degree{Doctor of Philosophy}
+\majordepartmentlabel{Major Department}
+\program{Test Program}
+\degreeoption{}
+\finaldefense{May 2026}
+\approvaldate{May 18, 2026}
+\departmentchair{Department Chair}
+\committeechair{Committee Chair}
+\committeeone{Committee One}
+\committeetwo{Committee Two}
+\committeethree{Committee Three}
+\subjectinfo{Fixture}
+\keywordsinfo{NDSU, counters, fixture}
+\disquisitionlanguage{en-US}
+
+\includelistoftables
+\includelistoffigures
+\includelistofequations
+\includelistofschemas
+\equationnumberingbychapter
+\usechaptercaptions
+
+\begin{document}
+\makefrontmatter
+\mainmattersetup
+
+\chapter{First Numbered Chapter}
+
+\mathalt{Equation one in chapter one.}
+\begin{equation}
+  a = b
+\end{equation}
+
+\mathalt{Equation two in chapter one.}
+\begin{equation}
+  c = d
+\end{equation}
+
+\begin{figure}[htbp]
+  \centering
+  \fbox{\rule{0pt}{0.5in}\rule{1.2in}{0pt}}
+  \caption{First chapter first figure}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \fbox{\rule{0pt}{0.5in}\rule{1.2in}{0pt}}
+  \caption{First chapter second figure}
+\end{figure}
+
+\begin{table}[htbp]
+  \centering
+  \caption{First chapter first table}
+  \begin{tabular}{ll}
+    \toprule
+    Item & Value \\
+    \midrule
+    A & 1 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{First chapter second table}
+  \begin{tabular}{ll}
+    \toprule
+    Item & Value \\
+    \midrule
+    B & 2 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{longtable}{ll}
+\caption{First chapter longtable}\label{tab:counter-longtable}\\
+\toprule
+Item & Value \\
+\midrule
+\endfirsthead
+\caption[]{First chapter longtable, continued}\\
+\toprule
+Item & Value \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+C & 3 \\
+D & 4 \\
+\end{longtable}
+
+\begin{schema}[htbp]
+  \centering
+  \fbox{\rule{0pt}{0.5in}\rule{1.2in}{0pt}}
+  \caption{First chapter schema}
+\end{schema}
+
+\begin{ndsucodelisting}[Unnumbered code listing sample]
+print("code listings have titles but no template counter")
+\end{ndsucodelisting}
+
+\chapter{Second Numbered Chapter}
+
+\mathalt{Equation one in chapter two.}
+\begin{equation}
+  e = f
+\end{equation}
+
+\begin{figure}[htbp]
+  \centering
+  \fbox{\rule{0pt}{0.5in}\rule{1.2in}{0pt}}
+  \caption{Second chapter first figure}
+\end{figure}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Second chapter first table}
+  \begin{tabular}{ll}
+    \toprule
+    Item & Value \\
+    \midrule
+    E & 5 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{schema}[htbp]
+  \centering
+  \fbox{\rule{0pt}{0.5in}\rule{1.2in}{0pt}}
+  \caption{Second chapter schema}
+\end{schema}
+
+\appendicesmatter
+\chapter{Appendix Counter Chapter}
+
+\begin{figure}[htbp]
+  \centering
+  \fbox{\rule{0pt}{0.5in}\rule{1.2in}{0pt}}
+  \caption{Appendix figure}
+\end{figure}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Appendix table}
+  \begin{tabular}{ll}
+    \toprule
+    Item & Value \\
+    \midrule
+    F & 6 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\end{document}

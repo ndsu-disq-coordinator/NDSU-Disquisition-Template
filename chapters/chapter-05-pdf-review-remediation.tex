@@ -1,0 +1,123 @@
+% chapter-05-pdf-review-remediation-reviewed.tex
+% User-facing Chapter 5 for the NDSU disquisition LaTeX template.
+
+\chapter{PDF Review and Remediation}
+\label{chap:pdf-review-remediation}
+
+This chapter explains what to do after the \LaTeX{} source has produced a stable PDF. The goal is to review the generated document, decide what should be fixed in the source, and identify any problems that may require PDF-level remediation.
+
+For most students, the key principle is this: fix the source first when the source can be fixed. PDF-level repairs may be lost if the PDF is regenerated.
+
+\section{What PDF review and remediation mean}
+\label{sec:pdf-review-remediation-mean}
+
+PDF review means checking the generated PDF for visible formatting, working links, metadata, structure, reading order, figure descriptions, table structure, and other accessibility-related features.
+
+PDF remediation means correcting accessibility or structure problems in the PDF after it has been generated. Remediation is a later-stage correction process. It is not a substitute for writing structured source files.
+
+\section{When to begin PDF review}
+\label{sec:when-begin-pdf-review}
+
+Begin detailed PDF review after the document is reasonably stable. The main content should be present, front matter should be completed, figures and tables should be included, citations and references should be mostly resolved, and the document should compile without major errors.
+
+Do not spend time remediating a PDF that you know will be replaced by major source edits. Regenerate the PDF after source changes and review again.
+
+\section{Fix the source before remediating the PDF}
+\label{sec:fix-source-before-remediation}
+
+Many problems should be corrected in the \LaTeX{} source:
+
+\begin{itemize}
+  \item missing or unclear headings;
+  \item missing captions;
+  \item missing or weak figure descriptions;
+  \item unclear link text;
+  \item manually typed cross-references;
+  \item tables made with screenshots, spaces, or tabs;
+  \item missing bibliography entries;
+  \item placeholder title, author, or metadata fields.
+\end{itemize}
+
+Some problems may still require PDF-level remediation after the source is stable. Examples include tag order problems, reading order problems that are not exposed through the source workflow, complex table tagging issues, some equation tagging issues, or artifacts created by tools and packages.
+
+\section{Manual review before automated checking}
+\label{sec:manual-review-before-automated}
+
+Manual review should come before or alongside automated checking. A checker may report that a figure has a description, but it cannot reliably decide whether the description is useful. It may detect headings, but it cannot always judge whether the heading order makes sense.
+
+Review the PDF as a document first. Check whether the title page and front matter are correct, page numbers appear as expected, headings are logical, figures and tables are readable, captions are meaningful, links make sense, equations are introduced, and wide or landscape pages are usable.
+
+\section{Automated accessibility checkers}
+\label{sec:automated-accessibility-checkers}
+
+Automated checkers can help identify technical problems in a PDF. They are useful, but they do not prove that a PDF is accessible, usable, or conforming to a standard.
+
+Use checker results as issues to investigate. Some issues point back to the source. Some may point to template behavior. Some may require PDF-level remediation. Record the result and the fix rather than treating the checker report as the whole review.
+
+\section{Metadata and document properties}
+\label{sec:metadata-document-properties}
+
+Check that the PDF title, author, language, and other document properties are correct. Also check whether the PDF displays the document title rather than only the file name, if that behavior is expected.
+
+If metadata is missing or wrong, fix the document information fields or template-provided settings in the source first. Use PDF-level correction only when the source workflow does not expose the needed setting.
+
+\section{Tags, structure, and reading order}
+\label{sec:tags-structure-reading-order}
+
+A tagged PDF contains structure such as headings, paragraphs, lists, figures, tables, and links. The structure should match the document's meaning, not only its appearance.
+
+Review reading order in places where problems are more likely: title pages, front matter, figures, tables, footnotes, appendices, landscape pages, and complex layouts. If a problem can be traced to source structure, fix the source. If it cannot, it may need remediation or template review.
+
+\section{Figures, images, and alternative text}
+\label{sec:figures-alt-text-pdf-review}
+
+Check each meaningful image. Confirm that it has a useful description, the description is accurate, the caption identifies the figure, and nearby text explains complex content when needed.
+
+For decorative images, confirm that the generated PDF treats them according to the template workflow. If a figure description is missing or weak, correct it in the source first.
+
+\section{Tables}
+\label{sec:tables-pdf-review}
+
+Review tables for readability and structure. Check whether the table is a real table rather than a screenshot, whether headers are clear, whether the reading order is logical, and whether the table is too complex to understand comfortably.
+
+If the problem is table design, fix the source by simplifying, splitting, or restructuring the table. Complex table tagging may still require PDF-level remediation or additional support.
+
+\section{Links, bookmarks, and cross-references}
+\label{sec:links-bookmarks-crossrefs}
+
+Check internal links, external links, bookmarks, and cross-references. Bookmarks should follow the document structure. Link text should be meaningful. Cross-references should point to the intended figures, tables, equations, chapters, sections, and appendices.
+
+Fix broken references, duplicate labels, and unclear link text in the source before attempting PDF-level repair.
+
+\section{Equations and technical content}
+\label{sec:equations-technical-pdf-review}
+
+Check whether equations are created as \LaTeX{} math rather than images, whether important equations are introduced in prose, and whether symbols and variables are explained. If an automated checker reports Alternative Descriptions failures, inspect whether the failed items are Formula tags and whether inline math has an /Alt entry. Also check any display-equation descriptions created in the source.
+
+If only math Alternative Descriptions failures remain, test the template's PDF/UA-1 math alternative-text fallback before attempting PDF-level remediation. Complex equations may need additional review after PDF production. Do not assume that consistent visual equation formatting is the same as accessible mathematical content, and do not describe the PDF as conforming unless the full review passes.
+
+\section{Recording issues and known limits}
+\label{sec:recording-issues-known-limits}
+
+Keep a simple issue log when review identifies problems. Useful fields include location, issue, source-level fix attempted, PDF-level remediation needed, status, and notes.
+
+This helps distinguish authoring errors, template issues, compiler or package limitations, remediation-only issues, and unresolved known limits.
+
+\section{Recompiling after remediation}
+\label{sec:recompiling-after-remediation}
+
+If the source changes, regenerate the PDF and review again. Do not assume that PDF-level remediation survived recompilation.
+
+Keep track of which issues were fixed in the source and which were fixed directly in the PDF. This is especially important near final submission, when small source edits may require a new review pass.
+
+\section{What not to claim without testing}
+\label{sec:what-not-to-claim}
+
+Do not describe the PDF as accessible, Section 508 conforming, WCAG conforming, or PDF/UA conforming unless the relevant checks have been completed and the results support that claim.
+
+A good review record should say what was checked, what passed, what failed, what was fixed in the source, what was remediated in the PDF, and what remains unresolved.
+
+\section{Before moving on}
+\label{sec:before-moving-on-pdf-review}
+
+At the end of PDF review, you should know whether the source is stable, whether visible formatting looks correct, whether major accessibility-related source issues have been addressed, and whether any remaining problems require PDF-level remediation or additional support.

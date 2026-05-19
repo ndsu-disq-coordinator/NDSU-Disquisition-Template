@@ -1,0 +1,58 @@
+\DocumentMetadata{
+  tagging=on,
+  pdfstandard=ua-1,
+  lang=en-US
+}
+\documentclass{../ndsudisq}
+
+\disquisitiontitle{Code Listing Number Alignment Fixture}
+\disquisitionauthor{Template Test}
+\documenttype{Dissertation}
+\degree{Doctor of Philosophy}
+\majordepartmentlabel{Major Department}
+\program{Test Program}
+\finaldefense{May 2026}
+\approvaldate{May 18, 2026}
+\departmentchair{Department Chair}
+\committeechair{Committee Chair}
+\committeeone{Committee One}
+\committeetwo{Committee Two}
+\committeethree{Committee Three}
+\subjectinfo{Code listing alignment regression}
+\keywordsinfo{code listing, line numbers, margin}
+\disquisitionlanguage{en-US}
+
+\begin{document}
+\mainmattersetup
+\chapter{Code Listing Number Alignment Regression}
+
+This fixture checks that numbered code listings remain inside the normal text block.
+The listing below intentionally has more than 20 lines, a title, a frame, and a long line that wraps.
+
+\begin{ndsucodelisting}[Twenty-line numbered listing]
+line 01: short content for number alignment inspection
+line 02: short content for number alignment inspection
+line 03: short content for number alignment inspection
+line 04: short content for number alignment inspection
+line 05: short content for number alignment inspection
+line 06: short content for number alignment inspection
+line 07: short content for number alignment inspection
+line 08: short content for number alignment inspection
+line 09: short content for number alignment inspection
+line 10: two digit line number should stay inside the text block
+line 11: two digit line number should stay inside the text block
+line 12: two digit line number should stay inside the text block
+line 13: two digit line number should stay inside the text block
+line 14: two digit line number should stay inside the text block
+line 15: two digit line number should stay inside the text block
+line 16: two digit line number should stay inside the text block
+line 17: two digit line number should stay inside the text block
+line 18: two digit line number should stay inside the text block
+line 19: two digit line number should stay inside the text block
+line 20: two digit line number should stay inside the text block
+line 21: this deliberately long line should wrap within the framed code listing without creating an overfull box or pushing the line numbers into the page margin during the regression check
+line 22: final line for visual confirmation
+\end{ndsucodelisting}
+
+Following text confirms spacing after the code listing remains acceptable.
+\end{document}

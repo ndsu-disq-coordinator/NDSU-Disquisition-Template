@@ -1,0 +1,63 @@
+% Regression fixture for Table of Contents hyperlink annotations.
+\DocumentMetadata{
+  tagging=on,
+  pdfversion=2.0,
+  pdfstandard=ua-2,
+  lang=en-US,
+  testphase={phase-III,math}
+}
+
+\documentclass{../ndsudisq}
+
+\disquisitiontitle{TOC Hyperlink Regression Fixture}
+\disquisitionauthor{Template Test}
+\documenttype{Dissertation}
+\degree{Doctor of Philosophy}
+\majordepartmentlabel{Major Department}
+\program{Test Program}
+\finaldefense{May 2026}
+\approvaldate{May 18, 2026}
+\departmentchair{Department Chair}
+\committeechair{Committee Chair}
+\committeeone{Committee Member One}
+\committeetwo{Committee Member Two}
+\committeethree{Committee Member Three}
+\subjectinfo{Disquisition hyperlink regression test}
+\keywordsinfo{NDSU, disquisition, TOC, hyperlinks}
+\disquisitionlanguage{en-US}
+
+\includelistoftables
+\includelistoffigures
+
+\begin{document}
+\makefrontmatter
+\mainmattersetup
+
+\chapter{First Test Chapter}
+\section{First Test Section}
+This fixture intentionally includes a chapter, a section, a figure, and a table
+so the Table of Contents can be compared against the working Lists.
+
+\begin{figure}[htbp]
+  \centering
+  \fbox{\rule{0pt}{0.75in}\rule{1.5in}{0pt}}
+  \caption{Fixture figure}
+\end{figure}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Fixture table}
+  \begin{tabular}{ll}
+    \toprule
+    Item & Value \\
+    \midrule
+    A & 1 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\appendicesmatter
+\chapter{Appendix Test Chapter}
+Appendix content verifies that appendix TOC entries keep their destinations.
+
+\end{document}

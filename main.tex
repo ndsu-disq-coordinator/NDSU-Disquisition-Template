@@ -1,0 +1,89 @@
+% main.tex
+% NDSU disquisition template.
+% Edit this file and the content files listed below. Most users should not edit
+% ndsudisq.cls or other template support files.
+
+% Leave this block before \documentclass. It requests PDF metadata and tagging
+% support. Validate the final PDF before making accessibility or PDF/UA claims.
+\DocumentMetadata{
+  tagging=on,
+  pdfstandard=ua-1,
+  lang=en-US,
+  tagging-setup={
+    math/alt/use
+  }
+}
+
+\documentclass{ndsudisq}
+
+% Bibliography setup.
+\usepackage[backend=biber,style=authoryear]{biblatex}
+\addbibresource{references.bib}
+
+% -----------------------------------------------------------------------------
+% Document information
+% -----------------------------------------------------------------------------
+% Replace these values with your own disquisition information.
+\disquisitiontitle{Your Disquisition Title}
+\disquisitionauthor{Your Name}
+\documenttype{Dissertation}
+\degree{Doctor of Philosophy}
+\majordepartmentlabel{Major Department}
+\program{Your Department or Program}
+\degreeoption{}
+\finaldefense{Month Year}
+
+\approvaldate{Month Day, Year}
+\departmentchair{Department Chair Name}
+\committeechair{Committee Chair Name}
+\committeeone{Committee Member One}
+\committeetwo{Committee Member Two}
+\committeethree{Committee Member Three}
+
+% PDF metadata.
+\subjectinfo{Disquisition}
+\keywordsinfo{NDSU, disquisition, thesis, dissertation}
+\disquisitionlanguage{en-US}
+
+% -----------------------------------------------------------------------------
+% Front matter options
+% -----------------------------------------------------------------------------
+% Uncomment only the sections and lists your document uses.
+\includededication
+\includelistoftables
+\includelistoffigures
+% \includelistofequations
+% \includelistofschemas
+\includeabbreviations
+% \includepreface
+
+% Numbering options. Leave these settings unless instructed otherwise.
+\equationnumberingbychapter
+\usechaptercaptions
+
+\begin{document}
+
+\makefrontmatter
+\mainmattersetup
+
+% -----------------------------------------------------------------------------
+% Main content
+% -----------------------------------------------------------------------------
+% Replace, add, or remove chapter files here.
+\input{chapters/chapter-01-introduction.tex}
+\input{chapters/chapter-02-adding-content.tex}
+\input{chapters/chapter-03-producing-pdf.tex}
+\input{chapters/chapter-04-digital-accessibility.tex}
+%\input{chapters/chapter-05-pdf-review-remediation.tex}
+
+\printreferences
+
+% -----------------------------------------------------------------------------
+% Appendices
+% -----------------------------------------------------------------------------
+% Replace, add, or remove appendix files here.
+\appendicesmatter
+\input{appendices/appendix-a-quick-start.tex}
+% \input{appendices/appendix-b-common-problems-fixes.tex}
+
+\end{document}

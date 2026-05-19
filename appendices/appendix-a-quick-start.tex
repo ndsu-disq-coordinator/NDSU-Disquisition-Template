@@ -1,0 +1,49 @@
+\chapter{Quick Start: Producing Your Disquisition PDF}
+\label{app:quick-start}
+
+This appendix gives a compact path from opening the project to producing a reviewable PDF. It assumes that you are using Overleaf, compiling \texttt{main.tex}, and using LuaLaTeX unless the repository instructions say otherwise.
+
+The basic revision cycle is:
+
+\begin{enumerate}
+    \item Open the complete project and confirm the settings.
+    \item Add or revise source content.
+    \item Compile \texttt{main.tex}.
+    \item Review the PDF and the log.
+    \item Fix source-level problems and compile again.
+    \item Complete final accessibility review and PDF remediation if needed.
+\end{enumerate}
+
+The first compiled PDF is not a final submission PDF. It is a working version that helps you confirm that the template, source files, front matter, chapters, figures, references, and generated output are connected correctly.
+
+\section{Open the complete project}
+\label{sec:quick-open-project}
+
+Open the full project in Overleaf, not just one \texttt{.tex} file. Confirm that Overleaf is compiling \texttt{main.tex}. Chapter files and appendix files are included by the main file and may not compile correctly by themselves. Confirm that the compiler is set to LuaLaTeX. This template also uses \texttt{biblatex} with Biber for citations and references. Overleaf usually manages the needed compilation passes.
+
+\section{Add or revise source content}
+\label{sec:quick-revise-source}
+
+Start with the most visible placeholders in \texttt{main.tex}: title, author, degree, program or department, committee information, date, subject, keywords, and language if needed. Then revise the front matter files. If you use optional front matter such as a dedication or abbreviations page, make sure the matching file exists and the corresponding option is enabled in \texttt{main.tex}. Add chapter, appendix, figure, table, equation, citation, and link content in the source files. Keep the template structure intact. Do not edit \texttt{ndsudisq.cls} for ordinary document content.
+
+\section{Compile the project}
+\label{sec:quick-compile-project}
+
+In Overleaf, compile \texttt{main.tex}. If the PDF appears, review it before making more changes. If Overleaf reports an error, open the log and start with the first serious error. Later errors are often side effects of the first one. If references, citations, or generated lists look stale, recompile again or use a clean rebuild.
+
+\section{Review the PDF and log}
+\label{sec:quick-review-output}
+
+Review the visible PDF from the beginning. Check the title page, approval page, abstract, acknowledgments, dedication if used, table of contents, generated lists, chapter headings, figures, tables, equations, citations, references, appendices, and page numbering. Also review the log for unresolved citations, unresolved references, missing files, duplicate labels, broken links, or overfull boxes that affect the visible PDF.
+
+\section{Fix the source and compile again}
+\label{sec:quick-fix-source}
+
+If something is wrong, fix the source file and compile again. Do not edit the generated PDF to correct source-level problems. Source-level fixes are easier to repeat and are less likely to be lost when the PDF is regenerated. Continue the cycle: edit the source, compile, review the PDF and log, fix source-level problems, and compile again.
+
+\section{Complete final accessibility review and remediation}
+\label{sec:quick-final-remediation}
+
+Before final review, remove placeholder text, sample dates, sample titles, guide examples, and unused optional sections. Confirm that document information is accurate, headings are logical, figures have captions and descriptions, tables are readable, citations resolve, links are meaningful, and the References section contains the expected entries.
+
+After the source is stable, complete accessibility review of the generated PDF. Some problems may still require PDF-level remediation, especially issues involving reading order, tag order, complex tables, figure descriptions, links, bookmarks, artifacts, or mathematical content. Do not describe the PDF as accessible, Section 508 conforming, WCAG conforming, or PDF/UA conforming unless the relevant checks have been completed and the results support that claim.

@@ -1,0 +1,65 @@
+\chapter{Start Here: The Template, \LaTeX{}, and Overleaf}
+\label{chap:start-here}
+
+Reaching the disquisition stage is a significant point in a graduate degree. You have already done much of the intellectual work: developing the project, carrying out the research or creative activity, analyzing material, and preparing to present the result in a formal document. This template is intended to help with the document work that remains. It provides a structured \LaTeX{} project for preparing an NDSU disquisition, including a dissertation, thesis, or culminating paper.
+
+This chapter gives a brief orientation to the repository and the workflow. It is not a complete introduction to \LaTeX{}, and it does not try to explain every command used by the template. The goal is simpler: to help you understand what the template is, what files you will normally edit, how Overleaf fits into the process, and what the template can and cannot do for formatting and accessibility. Later chapters explain how to prepare your source files, how to compile and review the PDF, and how to complete accessibility review and remediation workflows.
+
+\section{What this template is for}
+\label{sec:template-purpose}
+
+This repository contains a \LaTeX{} template and supporting files for producing an NDSU disquisition PDF. The template is designed to control repeated formatting patterns such as page layout, front matter, headings, captions, numbering, tables of contents, lists of figures and tables, appendices, references, and related document structures. It also supports accessibility-aware authoring practices, including structured headings, metadata, captions, links, and figure-description workflows.
+
+NDSU disquisitions must meet Graduate School formatting and construction requirements, and this template is intended to help students work within that document-preparation process \parencite{ndsu-cfw-templates-forms}.
+
+The template is meant to reduce the amount of formatting you do by hand. In a long document, manual formatting becomes difficult to maintain. Page numbers change, figures move, tables shift, citations update, and front matter may need to be revised. A template-based workflow makes those changes more repeatable because the source files describe the structure of the document and the template controls much of the appearance.
+
+This does not mean the template writes or verifies the disquisition for you. You still provide the content, complete the front matter, insert figures and tables, write captions and descriptions, manage references, and review the compiled PDF. The template can help produce a more consistent and reviewable document, but it cannot guarantee that the final PDF is accessible, Section 508 conforming, WCAG conforming, or PDF/UA conforming. Those claims require appropriate testing and review.
+
+\section{How \LaTeX{} and Overleaf fit together}
+\label{sec:latex-overleaf}
+
+\LaTeX{} is a document preparation system. Instead of formatting a document mainly by selecting text and changing its appearance, you write plain-text source files that use commands to identify structure. A command such as \verb|\chapter{Methods}| marks a chapter. A command such as \verb|\section{Data Collection}| marks a section. Other commands identify figures, tables, equations, citations, links, and references. A compiler then processes the source files and produces the PDF.
+
+Overleaf is the web-based editing and compiling environment assumed by this template. In Overleaf, you edit the project files, set the compiler, compile the document, preview the PDF, and check the log when something goes wrong. Other local \LaTeX{} systems can be used by experienced users or support staff, but this guide is written primarily for students working in Overleaf.
+
+A few terms are useful at the beginning. A \textit{source file} is a plain-text file that contains \LaTeX{} content and commands, usually ending in \texttt{.tex}. The \textit{main file}, usually \texttt{main.tex}, starts the document build, loads the template, sets document information, and includes the other files. A \textit{compiler} is the tool that turns the source files into a PDF. This template expects LuaLaTeX unless the repository instructions say otherwise. \textit{Biber} is the bibliography processor used with the \texttt{biblatex} citation workflow. The \textit{class file}, \texttt{ndsudisq.cls}, is the template file that controls much of the document behavior. Most students use the class file but do not edit it.
+
+\section{What you edit}
+\label{sec:what-you-edit}
+
+Most of your work should happen in the user-editable source files. The main file contains document information such as title, author, degree, program, committee information, date, metadata, front matter options, chapter inputs, appendix inputs, and bibliography setup. The files in \texttt{frontmatter/} contain material such as the abstract, acknowledgments, dedication, abbreviations, or other front matter used by your document. The files in \texttt{chapters/} contain the main body of the disquisition. The files in \texttt{appendices/} contain appendix material. The bibliography file, usually \texttt{references.bib}, contains the sources used by citation commands. The \texttt{figures/} folder holds images, charts, maps, screenshots, diagrams, and other visual files.
+
+You normally do not edit \texttt{ndsudisq.cls}. That file is part of the template infrastructure. It defines formatting, front matter behavior, heading behavior, caption behavior, appendix behavior, PDF metadata settings, and other document features. You also normally do not edit generated files such as logs, auxiliary files, table-of-contents files, bibliography output files, or the compiled PDF as part of ordinary writing. If the PDF does not look right, fix the source file when possible and compile again.
+
+
+Figure~\ref{fig:project-file-organization} shows the general organization of the repository and the relationship between editable source files, template files, and generated output. Most students work mainly in the editable source files, while Overleaf and the template process those files into the generated PDF used for review and revision. A useful working habit is to make one meaningful change at a time, compile, and review the result. This is especially helpful when adding figures, tables, equations, citations, or appendices. If something fails, the source file, the compile log, and the most recent change usually provide the fastest path to diagnosis.
+
+\begin{figure}[htbp]
+\centering
+
+\ndsuincludegraphics[
+    width=\textwidth,
+    keepaspectratio
+]
+{Infographic showing four categories of files in the NDSU LaTeX disquisition project: content files students write, setup files students complete, optional document components enabled when needed, and template or generated files that students usually leave unchanged.}
+{figures/LaTeX disquisition project file organization.png}
+
+\caption{Typical organization and use of files in the NDSU \LaTeX{} disquisition workflow.}
+\label{fig:project-file-organization}
+
+\ndsufigurenote{This diagram shows the general organization of the repository rather than every file included in the project.}
+
+\end{figure}
+
+
+
+
+\section{What the template can and cannot do}
+\label{sec:template-limits}
+
+The template can apply consistent formatting to repeated document structures. It can help headings appear consistently, place front matter in the expected sequence, generate a table of contents, create lists of figures and tables when those lists are enabled, format captions, manage page numbering transitions, support citation and reference output, and provide commands for common content patterns. It can also support accessibility-aware authoring by encouraging real headings, meaningful links, figure descriptions, structured tables, metadata, and source-level corrections.
+
+The template cannot decide whether your content is complete, whether a figure description is accurate, whether a table is too complex, whether link text is meaningful, whether an equation is explained well enough, or whether the final PDF passes an accessibility review. Those decisions require author judgment and, in some cases, additional review or remediation. When a problem can be fixed in the source, fix it there first. Source-level fixes survive recompilation; direct PDF-level repairs may need to be repeated if the PDF is regenerated.
+
+The rest of this guide follows that workflow. The next chapter explains how to prepare the source files for your disquisition. Chapter 3 explains how to compile, review, and revise the PDF. Chapter 4 explains accessibility review and PDF remediation workflows. Appendix A gives a compact first-PDF checklist, and Appendix B provides troubleshooting guidance when something goes wrong.

@@ -1,0 +1,63 @@
+% math-tagging-fixture.tex
+% Focused PDF/UA-1 fixture for checking Formula tagging and math /Alt behavior.
+% Compile with LuaLaTeX. PAC/Acrobat validation still must be run separately.
+\DocumentMetadata{
+  tagging=on,
+  pdfstandard=ua-1,
+  lang=en-US,
+  tagging-setup={
+    math/alt/use
+  }
+}
+
+\documentclass{../ndsudisq}
+
+\disquisitiontitle{Math Tagging Fixture}
+\disquisitionauthor{Template Test}
+\documenttype{Dissertation}
+\degree{Doctor of Philosophy}
+\majordepartmentlabel{Major Department}
+\program{Test Program}
+\degreeoption{}
+\finaldefense{May 2026}
+\approvaldate{May 18, 2026}
+\departmentchair{Department Chair}
+\committeechair{Committee Chair}
+\committeeone{Committee One}
+\committeetwo{Committee Two}
+\committeethree{Committee Three}
+\subjectinfo{Formula tagging fixture}
+\keywordsinfo{NDSU, disquisition, Formula tags, math alternative text}
+\disquisitionlanguage{en-US}
+\includelistofequations
+\numberwithin{equation}{chapter}
+
+\begin{document}
+\makefrontmatter
+\mainmattersetup
+
+\chapter{Math Tagging Fixture}
+\label{chap:math-tagging-fixture}
+
+% These examples are present to test Formula tagging and math /Alt behavior
+% under the PDF/UA-1 validation target. They should remain LaTeX math rather
+% than screenshots or image replacements.
+This paragraph contains the inline formula \(S=\sum_{i=1}^{n} w_i x_i\).
+It also contains the inline variables \(\bar{x}\), \(x_i\), and \(n\).
+
+% The \mathalt command preserves the template's existing display-equation
+% description workflow for numbered display equations while math/alt/use
+% supplies a fallback for Formula tags.
+\mathalt{Sample mean equals one over n times the sum from i equals one to n of x sub i.}
+\begin{equation}
+\bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_i
+\end{equation}
+
+% Include an amsmath environment so the fixture covers display math beyond the
+% base equation environment.
+\begin{align}
+S &= \sum_{i=1}^{n} w_i x_i \\
+\bar{x} &= \frac{1}{n}\sum_{i=1}^{n}x_i
+\end{align}
+
+\end{document}

@@ -1,0 +1,36 @@
+\chapter{Accessibility Review and PDF Remediation}
+\label{chap:accessibility-remediation}
+
+Accessibility is an important goal of this template, but it is not something the template can complete by itself. The template can help you prepare a more structured and reviewable PDF. You still need to make good authoring decisions, review the generated PDF, and complete remediation when the PDF requires it.
+
+The general workflow is:
+
+\begin{enumerate}
+  \item understand the basic \LaTeX{} and Overleaf workflow;
+  \item add your content to the source files in a structured way;
+  \item compile the source files to produce a PDF;
+  \item review and remediate the PDF when needed.
+\end{enumerate}
+
+The first three steps should happen before PDF remediation. If a problem can be fixed in the \LaTeX{} source, fix it there first. Source-level fixes usually survive recompilation. PDF-level fixes may need to be repeated if the PDF is regenerated.
+
+\section{What the template can help with}
+\label{sec:template-accessibility-support}
+
+This template can help with several accessibility-related parts of the workflow. It can support document metadata, language settings, structured headings, front matter order, captions, figure descriptions, table structures, links, cross-references, citations, references, bookmarks, and some PDF tagging behavior.
+
+These features matter because they give the generated PDF a clearer structure and make the document easier to review. For example, real heading commands can support the table of contents and bookmarks. Captions and labels help figures and tables remain identifiable. Descriptive link text helps readers understand where a link goes. Figure descriptions help make meaningful images available to readers who cannot see or interpret the image visually. These supports do not prove that the final PDF is accessible, Section 508 conforming, WCAG conforming, or PDF/UA conforming. They are part of a better authoring workflow, not a substitute for review.
+
+\section{What authors still need to do}
+\label{sec:author-accessibility-work}
+
+The author still needs to provide accurate, meaningful content. The template cannot decide whether a figure description is useful, whether a table is too complex, whether a link makes sense out of context, whether an equation is explained clearly, or whether color is being used as the only way to communicate meaning.
+
+Before moving to PDF remediation, review the source and the compiled PDF. Check that document information is complete, headings are logical, figures have captions and descriptions, tables are readable, links are meaningful, citations resolve, and the References section contains the expected entries. Pay special attention to complex figures, screenshots, charts, tables, equations, appendices, and landscape pages. When you find a problem, first ask whether it can be corrected in the source. Missing captions, weak link text, missing figure descriptions, fake headings, manually typed references, and poorly structured tables should usually be fixed in the source before the PDF is remediated.
+
+\section{PDF remediation after source review}
+\label{sec:pdf-remediation-after-source-review}
+
+Some problems may remain after the source has been corrected as much as practical. These problems may require PDF remediation in a PDF editor or accessibility review tool. Examples include reading-order problems, tag-order problems, artifact problems, complex table structure issues, bookmark problems, link annotation issues, or cases where source-provided descriptions do not appear correctly in the generated PDF.
+
+PDF remediation should happen after the source is reasonably stable. If you remediate a PDF and then regenerate it from revised \LaTeX{} source, the PDF-level fixes may be lost. For that reason, complete major source revisions first, compile a clean PDF, review the PDF, and then remediate the remaining PDF-level issues.
