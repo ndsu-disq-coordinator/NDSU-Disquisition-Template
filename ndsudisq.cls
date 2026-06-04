@@ -1229,7 +1229,10 @@
   \begingroup
   \singlespacing
   \centering
+  \tagstructbegin{tag=H1}%
+  \tagmcbegin{tag=H1}%
   {\begin{doublespace}\MakeUppercase{\ndsutitle}\par\end{doublespace}}%
+  \tagpdfsuppressmarks{\tagmcend}\tagstructend%
   \vspace{\ndsu@titlefirstsep}
   A \ndsudocumenttype\par
   Submitted to the Graduate Faculty\par
