@@ -1224,6 +1224,8 @@
 \setlength{\ndsu@titlefirstsep}{0.92in}
 \newlength{\ndsu@titlebottomsep}
 \setlength{\ndsu@titlebottomsep}{0.12in}
+\newlength{\ndsu@approvalblockwidth}
+\setlength{\ndsu@approvalblockwidth}{0.855\textwidth}
 \newcommand{\makecoverpage}{%
   \thispagestyle{empty}%
   \begingroup
@@ -1271,7 +1273,7 @@
 }
 \newcommand{\ndsu@signatureentry}[2]{%
   \noindent
-  \begin{minipage}[t]{0.58\textwidth}
+  \begin{minipage}[t]{0.58\linewidth}
     #1\par%
     \vspace{-1.5ex}
     \ndsuartifactcontent{\rule{\linewidth}{0.4pt}}\par
@@ -1286,7 +1288,7 @@
 }
 
 \newcommand{\ndsu@approvalfield}[2]{%
-  \begin{minipage}[t]{0.42\textwidth}
+  \begin{minipage}[t]{0.42\linewidth}
     \centering
     #1\par%
     \vspace{-1.5ex}
@@ -1296,7 +1298,7 @@
   \end{minipage}%
 }
 \newcommand{\ndsu@approvaldatefield}[2]{%
-  \begin{minipage}[t]{0.42\textwidth}
+  \begin{minipage}[t]{0.42\linewidth}
     \noindent\makebox[0.85\linewidth][c]{#1}\par
     \vspace{-1.5ex}
     \ndsuartifactcontent{\rule{0.85\linewidth}{0.4pt}}\par
@@ -1330,7 +1332,7 @@
     {\fontsize{10pt}{12pt}\selectfont\textbf{Title}\par}
     \vspace{0.08in}
 
-    \begin{minipage}{0.855\textwidth}
+    \begin{minipage}{\ndsu@approvalblockwidth}
       \centering
       \ndsutitle\par
       \vspace{-1.5ex}
@@ -1342,7 +1344,7 @@
     {\fontsize{10pt}{12pt}\selectfont\textbf{By}\par}
     \vspace{0.08in}
 
-    \begin{minipage}{0.855\textwidth}
+    \begin{minipage}{\ndsu@approvalblockwidth}
       \centering
       \ndsuauthor\par
       \vspace{-1.5ex}
@@ -1353,52 +1355,52 @@
   \vspace{0.12in}
 
   \noindent\makebox[\textwidth][c]{%
-    \begin{minipage}{0.855\textwidth}
+    \begin{minipage}{\ndsu@approvalblockwidth}
       {\fontsize{10pt}{12pt}\selectfont
       \doublespacing
       The Supervisory Committee certifies that this \textbf{\textit{disquisition}} complies with
       North Dakota State University's regulations and meets the accepted standards
       for the degree of\par}
+
+      \vspace{0.20in}
+
+      \begin{center}
+        {\fontsize{10pt}{12pt}\selectfont\bfseries\MakeUppercase{\ndsudegree}\par}
+      \end{center}
+
+      \vspace{1.15in}
+
+      {\fontsize{10pt}{12pt}\selectfont SUPERVISORY COMMITTEE:\par}
+
+      \vspace{0.20in}
+
+      \ndsu@signatureentry{\ndsucommitteechair}{Chair}%
+      \ifstrempty{\ndsucommitteeone}{}{%
+        \par\vspace{0.20in}%
+        \ndsu@signatureentry{\ndsucommitteeone}{}%
+      }%
+      \ifstrempty{\ndsucommitteetwo}{}{%
+        \par\vspace{0.12in}%
+        \ndsu@signatureentry{\ndsucommitteetwo}{}%
+      }%
+      \ifstrempty{\ndsucommitteethree}{}{%
+        \par\vspace{0.12in}%
+        \ndsu@signatureentry{\ndsucommitteethree}{}%
+      }%
+      \forlistloop{\ndsu@committeeentry}{\ndsu@additionalcommittee}%
+
+      \vspace{0.5in}
+
+      {\fontsize{10pt}{12pt}\selectfont Approved:\par}
+
+      \vspace{0.10in}
+
+      \noindent
+      \ndsu@approvaldatefield{\ndsuapprovaldate}{Date}%
+      \hfill
+      \ndsu@approvalfield{\ndsudeptchair}{Department Chair}%
     \end{minipage}%
   }%
-
-  \vspace{0.20in}
-
-  \begin{center}
-  {\fontsize{10pt}{12pt}\selectfont\bfseries\MakeUppercase{\ndsudegree}\par}
-\end{center}
-
-  \vspace{1.15in}
-
-  {\fontsize{10pt}{12pt}\selectfont SUPERVISORY COMMITTEE:\par}
-
-  \vspace{0.20in}
-
-  \ndsu@signatureentry{\ndsucommitteechair}{Chair}%
-  \ifstrempty{\ndsucommitteeone}{}{%
-    \par\vspace{0.20in}%
-    \ndsu@signatureentry{\ndsucommitteeone}{}%
-  }%
-  \ifstrempty{\ndsucommitteetwo}{}{%
-    \par\vspace{0.12in}%
-    \ndsu@signatureentry{\ndsucommitteetwo}{}%
-  }%
-  \ifstrempty{\ndsucommitteethree}{}{%
-    \par\vspace{0.12in}%
-    \ndsu@signatureentry{\ndsucommitteethree}{}%
-  }%
-  \forlistloop{\ndsu@committeeentry}{\ndsu@additionalcommittee}%
-
-  \vspace{0.5in}
-
-  {\fontsize{10pt}{12pt}\selectfont Approved:\par}
-
-  \vspace{0.10in}
-
-  \noindent
-  \ndsu@approvaldatefield{\ndsuapprovaldate}{Date}%
-  \hfill
-  \ndsu@approvalfield{\ndsudeptchair}{Department Chair}%
 
   \end{ndsu@nohyphenation}
   \endgroup
