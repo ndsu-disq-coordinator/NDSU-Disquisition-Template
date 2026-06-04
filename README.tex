@@ -1,0 +1,17 @@
+# NDSU Disquisition Class
+
+This project provides a LaTeX class for building an NDSU-style thesis or dissertation with consistent page layout, front matter, headings, captions, lists, references, and PDF metadata.
+
+## Theory of Operation
+
+The class file, `ndsudisq.cls`, owns the document structure and formatting rules. Authors should keep project content in `main.tex`, front-matter files, chapter files, figures, tables, and bibliography files. The class is designed for LuaLaTeX.
+
+## First Steps
+
+1. Add `ndsudisq.cls` to your LaTeX project.
+2. Use `\documentclass{ndsudisq}` in `main.tex`.
+3. Fill in the title, author, degree, committee, and date metadata.
+4. Add front matter and chapter content.
+5. Compile with LuaLaTeX, and use Biber if using `biblatex`.
+
+This public version is intended as a starting point for maintainable disquisition formatting, not as a substitute for checking current Graduate School requirements.

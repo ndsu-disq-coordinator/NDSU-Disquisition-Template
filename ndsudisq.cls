@@ -10,15 +10,19 @@
 \newcommand{\ndsudisqdesc}{NDSU disquisition class}
 \ProvidesClass{ndsudisq}[\ndsudisqdate\space \ndsudisqdesc\space (\ndsudisqversion)]
 
+
 % --- Options and base class ---
 \newif\ifndsu@nonumbered
 \ndsu@nonumberedfalse
 \newif\ifndsu@debugbookmarks
 \ndsu@debugbookmarksfalse
+\newif\ifndsu@xitsfonts
+\ndsu@xitsfontsfalse
 \DeclareOption{nonumbered}{\ndsu@nonumberedtrue}
 \DeclareOption{debugbookmarks}{\ndsu@debugbookmarkstrue}
 \DeclareOption{equationchapter}{\AtEndOfClass{\equationnumberingbychapter}}
 \DeclareOption{equationcontinuous}{\AtEndOfClass{\equationnumberingcontinuous}}
+\DeclareOption{xitsfonts}{\ndsu@xitsfontstrue}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{report}}
 \ProcessOptions\relax
 \LoadClass[12pt,oneside,letterpaper]{report}
@@ -30,12 +34,23 @@
   \stop
 \fi
 \RequirePackage{fontspec}
-\IfFontExistsTF{Times New Roman}
-  {\setmainfont{Times New Roman}}
-  {%
-    \setmainfont{TeX Gyre Termes}%
-    \ClassWarningNoLine{ndsudisq}{Times New Roman was not found; using TeX Gyre Termes fallback. Confirm institutional acceptance of this substitute font before submission}%
-  }
+\ifndsu@xitsfonts
+  \IfFontExistsTF{XITS}
+    {\setmainfont{XITS}}
+    {\ClassError{ndsudisq}{The xitsfonts option requires the XITS font}{Install the XITS font family or remove the xitsfonts option.}}
+  \RequirePackage{unicode-math}
+  \IfFontExistsTF{XITS Math}
+    {\setmathfont{XITS Math}}
+    {\ClassError{ndsudisq}{The xitsfonts option requires the XITS Math font}{Install XITS Math or remove the xitsfonts option.}}
+  \ClassInfo{ndsudisq}{Using XITS/XITS Math font experiment via xitsfonts option}
+\else
+  \IfFontExistsTF{Times New Roman}
+    {\setmainfont{Times New Roman}}
+    {%
+      \setmainfont{TeX Gyre Termes}%
+      \ClassWarningNoLine{ndsudisq}{Times New Roman was not found; using TeX Gyre Termes fallback. Confirm institutional acceptance of this substitute font before submission}%
+    }
+\fi
 \RequirePackage{polyglossia}
 \RequirePackage{csquotes}
 \RequirePackage{xparse}
@@ -101,14 +116,21 @@
 \setlength{\ndsuListPartopSep}{0pt}
 \newlength{\ndsuListLeftMargin}
 \setlength{\ndsuListLeftMargin}{0.5in}
+\newcommand{\ndsu@enumeratesetup}{%
+  \setstretch{1}%
+  \selectfont%
+  \ndsu@listsetup
+}
 \setlist[itemize,1]{%
-  leftmargin=\ndsuListLeftMargin,%
+ leftmargin=\ndsuListLeftMargin,%
   topsep=\ndsuListTopSep,%
   partopsep=\ndsuListPartopSep,%
   itemsep=\ndsuListItemSep,%
   parsep=\ndsuListParseSep,%
   before={\setlength{\parskip}{0pt}}%
 }
+\BeforeBeginEnvironment{enumerate}{\vspace{-1.2\baselineskip}\begin{singlespace}}
+\AfterEndEnvironment{enumerate}{\end{singlespace}\vspace{-0.5\baselineskip}}
 \setlist[enumerate,1]{%
   leftmargin=\ndsuListLeftMargin,%
   topsep=\ndsuListTopSep,%
@@ -126,14 +148,15 @@
   before={\setlength{\parskip}{0pt}}%
 }
 \setlist[itemize,2]{%
-  topsep=\ndsuListTopSep,%
+ topsep=\ndsuListTopSep,%
   partopsep=0pt,%
   itemsep=\ndsuListItemSep,%
   parsep=0pt,%
   before={\setlength{\parskip}{0pt}}%
 }
+
 \setlist[enumerate,2]{%
-  topsep=\ndsuListTopSep,%
+ topsep=\ndsuListTopSep,%
   partopsep=0pt,%
   itemsep=\ndsuListItemSep,%
   parsep=0pt,%
@@ -154,9 +177,9 @@
 \newlength{\ndsuFloatFloatSkip}
 \setlength{\ndsuFloatFloatSkip}{8pt plus 2pt minus 2pt}
 \newlength{\ndsuFigureCaptionSkip}
-\setlength{\ndsuFigureCaptionSkip}{6pt plus 1pt minus 1pt}
+\setlength{\ndsuFigureCaptionSkip}{0pt}
 \newlength{\ndsuTableCaptionSkip}
-\setlength{\ndsuTableCaptionSkip}{6pt plus 1pt minus 1pt}
+\setlength{\ndsuTableCaptionSkip}{24pt}
 \newlength{\ndsuLongtablePreSkip}
 \setlength{\ndsuLongtablePreSkip}{8pt plus 2pt minus 2pt}
 \newlength{\ndsuLongtablePostSkip}
@@ -164,7 +187,7 @@
 \newlength{\ndsuFigureNoteSkip}
 \setlength{\ndsuFigureNoteSkip}{3pt}
 \newlength{\ndsuTableNoteSkip}
-\setlength{\ndsuTableNoteSkip}{3pt}
+\setlength{\ndsuTableNoteSkip}{-14pt}
 \newlength{\ndsuNoteAfterSkip}
 \setlength{\ndsuNoteAfterSkip}{8pt}
 \newlength{\ndsuSchemaCaptionSkip}
@@ -178,21 +201,49 @@
 \setlength{\@fptop}{0pt}
 \setlength{\@fpsep}{\ndsuFloatFloatSkip}
 \setlength{\@fpbot}{0pt plus 1fil}
+
 % Displayed math spacing.
 % These lengths affect displayed equations and similar math displays.
 % They do not control float spacing for figures/tables or list spacing.
-% Keep these values compact so math stays associated with the surrounding
-% double-spaced prose without crowding equation, align, or short displays.
-\newlength{\ndsu@displayskip}
-\setlength{\ndsu@displayskip}{4pt}
-\newlength{\ndsu@displayshortskip}
-\setlength{\ndsu@displayshortskip}{2pt}
+\newlength{\ndsu@displayaboveskip}
+\setlength{\ndsu@displayaboveskip}{2pt plus 1pt minus 1pt}
+
+\newlength{\ndsu@displaybelowskip}
+\setlength{\ndsu@displaybelowskip}{2pt}
+
+\newlength{\ndsu@displayshortaboveskip}
+\setlength{\ndsu@displayshortaboveskip}{4pt plus 1pt minus 1pt}
+
+\newlength{\ndsu@displayshortbelowskip}
+\setlength{\ndsu@displayshortbelowskip}{4pt plus 2pt minus 2pt}
+
 \AtBeginDocument{%
-  \setlength{\abovedisplayskip}{\ndsu@displayskip}%
-  \setlength{\belowdisplayskip}{\ndsu@displayskip}%
-  \setlength{\abovedisplayshortskip}{\ndsu@displayshortskip}%
-  \setlength{\belowdisplayshortskip}{\ndsu@displayshortskip}%
+  \setlength{\abovedisplayskip}{\ndsu@displayaboveskip}%
+  \setlength{\belowdisplayskip}{\ndsu@displaybelowskip}%
+  \setlength{\abovedisplayshortskip}{\ndsu@displayshortaboveskip}%
+  \setlength{\belowdisplayshortskip}{\ndsu@displayshortbelowskip}%
 }
+
+% Long/tall equation spacing.
+\newlength{\ndsu@longdisplayaboveskip}
+\setlength{\ndsu@longdisplayaboveskip}{-4pt}
+
+\newlength{\ndsu@longdisplaybelowskip}
+\setlength{\ndsu@longdisplaybelowskip}{0.5\baselineskip}
+
+\NewDocumentEnvironment{longequation}{}
+  {%
+    \begingroup
+    \setlength{\abovedisplayskip}{\ndsu@longdisplayaboveskip}%
+    \setlength{\abovedisplayshortskip}{\ndsu@longdisplayaboveskip}%
+    \setlength{\belowdisplayskip}{\ndsu@longdisplaybelowskip}%
+    \setlength{\belowdisplayshortskip}{\ndsu@longdisplaybelowskip}%
+    \begin{equation}%
+  }
+  {%
+    \end{equation}%
+    \endgroup
+  }
 
 \setlength{\footskip}{0.25in}
 \newcommand{\ndsu@pagenumberfont}{\normalfont\normalsize}
@@ -528,12 +579,15 @@
 }
 
 % --- Caption, figure, decorative-image, and artifact helpers ---
+
+\DeclareCaptionLabelSeparator{ndsuboldperiod}{\textbf{.}\space}
 \newcommand{\ndsu@periodcaptionlabels}{%
   \captionsetup{labelsep=period}%
   \captionsetup[figure]{labelsep=period}%
-  \captionsetup[table]{labelsep=period}%
-  \captionsetup[longtable]{labelsep=period}%
+  \captionsetup[table]{labelsep=ndsuboldperiod}%
+  \captionsetup[longtable]{labelsep=ndsuboldperiod}%
 }
+
 \newcommand{\ndsu@captionalignmentsetup}{%
   \captionsetup[figure]{%
     justification=raggedright,%
@@ -543,18 +597,42 @@
     parindent=0pt,%
     skip=\ndsuFigureCaptionSkip%
   }%
-  \captionsetup[table]{%
-    skip=\ndsuTableCaptionSkip%
-  }%
+    \captionsetup[table]{%
+        justification=ndsutableleft,%
+        singlelinecheck=false,%
+        margin=0pt,%
+        width=\textwidth,%
+        indention=0pt,%
+        parindent=0pt,%
+        skip=\ndsuTableCaptionSkip%
+}%
+    
   \captionsetup[longtable]{%
+    justification=raggedright,%
+    singlelinecheck=false,%
+    margin=0pt,%
+    indention=0pt,%
+    parindent=0pt,%
     skip=\ndsuTableCaptionSkip%
   }%
 }
+\long\def\ndsu@makeleftcaption#1#2{%
+  \def\ndsu@tempcaptype{figure}%
+  \ifx\@captype\ndsu@tempcaptype\vspace{-\baselineskip}\fi
+  \begingroup
+    \singlespacing\normalfont\normalsize\upshape\raggedright
+    \setlength{\parindent}{0pt}%
+    \setlength{\parskip}{0pt}%
+    \noindent{\bfseries #1.}\space #2\par
+  \endgroup
+}
+
+
 \newcommand{\ndsu@captionlabelsocketsetup}{%
   \@ifundefined{IfSocketExistsTF}{}{%
     \IfSocketExistsTF{caption/label}{%
       \IfSocketPlugExistsTF{caption/label}{ndsu-period}{}{%
-        \NewSocketPlug{caption/label}{ndsu-period}{{\bfseries ##1}.\space}%
+        \NewSocketPlug{caption/label}{ndsu-period}{{\bfseries ##1.}\space}%
       }%
       \AssignSocketPlug{caption/label}{ndsu-period}%
     }{}%
@@ -568,17 +646,18 @@
   textfont=normalfont,%
   skip=\ndsuFigureCaptionSkip%
 }
-\ndsu@periodcaptionlabels
-\ndsu@captionalignmentsetup
-\ndsu@captionlabelsocketsetup
+
 % Default placement for ordinary LaTeX floats.
 % This does not force exact placement; it only allows LaTeX to try "here".
+
+
 \def\fps@figure{!htbp}
 \def\fps@table{!htbp}
 \AtBeginDocument{%
   \ndsu@periodcaptionlabels
   \ndsu@captionalignmentsetup
   \ndsu@captionlabelsocketsetup
+  \let\@makecaption\ndsu@makeleftcaption
 }
 % --- Counter policy for captions and float-like lists ---
 % Equations are controlled separately below with \numberwithin from amsmath.
@@ -608,7 +687,7 @@
   \renewcommand{\theschema}{\arabic{schema}}%
 }
 
-\newcommand{\ndsunoteprefix}{Note.}
+\newcommand{\ndsunoteprefix}{Note:}
 \newcommand{\ndsunoteprefixstyle}[1]{\renewcommand{\ndsunoteprefix}{#1}}
 \NewDocumentCommand{\ndsunote}{ O{\ndsuFigureNoteSkip} m }{%
   \par\vspace{#1}%
@@ -621,7 +700,7 @@
 \NewDocumentCommand{\ndsucenterednote}{ O{\ndsuFigureNoteSkip} m }{%
   \par\vspace{#1}%
   \begingroup
-    \singlespacing\normalfont\normalsize\upshape\centering%
+    \singlespacing\normalfont\normalsize\upshape\raggedright%
     \textbf{\ndsunoteprefix}~#2\par%
   \endgroup
   \vspace{\ndsuNoteAfterSkip}%
@@ -705,8 +784,15 @@
     presentation .default:n = true
   }
 \NewDocumentEnvironment{ndsudatatable}{ O{} }
-  { \begingroup \keys_set:nn { ndsu / datatable } { #1 } \singlespacing\selectfont }
-  { \endgroup }
+  {%
+    \par\vspace{-0.75\baselineskip}%
+    \begingroup
+    \keys_set:nn { ndsu / datatable } { #1 }%
+    \singlespacing\selectfont
+  }
+  {%
+    \endgroup
+  }
 \ExplSyntaxOff
 
 % --- Schema helpers ---
