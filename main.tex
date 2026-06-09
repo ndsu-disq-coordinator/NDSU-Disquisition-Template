@@ -14,7 +14,10 @@
   }
 }
 
-\documentclass{ndsudisq}
+\documentclass[xitsfonts]{ndsudisq}
+\usepackage{amsmath}
+\usepackage{tcolorbox}
+\usepackage{fancyvrb}
 
 % Bibliography setup.
 \usepackage[backend=biber,style=authoryear]{biblatex}
@@ -26,8 +29,8 @@
 % Replace these values with your own disquisition information.
 \disquisitiontitle{Your Disquisition Title}
 \disquisitionauthor{Your Name}
-\documenttype{Dissertation}
-\degree{Doctor of Philosophy}
+\documenttype{Dissertation [Thesis / Paper]}
+\degree{NAME OF DEGREE (e.g., Doctor of Philosophy)}
 \majordepartmentlabel{Major Department}
 \program{Your Department or Program}
 \degreeoption{}
@@ -36,6 +39,7 @@
 \approvaldate{Month Day, Year}
 \departmentchair{Department Chair Name}
 \committeechair{Committee Chair Name}
+%\committeecochair{Committee Co-Chair Name}
 \committeeone{Committee Member One}
 \committeetwo{Committee Member Two}
 \committeethree{Committee Member Three}

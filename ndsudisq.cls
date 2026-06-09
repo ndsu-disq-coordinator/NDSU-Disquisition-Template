@@ -2,7 +2,8 @@
 % NDSU disquisition class.
 % This file controls document structure and formatting.
 % Most users should edit main.tex and the content files rather than this class file.
-% Last patch June 9, 2026
+% LAST PATCH JUNE 9, 2026
+
 
 % --- Class identity and version ---
 \NeedsTeXFormat{LaTeX2e}
@@ -158,7 +159,12 @@
     \begin{singlespace}%
     \setlength{\parskip}{0pt}%
     \ifnum\@itemdepth=0
-      \ndsu@original@itemize[labelwidth=\ndsuItemizeLabelWidth,labelsep=\ndsuItemizeLabelSep,leftmargin=\ndsuItemizeLeftMargin,itemindent=0pt,align=left,topsep=\ndsuListTopSep,partopsep=\ndsuListPartopSep,itemsep=\ndsuListItemSep,parsep=\ndsuListParseSep,##1]%
+      \ndsu@original@itemize[leftmargin=\ndsuItemizeLeftMargin,topsep=\ndsuListTopSep,partopsep=\ndsuListPartopSep,##1]%
+\setlength{\labelwidth}{\ndsuItemizeLabelWidth}%
+\setlength{\labelsep}{\ndsuItemizeLabelSep}%
+\setlength{\itemindent}{0pt}%
+\setlength{\itemsep}{\ndsuListItemSep}%
+\setlength{\parsep}{\ndsuListParseSep}%
     \else
       \ndsu@original@itemize[##1]%
     \fi
@@ -264,7 +270,7 @@
 \newlength{\ndsuLongtablePostSkip}
 \setlength{\ndsuLongtablePostSkip}{8pt plus 2pt minus 2pt}
 \newlength{\ndsuFigureNoteSkip}
-\setlength{\ndsuFigureNoteSkip}{3pt}
+\setlength{\ndsuFigureNoteSkip}{0pt}
 \newlength{\ndsuTableNoteSkip}
 \setlength{\ndsuTableNoteSkip}{-14pt}
 \newlength{\ndsuNoteAfterSkip}
@@ -465,6 +471,7 @@
 \newcommand{\ndsuapprovaldate}{April 15, 2026}
 \newcommand{\ndsudeptchair}{Department Chair Name}
 \newcommand{\ndsucommitteechair}{Committee Chair Name}
+\newcommand{\ndsucommitteecochair}{}
 \newcommand{\ndsucommitteeone}{Committee Member One}
 \newcommand{\ndsucommitteetwo}{Committee Member Two}
 \newcommand{\ndsucommitteethree}{}
@@ -483,6 +490,7 @@
 \newcommand{\approvaldate}[1]{\renewcommand{\ndsuapprovaldate}{#1}}
 \newcommand{\departmentchair}[1]{\renewcommand{\ndsudeptchair}{#1}}
 \newcommand{\committeechair}[1]{\renewcommand{\ndsucommitteechair}{#1}}
+\newcommand{\committeecochair}[1]{\renewcommand{\ndsucommitteecochair}{#1}}
 \newcommand{\committeeone}[1]{\renewcommand{\ndsucommitteeone}{#1}}
 \newcommand{\committeetwo}[1]{\renewcommand{\ndsucommitteetwo}{#1}}
 \newcommand{\committeethree}[1]{\renewcommand{\ndsucommitteethree}{#1}}
@@ -697,13 +705,13 @@
 }%
     
   \captionsetup[longtable]{%
-    justification=raggedright,%
-    singlelinecheck=false,%
-    margin=0pt,%
-    indention=0pt,%
-    parindent=0pt,%
-    skip=\ndsuTableCaptionSkip%
-  }%
+  justification=raggedright,%
+  singlelinecheck=false,%
+  margin=0pt,%
+  indention=0pt,%
+  parindent=0pt,%
+  skip=0pt%
+}%
 }
 \long\def\ndsu@makeleftcaption#1#2{%
   \def\ndsu@tempcaptype{figure}%
@@ -791,7 +799,7 @@
   \vspace{\ndsuNoteAfterSkip}%
 }
 \NewDocumentCommand{\ndsucenterednote}{ O{\ndsuFigureNoteSkip} m }{%
-  \par\vspace{#1}%
+  \par\nointerlineskip\vspace{#1}%
   \begingroup
     \singlespacing\normalfont\normalsize\upshape\raggedright%
     \textbf{\ndsunoteprefix}~#2\par%
@@ -860,6 +868,14 @@
 % attach descriptions entered separately from the image-inclusion command.
 \NewDocumentCommand{\ndsufigurealt}{ m }{}
 
+% Keep longtable body text single spaced, matching ordinary tables.
+\AtBeginEnvironment{longtable}{%
+  \setstretch{1}\selectfont
+}
+\AfterEndEnvironment{longtable}{%
+  \doublespacing
+}
+
 % --- Table helpers ---
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcommand{\ndsu@tagpdfsetup}[1]{%
@@ -867,6 +883,7 @@
     \ClassWarning{ndsudisq}{LaTeX tagpdf setup is unavailable; table accessibility hint `#1' was ignored}%
   }{\tagpdfsetup{#1}}%
 }
+
 \newcommand{\ndsutableheaders}[1]{\ndsu@tagpdfsetup{table/header-rows={#1}}}
 \newcommand{\ndsutablepresentation}{\ndsu@tagpdfsetup{table/tagging=presentation}}
 \ExplSyntaxOn
@@ -1320,6 +1337,12 @@
 \setlength{\ndsu@titlebottomsep}{0.12in}
 \newlength{\ndsu@approvalblockwidth}
 \setlength{\ndsu@approvalblockwidth}{0.855\textwidth}
+\newlength{\ndsu@approvalcommitteeskip}
+\setlength{\ndsu@approvalcommitteeskip}{0.90in}
+\newlength{\ndsu@approvalapprovedskip}
+\setlength{\ndsu@approvalapprovedskip}{0.20in}
+\newlength{\ndsu@approvallowerheight}
+\setlength{\ndsu@approvallowerheight}{5.98in}
 \newcommand{\makecoverpage}{%
   \thispagestyle{empty}%
   \begingroup
@@ -1411,7 +1434,9 @@
   \setlength{\parindent}{0pt}%
   \hyphenpenalty=10000
   \exhyphenpenalty=10000
-
+  \noindent\begin{minipage}[t][\dimexpr\textheight-\topskip\relax][t]{\textwidth}
+  \vspace*{0pt}%
+  
   \begin{center}
     {\fontsize{18pt}{22pt}\selectfont
     North Dakota State University\par}
@@ -1451,7 +1476,7 @@
   \vspace{0.12in}
 
   \noindent\makebox[\textwidth][c]{%
-    \begin{minipage}{\ndsu@approvalblockwidth}
+     \begin{minipage}[t][\ndsu@approvallowerheight][s]{\ndsu@approvalblockwidth}
       {\fontsize{10pt}{12pt}\selectfont
       \doublespacing
       The Supervisory Committee certifies that this \textbf{\textit{disquisition}} complies with
@@ -1460,32 +1485,36 @@
 
     \vspace{0.20in}
 
-    \begin{center}
-    {\fontsize{10pt}{12pt}\selectfont\bfseries\MakeUppercase{\ndsudegree}\par}
-    \end{center}
+     {\centering
+    {\fontsize{10pt}{12pt}\selectfont\bfseries\MakeUppercase{\ndsudegree}\par}}
 
-    \vspace{1.15in}
+
+    \vspace{\ndsu@approvalcommitteeskip}
 
     {\fontsize{10pt}{12pt}\selectfont SUPERVISORY COMMITTEE:\par}
 
     \vspace{0.20in}
 
     \ndsu@signatureentry{\ndsucommitteechair}{Chair}%
-    \ifstrempty{\ndsucommitteeone}{}{%
+      \ifdefempty{\ndsucommitteecochair}{}{%
+      \par\vspace{0.20in}%
+      \ndsu@signatureentry{\ndsucommitteecochair}{Co-Chair}%
+    }%
+    \ifdefempty{\ndsucommitteeone}{}{%
       \par\vspace{0.20in}%
       \ndsu@signatureentry{\ndsucommitteeone}{}%
     }%
-    \ifstrempty{\ndsucommitteetwo}{}{%
+    \ifdefempty{\ndsucommitteetwo}{}{%
       \par\vspace{0.12in}%
       \ndsu@signatureentry{\ndsucommitteetwo}{}%
     }%
-    \ifstrempty{\ndsucommitteethree}{}{%
+    \ifdefempty{\ndsucommitteethree}{}{%
       \par\vspace{0.12in}%
       \ndsu@signatureentry{\ndsucommitteethree}{}%
     }%
     \forlistloop{\ndsu@committeeentry}{\ndsu@additionalcommittee}%
 
-    \vspace{0.5in}
+    \vspace{\ndsu@approvalapprovedskip}\vfill
 
     {\fontsize{10pt}{12pt}\selectfont Approved:\par}
 
@@ -1498,6 +1527,7 @@
     \end{minipage}%
   }%
 
+\end{minipage}%
   \end{ndsu@nohyphenation}
   \endgroup
   \clearpage
