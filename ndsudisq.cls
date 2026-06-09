@@ -2,6 +2,7 @@
 % NDSU disquisition class.
 % This file controls document structure and formatting.
 % Most users should edit main.tex and the content files rather than this class file.
+% Last patch June 9, 2026
 
 % --- Class identity and version ---
 \NeedsTeXFormat{LaTeX2e}
@@ -87,6 +88,7 @@
 \RequirePackage{amsthm}
 \RequirePackage{fancyvrb}
 \RequirePackage{fvextra}
+\RequirePackage{listings}
 \RequirePackage{needspace}
 
 \makeatletter
@@ -105,6 +107,7 @@
 \ndsu@bodyalignmentsetup
 \AtBeginDocument{\ndsu@bodyalignmentsetup}
 \setcounter{tocdepth}{3}
+
 % Maintainable list-spacing controls for ordinary semantic lists.
 \newlength{\ndsuListTopSep}
 \setlength{\ndsuListTopSep}{0.25\baselineskip plus 1pt minus 1pt}
@@ -116,59 +119,135 @@
 \setlength{\ndsuListPartopSep}{0pt}
 \newlength{\ndsuListLeftMargin}
 \setlength{\ndsuListLeftMargin}{0.5in}
-\newcommand{\ndsu@enumeratesetup}{%
-  \setstretch{1}%
-  \selectfont%
-  \ndsu@listsetup
-}
-\setlist[itemize,1]{%
- leftmargin=\ndsuListLeftMargin,%
-  topsep=\ndsuListTopSep,%
-  partopsep=\ndsuListPartopSep,%
-  itemsep=\ndsuListItemSep,%
-  parsep=\ndsuListParseSep,%
-  before={\setlength{\parskip}{0pt}}%
-}
-\BeforeBeginEnvironment{enumerate}{\vspace{-1.2\baselineskip}\begin{singlespace}}
-\AfterEndEnvironment{enumerate}{\end{singlespace}\vspace{-0.5\baselineskip}}
-\setlist[enumerate,1]{%
-  leftmargin=\ndsuListLeftMargin,%
-  topsep=\ndsuListTopSep,%
-  partopsep=\ndsuListPartopSep,%
-  itemsep=\ndsuListItemSep,%
-  parsep=\ndsuListParseSep,%
-  before={\setlength{\parskip}{0pt}}%
-}
-\setlist[description,1]{%
-  leftmargin=\ndsuListLeftMargin,%
-  topsep=\ndsuListTopSep,%
-  partopsep=\ndsuListPartopSep,%
-  itemsep=\ndsuListItemSep,%
-  parsep=\ndsuListParseSep,%
-  before={\setlength{\parskip}{0pt}}%
-}
-\setlist[itemize,2]{%
- topsep=\ndsuListTopSep,%
-  partopsep=0pt,%
-  itemsep=\ndsuListItemSep,%
-  parsep=0pt,%
-  before={\setlength{\parskip}{0pt}}%
-}
 
-\setlist[enumerate,2]{%
- topsep=\ndsuListTopSep,%
-  partopsep=0pt,%
-  itemsep=\ndsuListItemSep,%
-  parsep=0pt,%
-  before={\setlength{\parskip}{0pt}}%
+\newlength{\ndsuItemizeLabelWidth}
+\setlength{\ndsuItemizeLabelWidth}{2em}
+\newlength{\ndsuItemizeLabelSep}
+\setlength{\ndsuItemizeLabelSep}{0.35em}
+\newlength{\ndsuItemizeLeftMargin}
+\setlength{\ndsuItemizeLeftMargin}{\ndsuListLeftMargin}
+\addtolength{\ndsuItemizeLeftMargin}{\ndsuItemizeLabelWidth}
+\addtolength{\ndsuItemizeLeftMargin}{\ndsuItemizeLabelSep}
+
+\newlength{\ndsuEnumerateLabelWidth}
+\setlength{\ndsuEnumerateLabelWidth}{2em}
+\newlength{\ndsuEnumerateLabelSep}
+\setlength{\ndsuEnumerateLabelSep}{0.35em}
+\newlength{\ndsuEnumerateLeftMargin}
+\setlength{\ndsuEnumerateLeftMargin}{\ndsuListLeftMargin}
+\addtolength{\ndsuEnumerateLeftMargin}{\ndsuEnumerateLabelWidth}
+\addtolength{\ndsuEnumerateLeftMargin}{\ndsuEnumerateLabelSep}
+
+\newcommand{\ndsu@installlistformatting}{%
+  \setlist[itemize,1]{%
+    labelwidth=\ndsuItemizeLabelWidth,%
+    labelsep=\ndsuItemizeLabelSep,%
+    leftmargin=\ndsuItemizeLeftMargin,%
+    itemindent=0pt,%
+    align=left,%
+    topsep=\ndsuListTopSep,%
+    partopsep=\ndsuListPartopSep,%
+    itemsep=\ndsuListItemSep,%
+    parsep=\ndsuListParseSep,%
+    before={\setlength{\parskip}{0pt}}%
+  }%
+  \let\ndsu@original@itemize\itemize
+  \let\ndsu@original@enditemize\enditemize
+  \renewenvironment{itemize}[1][]{%
+    \vspace{-1.0\baselineskip}%
+    \begin{singlespace}%
+    \setlength{\parskip}{0pt}%
+    \ifnum\@itemdepth=0
+      \ndsu@original@itemize[labelwidth=\ndsuItemizeLabelWidth,labelsep=\ndsuItemizeLabelSep,leftmargin=\ndsuItemizeLeftMargin,itemindent=0pt,align=left,topsep=\ndsuListTopSep,partopsep=\ndsuListPartopSep,itemsep=\ndsuListItemSep,parsep=\ndsuListParseSep,##1]%
+    \else
+      \ndsu@original@itemize[##1]%
+    \fi
+  }{%
+    \ndsu@original@enditemize
+    \end{singlespace}%
+    \vspace{-0.3\baselineskip}%
+  }%
+  \@ifpackageloaded{latex-lab-enumitem}{%
+  \setlist[enumerate,1]{%
+    label-width=\ndsuEnumerateLabelWidth,%
+    label-sep=\ndsuEnumerateLabelSep,%
+    left-margin=\ndsuEnumerateLeftMargin,%
+    item-indent=0pt,%
+    label-align=left,%
+    begin-vspace=\ndsuListTopSep,%
+    begin-extra-vspace=\ndsuListPartopSep,%
+    item-vspace=\ndsuListItemSep,%
+    para-vspace=\ndsuListParseSep%
+  }%
+}{%
+  \setlist[enumerate,1]{%
+    labelwidth=\ndsuEnumerateLabelWidth,%
+    labelsep=\ndsuEnumerateLabelSep,%
+    leftmargin=\ndsuEnumerateLeftMargin,%
+    itemindent=0pt,%
+    align=left,%
+    topsep=\ndsuListTopSep,%
+    partopsep=\ndsuListPartopSep,%
+    itemsep=\ndsuListItemSep,%
+    parsep=\ndsuListParseSep,%
+    before={\setlength{\parskip}{0pt}}%
+  }%
+}%
+  \let\ndsu@original@enumerate\enumerate
+  \let\ndsu@original@endenumerate\endenumerate
+  \renewenvironment{enumerate}[1][]{%
+\@ifundefined{tagpdfparaOff}{}{\tagpdfparaOff}%
+\vspace{-1.0\baselineskip}%
+\begin{singlespace}%
+\setlength{\parskip}{0pt}%
+    \ifnum\@enumdepth=0
+      \ndsu@original@enumerate[leftmargin=\ndsuEnumerateLeftMargin,topsep=\ndsuListTopSep,partopsep=\ndsuListPartopSep,##1]%
+      \setlength{\labelwidth}{\ndsuEnumerateLabelWidth}%
+      \setlength{\labelsep}{\ndsuEnumerateLabelSep}%
+      \setlength{\itemindent}{0pt}%
+      \setlength{\itemsep}{\ndsuListItemSep}%
+      \setlength{\parsep}{\ndsuListParseSep}%
+    \else
+      \ndsu@original@enumerate[##1]%
+    \fi
+  }{%
+\ndsu@original@endenumerate
+\end{singlespace}%
+\vspace{-0.3\baselineskip}%
+\@ifundefined{tagpdfparaOn}{}{\tagpdfparaOn}%
+  }%
+  \setlist[description,1]{%
+    leftmargin=\ndsuListLeftMargin,%
+    topsep=\ndsuListTopSep,%
+    partopsep=\ndsuListPartopSep,%
+    itemsep=\ndsuListItemSep,%
+    parsep=\ndsuListParseSep,%
+    before={\setlength{\parskip}{0pt}}%
+  }%
+  \setlist[itemize,2]{%
+    topsep=\ndsuListTopSep,%
+    partopsep=0pt,%
+    itemsep=\ndsuListItemSep,%
+    parsep=0pt,%
+    before={\setlength{\parskip}{0pt}}%
+  }%
+  \setlist[enumerate,2]{%
+    topsep=\ndsuListTopSep,%
+    partopsep=0pt,%
+    itemsep=\ndsuListItemSep,%
+    parsep=0pt,%
+    before={\setlength{\parskip}{0pt}}%
+  }%
+  \setlist[description,2]{%
+    topsep=\ndsuListTopSep,%
+    partopsep=0pt,%
+    itemsep=\ndsuListItemSep,%
+    parsep=0pt,%
+    before={\setlength{\parskip}{0pt}}%
+  }%
 }
-\setlist[description,2]{%
-  topsep=\ndsuListTopSep,%
-  partopsep=0pt,%
-  itemsep=\ndsuListItemSep,%
-  parsep=0pt,%
-  before={\setlength{\parskip}{0pt}}%
-}
+\AtBeginDocument{\ndsu@installlistformatting}
+
 % Maintainable non-text spacing controls.
 % Maintainers should tune these named lengths instead of adding manual \vspace
 % around individual figures/tables in chapter files.
@@ -352,6 +431,16 @@
 \providecommand*{\thefrontmatter}{}
 \providecommand*{\theprefatory}{}
 \providecommand*{\thereferences}{}
+\ExplSyntaxOn
+\tl_new:N \l_ndsu_title_pdf_bookmark_tl
+\cs_new_protected:Npn \ndsu_add_title_pdf_bookmark:
+  {
+    \tl_set:Nx \l_ndsu_title_pdf_bookmark_tl
+      { \text_purify:n { \text_uppercase:n { \ndsutitle } } }
+    \pdfbookmark[0]{\tl_use:N \l_ndsu_title_pdf_bookmark_tl}{ndsu-disquisition-title}
+  }
+\cs_new_eq:NN \NDSUAddTitlePdfBookmark \ndsu_add_title_pdf_bookmark:
+\ExplSyntaxOff
 \AtBeginDocument{%
   \hypersetup{%
     pdflang={\ndsulanguage},%
@@ -598,7 +687,7 @@
     skip=\ndsuFigureCaptionSkip%
   }%
     \captionsetup[table]{%
-        justification=ndsutableleft,%
+        justification=raggedright,%
         singlelinecheck=false,%
         margin=0pt,%
         width=\textwidth,%
@@ -661,11 +750,12 @@
 }
 % --- Counter policy for captions and float-like lists ---
 % Equations are controlled separately below with \numberwithin from amsmath.
-% Figures and tables use the chngcntr-provided \counterwithin/\counterwithout
-% helpers loaded above. Longtable uses LaTeX's table counter, so table policy
-% changes automatically apply to longtable captions and List of Tables entries.
-% The schema counter is created later by \newfloat; the public switches are used
-% after class loading, when that counter exists.
+% Figures, tables, schemas, and listings use the chngcntr-provided
+% \counterwithin/\counterwithout helpers loaded above. Longtable uses LaTeX's
+% table counter, so table policy changes automatically apply to longtable
+% captions and List of Tables entries. Schema and listing counters are created
+% later by \newfloat; the public switches are used after class loading, when
+% those counters exist.
 \newif\ifndsu@chaptercaptions \ndsu@chaptercaptionstrue
 \newcommand{\ndsu@counterwithinchapter}[1]{%
   \counterwithout{#1}{chapter}%
@@ -676,15 +766,18 @@
   \ndsu@counterwithinchapter{table}%
   \ndsu@counterwithinchapter{figure}%
   \ndsu@counterwithinchapter{schema}%
+  \ndsu@counterwithinchapter{listing}%
 }
 \newcommand{\usecontinuouscaptions}{%
   \ndsu@chaptercaptionsfalse
   \counterwithout{table}{chapter}%
   \counterwithout{figure}{chapter}%
   \counterwithout{schema}{chapter}%
+  \counterwithout{listing}{chapter}%
   \renewcommand{\thetable}{\arabic{table}}%
   \renewcommand{\thefigure}{\arabic{figure}}%
   \renewcommand{\theschema}{\arabic{schema}}%
+  \renewcommand{\thelisting}{\arabic{listing}}%
 }
 
 \newcommand{\ndsunoteprefix}{Note:}
@@ -1213,6 +1306,7 @@
   \chapter*{TABLE OF CONTENTS}%
   \phantomsection
   \pdfbookmark[0]{TABLE OF CONTENTS}{toc}%
+  \vspace{\baselineskip}%
   \@starttoc{toc}%
 }
 
@@ -1231,6 +1325,8 @@
   \begingroup
   \singlespacing
   \centering
+  \phantomsection
+  \NDSUAddTitlePdfBookmark
   \tagstructbegin{tag=H1}%
   \tagmcbegin{tag=H1}%
   {\begin{doublespace}\MakeUppercase{\ndsutitle}\par\end{doublespace}}%
@@ -1362,42 +1458,42 @@
       North Dakota State University's regulations and meets the accepted standards
       for the degree of\par}
 
-      \vspace{0.20in}
+    \vspace{0.20in}
 
-      \begin{center}
-        {\fontsize{10pt}{12pt}\selectfont\bfseries\MakeUppercase{\ndsudegree}\par}
-      \end{center}
+    \begin{center}
+    {\fontsize{10pt}{12pt}\selectfont\bfseries\MakeUppercase{\ndsudegree}\par}
+    \end{center}
 
-      \vspace{1.15in}
+    \vspace{1.15in}
 
-      {\fontsize{10pt}{12pt}\selectfont SUPERVISORY COMMITTEE:\par}
+    {\fontsize{10pt}{12pt}\selectfont SUPERVISORY COMMITTEE:\par}
 
-      \vspace{0.20in}
+    \vspace{0.20in}
 
-      \ndsu@signatureentry{\ndsucommitteechair}{Chair}%
-      \ifstrempty{\ndsucommitteeone}{}{%
-        \par\vspace{0.20in}%
-        \ndsu@signatureentry{\ndsucommitteeone}{}%
-      }%
-      \ifstrempty{\ndsucommitteetwo}{}{%
-        \par\vspace{0.12in}%
-        \ndsu@signatureentry{\ndsucommitteetwo}{}%
-      }%
-      \ifstrempty{\ndsucommitteethree}{}{%
-        \par\vspace{0.12in}%
-        \ndsu@signatureentry{\ndsucommitteethree}{}%
-      }%
-      \forlistloop{\ndsu@committeeentry}{\ndsu@additionalcommittee}%
+    \ndsu@signatureentry{\ndsucommitteechair}{Chair}%
+    \ifstrempty{\ndsucommitteeone}{}{%
+      \par\vspace{0.20in}%
+      \ndsu@signatureentry{\ndsucommitteeone}{}%
+    }%
+    \ifstrempty{\ndsucommitteetwo}{}{%
+      \par\vspace{0.12in}%
+      \ndsu@signatureentry{\ndsucommitteetwo}{}%
+    }%
+    \ifstrempty{\ndsucommitteethree}{}{%
+      \par\vspace{0.12in}%
+      \ndsu@signatureentry{\ndsucommitteethree}{}%
+    }%
+    \forlistloop{\ndsu@committeeentry}{\ndsu@additionalcommittee}%
 
-      \vspace{0.5in}
+    \vspace{0.5in}
 
-      {\fontsize{10pt}{12pt}\selectfont Approved:\par}
+    {\fontsize{10pt}{12pt}\selectfont Approved:\par}
 
-      \vspace{0.10in}
+    \vspace{0.10in}
 
-      \noindent
-      \ndsu@approvaldatefield{\ndsuapprovaldate}{Date}%
-      \hfill
+    \noindent
+    \ndsu@approvaldatefield{\ndsuapprovaldate}{Date}%
+    \hfill
       \ndsu@approvalfield{\ndsudeptchair}{Department Chair}%
     \end{minipage}%
   }%
@@ -1521,7 +1617,7 @@
     \setlength{\ndsuAbbrevLabelWidth}{#1}%
     \setlength{\parindent}{0pt}%
     \setlength{\parskip}{0pt}%
-    \singlespacing
+    \setstretch{1.667}\selectfont
   }
   {%
     \par
@@ -1546,15 +1642,36 @@
 \newlength{\ndsu@codebeforeskip}
 \setlength{\ndsu@codebeforeskip}{6pt plus 1pt minus 1pt}
 \newlength{\ndsu@codeafterskip}
-\setlength{\ndsu@codeafterskip}{6pt plus 1pt minus 1pt}
+\newlength{\ndsuCodeCaptionSkip}
+\setlength{\ndsuCodeCaptionSkip}{12pt}
 \newlength{\ndsu@codetitleskip}
-\setlength{\ndsu@codetitleskip}{3pt}
+\setlength{\ndsu@codetitleskip}{0pt}
 \newlength{\ndsu@codenumbersep}
 \setlength{\ndsu@codenumbersep}{6pt}
 \newlength{\ndsu@codelistingxleftmargin}
 \setlength{\ndsu@codelistingxleftmargin}{1.75em}
 \newlength{\ndsu@codelistingframexleftmargin}
 \setlength{\ndsu@codelistingframexleftmargin}{1.75em}
+\providecommand{\listlistingname}{LIST OF LISTINGS}
+\@ifundefined{c@listing}{%
+  \newfloat{listing}{htbp}{lol}%
+  \floatname{listing}{Listing}%
+}{}
+\captionsetup[listing]{%
+  justification=raggedright,%
+  singlelinecheck=false,%
+  margin=0pt,%
+  indention=0pt,%
+  parindent=0pt,%
+  skip=0pt%
+}
+\crefname{listing}{Listing}{Listings}
+\Crefname{listing}{Listing}{Listings}
+\newcommand{\ndsu@codelistingcaption}[1]{%
+  \captionsetup{type=listing}%
+  \captionof{listing}{#1}%
+   \par\nobreak\vspace{\ndsuCodeCaptionSkip}%
+}
 \newcommand{\ndsu@codeverbatimlistparameters}{%
   \setlength{\topsep}{0pt}%
   \setlength{\partopsep}{0pt}%
@@ -1569,16 +1686,22 @@
     \begin{Verbatim}[fontsize=\small,belowskip=0pt,listparameters={\ndsu@codeverbatimlistparameters},#1]%
   }
   {\end{Verbatim}\par\addvspace{\ndsu@codeafterskip}}
-\NewDocumentEnvironment{ndsucodelisting}{ O{} O{} }
-  {%
-    \VerbatimEnvironment
-    \par\Needspace{6\baselineskip}%
-    \addvspace{\ndsu@codebeforeskip}%
-    \ifstrempty{#1}{}{\noindent\textbf{#1}\par\nobreak\vspace{\ndsu@codetitleskip}}%
-    \singlespacing
-    \begin{Verbatim}[fontsize=\small,numbers=left,numbersep=\ndsu@codenumbersep,xleftmargin=\ndsu@codelistingxleftmargin,frame=single,framexleftmargin=\ndsu@codelistingframexleftmargin,breaklines=true,breakanywhere=true,belowskip=0pt,listparameters={\ndsu@codeverbatimlistparameters},#2]%
-  }
-  {\end{Verbatim}\par\addvspace{\ndsu@codeafterskip}}
+\newenvironment{ndsucodelisting}[1][]{%
+  \VerbatimEnvironment
+  \par
+  \@ifundefined{tagpdfparaOff}{}{\tagpdfparaOff}%
+  \Needspace{6\baselineskip}%
+  \addvspace{\ndsu@codebeforeskip}%
+  \ndsu@codelistingcaption{#1}%
+  \setstretch{1}%
+  \begin{Verbatim}[fontsize=\small,numbers=left,numbersep=\ndsu@codenumbersep,xleftmargin=\ndsu@codelistingxleftmargin,frame=single,breaklines=true,breakanywhere=true,listparameters={\ndsu@codeverbatimlistparameters}]%
+}{%
+  \end{Verbatim}%
+  \par
+  \@ifundefined{tagpdfparaOn}{}{\tagpdfparaOn}%
+  \addvspace{\ndsu@codeafterskip}%
+}
+
 \newcommand{\ndsucodenote}[1]{\ndsunote{#1}}
 
 % Apply the default chapter-based float/list counter policy after all counters
