@@ -2,8 +2,7 @@
 % NDSU disquisition class.
 % This file controls document structure and formatting.
 % Most users should edit main.tex and the content files rather than this class file.
-% LAST PATCH JUNE 9, 2026
-
+% LAST PATCH 6/15/2026
 
 % --- Class identity and version ---
 \NeedsTeXFormat{LaTeX2e}
@@ -202,7 +201,7 @@
   \let\ndsu@original@enumerate\enumerate
   \let\ndsu@original@endenumerate\endenumerate
   \renewenvironment{enumerate}[1][]{%
-\@ifundefined{tagpdfparaOff}{}{\tagpdfparaOff}%
+
 \vspace{-1.0\baselineskip}%
 \begin{singlespace}%
 \setlength{\parskip}{0pt}%
@@ -220,7 +219,7 @@
 \ndsu@original@endenumerate
 \end{singlespace}%
 \vspace{-0.3\baselineskip}%
-\@ifundefined{tagpdfparaOn}{}{\tagpdfparaOn}%
+
   }%
   \setlist[description,1]{%
     leftmargin=\ndsuListLeftMargin,%
@@ -264,7 +263,7 @@
 \newlength{\ndsuFigureCaptionSkip}
 \setlength{\ndsuFigureCaptionSkip}{0pt}
 \newlength{\ndsuTableCaptionSkip}
-\setlength{\ndsuTableCaptionSkip}{24pt}
+\setlength{\ndsuTableCaptionSkip}{12pt}
 \newlength{\ndsuLongtablePreSkip}
 \setlength{\ndsuLongtablePreSkip}{8pt plus 2pt minus 2pt}
 \newlength{\ndsuLongtablePostSkip}
@@ -274,7 +273,7 @@
 \newlength{\ndsuTableNoteSkip}
 \setlength{\ndsuTableNoteSkip}{-14pt}
 \newlength{\ndsuNoteAfterSkip}
-\setlength{\ndsuNoteAfterSkip}{8pt}
+\setlength{\ndsuNoteAfterSkip}{-6pt}
 \newlength{\ndsuSchemaCaptionSkip}
 \setlength{\ndsuSchemaCaptionSkip}{6pt plus 1pt minus 1pt}
 \setlength{\LTpre}{\ndsuLongtablePreSkip}
@@ -316,19 +315,20 @@
 \newlength{\ndsu@longdisplaybelowskip}
 \setlength{\ndsu@longdisplaybelowskip}{0.5\baselineskip}
 
-\NewDocumentEnvironment{longequation}{}
+\NewDocumentEnvironment{longequation}{+b}
   {%
+    \par
     \begingroup
     \setlength{\abovedisplayskip}{\ndsu@longdisplayaboveskip}%
     \setlength{\abovedisplayshortskip}{\ndsu@longdisplayaboveskip}%
     \setlength{\belowdisplayskip}{\ndsu@longdisplaybelowskip}%
     \setlength{\belowdisplayshortskip}{\ndsu@longdisplaybelowskip}%
-    \begin{equation}%
-  }
-  {%
+    \begin{equation}
+    #1
     \end{equation}%
     \endgroup
   }
+  {}
 
 \setlength{\footskip}{0.25in}
 \newcommand{\ndsu@pagenumberfont}{\normalfont\normalsize}
@@ -602,6 +602,56 @@
 \titlespacing{\subsubsection}{0pt}{0pt}{0pt}
 \titlespacing{\paragraph}{0pt}{0pt}{0pt}
 \titlespacing{\subparagraph}{0pt}{0pt}{0pt}
+% Current tagged-PDF LaTeX builds install heading templates that bypass
+% titlesec for chapter headings. Mirror the chapter format there when present.
+\ExplSyntaxOn
+\cs_new_protected:Npn \ndsu_install_lab_chapter_heading:n #1
+  {
+    \IfInstanceExistsTF { heading } { chapter }
+      {
+        \DeclareInstance { headformat } { ndsu-chapter } { hang }
+          {
+            heading-indent = 0pt,
+            number-title-sep = 0pt,
+            title-format = \MakeUppercase {##1}
+          }
+        \DeclareInstance { heading } { chapter } { display }
+          {
+            name = chapter,
+            level = 0,
+            placement = top,
+            after-penalty-vspace = 0pt,
+            after-vspace = 0pt,
+            para-indent = true,
+            number-format = #1,
+            heading-decls = \normalfont \bfseries \centering,
+            headformat-instance = ndsu-chapter,
+            mark-cmd = \chaptermark {##1},
+            contents-extra =
+              \addtocontents { lof } { \protect \addvspace { 10pt } }
+              \addtocontents { lot } { \protect \addvspace { 10pt } }
+          }
+      }
+      { }
+  }
+\cs_new_protected:Npn \ndsu_install_standard_lab_chapter_heading:
+  {
+    \ifndsu@nonumbered
+      \ndsu_install_lab_chapter_heading:n { CHAPTER~\thechapter:\space }
+    \else
+      \ndsu_install_lab_chapter_heading:n { \thechapter.\space }
+    \fi
+  }
+\cs_new_protected:Npn \ndsu_install_appendix_lab_chapter_heading:
+  {
+    \ndsu_install_lab_chapter_heading:n { \ndsu@appendixchapterlabel }
+  }
+\cs_gset_eq:NN \ndsu@installstandardlabchapterheading
+  \ndsu_install_standard_lab_chapter_heading:
+\cs_gset_eq:NN \ndsu@installappendixlabchapterheading
+  \ndsu_install_appendix_lab_chapter_heading:
+\ExplSyntaxOff
+\ndsu@installstandardlabchapterheading
 \pretocmd{\section}{\ndsu@subheadingneedspace}{}{}
 \pretocmd{\subsection}{\ndsu@subheadingneedspace}{}{}
 \pretocmd{\subsubsection}{\ndsu@subheadingneedspace}{}{}
@@ -869,11 +919,46 @@
 \NewDocumentCommand{\ndsufigurealt}{ m }{}
 
 % Keep longtable body text single spaced, matching ordinary tables.
-\AtBeginEnvironment{longtable}{%
+% Make longtables use landscape pages by default.
+\newif\ifndsu@landscapelongtables
+\ndsu@landscapelongtablestrue
+\newif\ifndsu@longtableopenedlandscape
+
+\newcommand{\uselandscapelongtables}{\ndsu@landscapelongtablestrue}
+\newcommand{\useportraitlongtables}{\ndsu@landscapelongtablesfalse}
+
+\newcommand{\ndsu@landscapelongtablesetup}{%
   \setstretch{1}\selectfont
+  \small
+  \setlength{\tabcolsep}{3pt}%
+  \renewcommand{\arraystretch}{0.9}%
+  \setlength{\LTleft}{0pt}%
+  \setlength{\LTright}{0pt}%
+  \setlength{\LTcapwidth}{\linewidth}%
 }
+
+\BeforeBeginEnvironment{longtable}{%
+  \ifndsu@landscapelongtables
+    \ifndsu@landscapepage
+      \global\ndsu@longtableopenedlandscapefalse
+      \begingroup
+    \else
+      \global\ndsu@longtableopenedlandscapetrue
+      \begin{landscapepage}%
+      \begingroup
+    \fi
+    \ndsu@landscapelongtablesetup
+  \fi
+}
+
 \AfterEndEnvironment{longtable}{%
-  \doublespacing
+  \ifndsu@landscapelongtables
+    \endgroup
+    \ifndsu@longtableopenedlandscape
+      \end{landscapepage}%
+      \global\ndsu@longtableopenedlandscapefalse
+    \fi
+  \fi
 }
 
 % --- Table helpers ---
@@ -1005,7 +1090,7 @@
   \endgroup
   \global\let\ndsu@pendingequationlistentry\@empty
 }
-\AfterEndEnvironment{equation}{\ndsu@addequationtolist}
+
 
 % --- TOC/list rendering ---
 \renewcommand{\contentsname}{TABLE OF CONTENTS}
@@ -1323,7 +1408,7 @@
   \chapter*{TABLE OF CONTENTS}%
   \phantomsection
   \pdfbookmark[0]{TABLE OF CONTENTS}{toc}%
-  \vspace{\baselineskip}%
+  \vspace{0.5\baselineskip}%
   \@starttoc{toc}%
 }
 
@@ -1670,10 +1755,11 @@
 \newcommand{\ndsusym}[2]{\ndsuabbr{#1}{#2}}
 
 \newlength{\ndsu@codebeforeskip}
-\setlength{\ndsu@codebeforeskip}{6pt plus 1pt minus 1pt}
+\setlength{\ndsu@codebeforeskip}{2pt}
 \newlength{\ndsu@codeafterskip}
+\setlength{\ndsu@codeafterskip}{6pt}
 \newlength{\ndsuCodeCaptionSkip}
-\setlength{\ndsuCodeCaptionSkip}{12pt}
+\setlength{\ndsuCodeCaptionSkip}{4pt}
 \newlength{\ndsu@codetitleskip}
 \setlength{\ndsu@codetitleskip}{0pt}
 \newlength{\ndsu@codenumbersep}
@@ -1719,7 +1805,7 @@
 \newenvironment{ndsucodelisting}[1][]{%
   \VerbatimEnvironment
   \par
-  \@ifundefined{tagpdfparaOff}{}{\tagpdfparaOff}%
+  
   \Needspace{6\baselineskip}%
   \addvspace{\ndsu@codebeforeskip}%
   \ndsu@codelistingcaption{#1}%
@@ -1728,7 +1814,7 @@
 }{%
   \end{Verbatim}%
   \par
-  \@ifundefined{tagpdfparaOn}{}{\tagpdfparaOn}%
+  
   \addvspace{\ndsu@codeafterskip}%
 }
 
