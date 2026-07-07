@@ -2,6 +2,22 @@
 \label{app:quick-start}
 
 This appendix gives a compact path from opening the project to producing a reviewable PDF. It assumes that you are using Overleaf, compiling \texttt{main.tex}, and using LuaLaTeX unless the repository instructions say otherwise.
+\begin{longequation}
+  s_{t+1}
+    =
+    \begin{bmatrix}
+      1 & \Delta t \\
+      0 & 1
+    \end{bmatrix}
+    s_t
+    +
+    \begin{bmatrix}
+      \frac{1}{2}\Delta t^2 \\
+      \Delta t
+    \end{bmatrix}
+    u_t
+\label{eq:state-cost-example}
+\end{longequation}
 
 The basic revision cycle is:
 

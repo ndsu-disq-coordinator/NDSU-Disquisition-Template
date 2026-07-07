@@ -46,26 +46,13 @@ The exact image, caption, and description should match the content of your disqu
 
 Tables should present structured information rather than visual layout. Keep tables as simple as the content allows, use clear headers, and avoid screenshots of tables when possible. A screenshot is an image, not structured table data. Very wide or complicated tables may need to be simplified, split into smaller parts, or moved to an appendix.
 
-Equations should use \LaTeX{} math rather than images of equations. Use inline math when notation belongs inside a sentence (e.g., a short equation like $e = mc^2$). Inline notation is useful for brief definitions, but longer or more important equations should usually be displayed and numbered when you need to refer to them later. Equation~\ref{eq:state-cost-example} expands the inline state update into a compact display equation. It is included to demonstrate equation numbering, matrices, fractions, Greek letters, superscripts, subscripts, an integral, and a List of Equations entry when that list is enabled. In your own disquisition, use nearby prose to explain what the variables mean and why the equation matters for your argument. Complex mathematical content may need additional review after the PDF is generated.
+Equations should use \LaTeX{} math rather than images of equations. Use inline math when notation belongs inside a sentence (e.g., a short equation like $e = mc^2$). Inline notation is useful for brief definitions, but longer or more important equations should usually be displayed and numbered when you need to refer to them later. Equation~\ref{eq:state-cost-example} expands the inline state update into a compact display equation. It is included to demonstrate equation numbering, matrices, fractions, Greek letters, superscripts, subscripts, an integral, and a List of Equations entry when that list is enabled. In your own disquisition, use nearby prose to explain what the variables mean and why the equation matters for your argument. Complex mathematical content may need additional review after the PDF is generated. 
+\begin{equation}
+    E = mc^2
+\end{equation}
 
 \equationlistentry{Example state update and cost function}
 \mathalt{The next state s sub t plus one equals a two by two transition matrix times the current state s sub t plus a two element input vector times u sub t. The cost J of s equals the integral from zero to T of s transpose Q s plus rho times u squared, with respect to t.}
-\begin{longequation}
-  s_{t+1}
-    =
-    \begin{bmatrix}
-      1 & \Delta t \\
-      0 & 1
-    \end{bmatrix}
-    s_t
-    +
-    \begin{bmatrix}
-      \frac{1}{2}\Delta t^2 \\
-      \Delta t
-    \end{bmatrix}
-    u_t
-\label{eq:state-cost-example}
-\end{longequation}
 
 Citations and references depend on two parts working together: a bibliography entry in \texttt{references.bib} and a citation command in the chapter text. The template uses the \texttt{biblatex} workflow with Biber. If a citation appears as question marks or does not update, check the citation key, the bibliography entry, and the compile log before changing unrelated source files. Use descriptive link text rather than bare URLs or repeated phrases such as ``click here.'' A reader should be able to understand where a link goes from the linked text itself.
 
