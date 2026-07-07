@@ -202,8 +202,8 @@
   \let\ndsu@original@endenumerate\endenumerate
   \renewenvironment{enumerate}[1][]{%
 
-\vspace{-1.0\baselineskip}%
-\begin{singlespace}%
+\vspace{-0.2\baselineskip}%
+\begin{doublespace}%
 \setlength{\parskip}{0pt}%
     \ifnum\@enumdepth=0
       \ndsu@original@enumerate[leftmargin=\ndsuEnumerateLeftMargin,topsep=\ndsuListTopSep,partopsep=\ndsuListPartopSep,##1]%
@@ -217,8 +217,8 @@
     \fi
   }{%
 \ndsu@original@endenumerate
-\end{singlespace}%
-\vspace{-0.3\baselineskip}%
+\end{doublespace}%
+\vspace{-0.4\baselineskip}%
 
   }%
   \setlist[description,1]{%
