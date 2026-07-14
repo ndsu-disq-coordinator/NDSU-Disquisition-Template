@@ -2,6 +2,22 @@
 \label{chap:preparing-source}
 
 By the time you are preparing a disquisition, much of the difficult intellectual work is already behind you. This chapter focuses on the document task that remains: placing your content into the template in a clear, structured way. The goal is not to make you a \LaTeX{} expert. The goal is to help you work comfortably enough with the source files that the template can apply consistent formatting and produce a PDF that is easier to review.
+\begin{equation}
+  s_{t+1}
+    =
+    \begin{bmatrix}
+      1 & \Delta t \\
+      0 & 1
+    \end{bmatrix}
+    s_t
+    +
+    \begin{bmatrix}
+      \frac{1}{2}\Delta t^2 \\
+      \Delta t
+    \end{bmatrix}
+    u_t
+\label{eq:state-cost-example}
+\end{equation}
 
 This chapter explains the basic structure of the source files and introduces the most common kinds of content you are likely to add. The examples are intentionally brief. They are meant to show patterns, not every possible variation. Later chapters explain how to review the generated PDF and complete accessibility review and remediation workflows.
 
@@ -47,14 +63,16 @@ The exact image, caption, and description should match the content of your disqu
 Tables should present structured information rather than visual layout. Keep tables as simple as the content allows, use clear headers, and avoid screenshots of tables when possible. A screenshot is an image, not structured table data. Very wide or complicated tables may need to be simplified, split into smaller parts, or moved to an appendix.
 
 Equations should use \LaTeX{} math rather than images of equations. Use inline math when notation belongs inside a sentence (e.g., a short equation like $e = mc^2$). Inline notation is useful for brief definitions, but longer or more important equations should usually be displayed and numbered when you need to refer to them later. Equation~\ref{eq:state-cost-example} expands the inline state update into a compact display equation. It is included to demonstrate equation numbering, matrices, fractions, Greek letters, superscripts, subscripts, an integral, and a List of Equations entry when that list is enabled. In your own disquisition, use nearby prose to explain what the variables mean and why the equation matters for your argument. Complex mathematical content may need additional review after the PDF is generated. 
-\begin{equation}
+\begin{thineq}
     E = mc^2
-\end{equation}
+\end{thineq}
 
 \equationlistentry{Example state update and cost function}
 \mathalt{The next state s sub t plus one equals a two by two transition matrix times the current state s sub t plus a two element input vector times u sub t. The cost J of s equals the integral from zero to T of s transpose Q s plus rho times u squared, with respect to t.}
 
 Citations and references depend on two parts working together: a bibliography entry in \texttt{references.bib} and a citation command in the chapter text. The template uses the \texttt{biblatex} workflow with Biber. If a citation appears as question marks or does not update, check the citation key, the bibliography entry, and the compile log before changing unrelated source files. Use descriptive link text rather than bare URLs or repeated phrases such as ``click here.'' A reader should be able to understand where a link goes from the linked text itself.
+
+
 
 \section{Working with the source and reviewing changes}
 \label{sec:working-reviewing}
@@ -63,7 +81,7 @@ A useful workflow is to make one meaningful change at a time, compile, and revie
 When the PDF does not look right, fix the source first whenever possible. Do not treat the generated PDF as the place to rebuild headings, renumber chapters, manually correct references, or redesign front matter. Source-level fixes are easier to repeat and are less likely to be lost when the PDF is regenerated. Before compiling a more complete review build, use Table~\ref{tab:source-review-checks} to check the source for common unfinished items. This table is not a final submission checklist. It is a practical source check before you move into PDF review.
 
 \begin{table}[htbp]
-\caption{Source checks before compiling a review PDF.}
+\caption{Source checks before compiling a review PDF.F}
 \label{tab:source-review-checks}
 
 \begin{ndsudatatable}[headers={1}]

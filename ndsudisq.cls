@@ -155,7 +155,7 @@
   \let\ndsu@original@enditemize\enditemize
   \renewenvironment{itemize}[1][]{%
     \vspace{-1.0\baselineskip}%
-    \begin{singlespace}%
+    \begin{doublespace}%
     \setlength{\parskip}{0pt}%
     \ifnum\@itemdepth=0
       \ndsu@original@itemize[leftmargin=\ndsuItemizeLeftMargin,topsep=\ndsuListTopSep,partopsep=\ndsuListPartopSep,##1]%
@@ -289,17 +289,18 @@
 % Displayed math spacing.
 % These lengths affect displayed equations and similar math displays.
 % They do not control float spacing for figures/tables or list spacing.
+
 \newlength{\ndsu@displayaboveskip}
-\setlength{\ndsu@displayaboveskip}{2pt plus 1pt minus 1pt}
+\setlength{\ndsu@displayaboveskip}{12pt}
 
 \newlength{\ndsu@displaybelowskip}
-\setlength{\ndsu@displaybelowskip}{2pt}
+\setlength{\ndsu@displaybelowskip}{0.6\baselineskip}
 
 \newlength{\ndsu@displayshortaboveskip}
-\setlength{\ndsu@displayshortaboveskip}{4pt plus 1pt minus 1pt}
+\setlength{\ndsu@displayshortaboveskip}{-4pt}
 
 \newlength{\ndsu@displayshortbelowskip}
-\setlength{\ndsu@displayshortbelowskip}{4pt plus 2pt minus 2pt}
+\setlength{\ndsu@displayshortbelowskip}{0.5\baselineskip}
 
 \AtBeginDocument{%
   \setlength{\abovedisplayskip}{\ndsu@displayaboveskip}%
@@ -308,21 +309,21 @@
   \setlength{\belowdisplayshortskip}{\ndsu@displayshortbelowskip}%
 }
 
-% Long/tall equation spacing.
-\newlength{\ndsu@longdisplayaboveskip}
-\setlength{\ndsu@longdisplayaboveskip}{-4pt}
+% Thin equation spacing.
+\newlength{\ndsu@thindisplayaboveskip}
+\setlength{\ndsu@thindisplayaboveskip}{-12pt}
 
-\newlength{\ndsu@longdisplaybelowskip}
-\setlength{\ndsu@longdisplaybelowskip}{0.5\baselineskip}
+\newlength{\ndsu@thindisplaybelowskip}
+\setlength{\ndsu@thindisplaybelowskip}{2pt}
 
-\NewDocumentEnvironment{longequation}{+b}
+\NewDocumentEnvironment{thineq}{+b}
   {%
     \par
     \begingroup
-    \setlength{\abovedisplayskip}{\ndsu@longdisplayaboveskip}%
-    \setlength{\abovedisplayshortskip}{\ndsu@longdisplayaboveskip}%
-    \setlength{\belowdisplayskip}{\ndsu@longdisplaybelowskip}%
-    \setlength{\belowdisplayshortskip}{\ndsu@longdisplaybelowskip}%
+    \setlength{\abovedisplayskip}{\ndsu@thindisplayaboveskip}%
+    \setlength{\abovedisplayshortskip}{\ndsu@thindisplayaboveskip}%
+    \setlength{\belowdisplayskip}{\ndsu@thindisplaybelowskip}%
+    \setlength{\belowdisplayshortskip}{\ndsu@thindisplaybelowskip}%
     \begin{equation}
     #1
     \end{equation}%
