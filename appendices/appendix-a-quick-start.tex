@@ -2,8 +2,8 @@
 \label{app:quick-start}
 
 This appendix gives a compact path from opening the project to producing a reviewable PDF. It assumes that you are using Overleaf, compiling \texttt{main.tex}, and using LuaLaTeX unless the repository instructions say otherwise.
-\begin{longequation}
-  s_{t+1}
+\begin{equation}
+      s_{t+1}
     =
     \begin{bmatrix}
       1 & \Delta t \\
@@ -17,7 +17,7 @@ This appendix gives a compact path from opening the project to producing a revie
     \end{bmatrix}
     u_t
 \label{eq:state-cost-example}
-\end{longequation}
+\end{equation}
 
 The basic revision cycle is:
 
@@ -40,7 +40,25 @@ Open the full project in Overleaf, not just one \texttt{.tex} file. Confirm that
 \section{Add or revise source content}
 \label{sec:quick-revise-source}
 
-Start with the most visible placeholders in \texttt{main.tex}: title, author, degree, program or department, committee information, date, subject, keywords, and language if needed. Then revise the front matter files. If you use optional front matter such as a dedication or abbreviations page, make sure the matching file exists and the corresponding option is enabled in \texttt{main.tex}. Add chapter, appendix, figure, table, equation, citation, and link content in the source files. Keep the template structure intact. Do not edit \texttt{ndsudisq.cls} for ordinary document content.
+Start with the most visible placeholders in \texttt{main.tex}: title, author, degree, program or department, committee information, date, subject, keywords, and language if needed. Then revise the front matter files. If you use optional front matter such as a dedication or abbreviations page, make sure the matching file exists and the corresponding option is enabled in \texttt{main.tex}. Add chapter, appendix, figure, table, equation, citation, and link content in the source files. 
+\begin{table}[htbp]
+\caption{Source checks before compiling a review PDF.}
+\label{tab:source-review-checks}
+\begin{ndsudatatable}[headers={1}]
+\begin{tabularx}{\textwidth}{L{1.55in}XX}
+\toprule
+\textbf{Source check} & \textbf{Example} & \textbf{What to fix before review} \\
+\midrule
+
+
+Links & External links and internal cross-references & Use meaningful link text and confirm that cross-references point to the intended figure, table, equation, chapter, or appendix. \\
+
+Wide or landscape content & Wide tables, large figures, diagrams, schemas, or rotated pages & Decide whether the content should be simplified, split, moved to an appendix, or flagged for closer PDF review. \\
+\bottomrule
+\end{tabularx}
+\end{ndsudatatable}
+\end{table}
+Keep the template structure intact. Do not edit \texttt{ndsudisq.cls} for ordinary document content.
 
 \section{Compile the project}
 \label{sec:quick-compile-project}
@@ -50,7 +68,24 @@ In Overleaf, compile \texttt{main.tex}. If the PDF appears, review it before mak
 \section{Review the PDF and log}
 \label{sec:quick-review-output}
 
-Review the visible PDF from the beginning. Check the title page, approval page, abstract, acknowledgments, dedication if used, table of contents, generated lists, chapter headings, figures, tables, equations, citations, references, appendices, and page numbering. Also review the log for unresolved citations, unresolved references, missing files, duplicate labels, broken links, or overfull boxes that affect the visible PDF.
+Review the visible PDF from the beginning. Check the title page, approval page, abstract, acknowledgments, dedication if used, table of contents, generated lists, chapter headings, figures, tables, equations, citations, references, appendices, and page numbering.
+\begin{figure}[htbp]
+\centering
+\ndsuincludegraphics[
+    width=\textwidth,
+    keepaspectratio
+]
+{Infographic showing four categories of files in the NDSU LaTeX disquisition project: content files students write, setup files students complete, optional document components enabled when needed, and template or generated files that students usually leave unchanged.}
+{figures/LaTeX disquisition project file organization.png}
+
+\caption{Typical organization and use of files in the NDSU \LaTeX{} disquisition workflow.}
+\label{fig:project-file-organization}
+
+\ndsufigurenote{This diagram shows the general organization of the repository rather than every file included in the project.}
+
+\end{figure}
+
+Also review the log for unresolved citations, unresolved references, missing files, duplicate labels, broken links, or overfull boxes that affect the visible PDF.
 
 \section{Fix the source and compile again}
 \label{sec:quick-fix-source}

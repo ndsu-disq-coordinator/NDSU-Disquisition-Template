@@ -530,16 +530,8 @@
 \newcommand{\includetableofequations}{\includelistofequations}
 \newcommand{\includeabbreviations}{\ndsu@includeAbbreviationstrue}
 \newcommand{\includesymbols}{\ndsu@includeSymbolstrue}
-\newcommand{\includeappendixtables}{%
-  \ndsu@includeAppendixTablestrue
-  \ClassWarning{ndsudisq}{\string\includeappendixtables\space is reserved for appendix tables front matter, but is not yet implemented.\MessageBreak
-    It sets a compatibility flag only and does not add content to the front matter}%
-}
-\newcommand{\includeappendixfigures}{%
-  \ndsu@includeAppendixFigurestrue
-  \ClassWarning{ndsudisq}{\string\includeappendixfigures\space is reserved for appendix figures front matter, but is not yet implemented.\MessageBreak
-    It sets a compatibility flag only and does not add content to the front matter}%
-}
+\newcommand{\includeappendixtables}{\ndsu@includeAppendixTablestrue}
+\newcommand{\includeappendixfigures}{\ndsu@includeAppendixFigurestrue}
 \newcommand{\includepreface}{\ndsu@includePrefacetrue}
 
 % --- Heading numbering, visual formatting, and appendix headings ---
@@ -1098,6 +1090,8 @@
 \renewcommand{\listtablename}{LIST OF TABLES}
 \renewcommand{\listfigurename}{LIST OF FIGURES}
 \newcommand{\listequationname}{LIST OF EQUATIONS}
+\newcommand{\listappendixtablename}{LIST OF APPENDIX TABLES}
+\newcommand{\listappendixfigurename}{LIST OF APPENDIX FIGURES}
 \AtBeginDocument{%
   \renewcommand{\contentsname}{TABLE OF CONTENTS}%
   \renewcommand{\listtablename}{LIST OF TABLES}%
@@ -1153,6 +1147,53 @@
 \newcommand{\ndsu@dottedequationline}[2]{\@dottedtocline{1}{0pt}{2.5em}{\normalfont #1}{\normalfont #2}}
 \newcommand{\ndsu@dottedschemaline}[2]{\@dottedtocline{1}{0pt}{2.5em}{\normalfont #1}{\normalfont #2}}
 
+
+\providecommand{\ndsu@tocfile}{}
+\newcommand{\ndsu@installappendixfloatlistredirects}{%
+  \let\ndsu@standard@addcontentsline\addcontentsline
+  \let\ndsu@standard@addtocontents\addtocontents
+  \renewcommand{\addtocontents}[2]{%
+    \edef\ndsu@tocfile{##1}%
+    \ifndsu@appendices
+      \ifdefstring{\ndsu@tocfile}{lot}{%
+        \ndsu@standard@addtocontents{lat}{##2}%
+      }{%
+        \ifdefstring{\ndsu@tocfile}{lof}{%
+          \ndsu@standard@addtocontents{laf}{##2}%
+        }{%
+          \ndsu@standard@addtocontents{##1}{##2}%
+        }%
+      }%
+    \else
+      \ndsu@standard@addtocontents{##1}{##2}%
+    \fi
+  }%
+  \renewcommand{\addcontentsline}[3]{%
+    \edef\ndsu@tocfile{##1}%
+    \ifndsu@appendices
+      \ifdefstring{\ndsu@tocfile}{lot}{%
+        \ifstrequal{##2}{table}{%
+          \ndsu@standard@addcontentsline{lat}{table}{##3}%
+        }{%
+          \ndsu@standard@addcontentsline{##1}{##2}{##3}%
+        }%
+      }{%
+        \ifdefstring{\ndsu@tocfile}{lof}{%
+          \ifstrequal{##2}{figure}{%
+            \ndsu@standard@addcontentsline{laf}{figure}{##3}%
+          }{%
+            \ndsu@standard@addcontentsline{##1}{##2}{##3}%
+          }%
+        }{%
+          \ndsu@standard@addcontentsline{##1}{##2}{##3}%
+        }%
+      }%
+    \else
+      \ndsu@standard@addcontentsline{##1}{##2}{##3}%
+    \fi
+  }%
+}
+\AtBeginDocument{\ndsu@installappendixfloatlistredirects}
 \newcommand{\ndsu@tocchapterentry}[1]{%
   \ndsu@tocchapterentry@start#1\ndsu@toc@end
 }
@@ -1689,6 +1730,23 @@
     \clearpage
   \fi
   \ifndsu@includeAbbreviations\ndsu@inputoptionalfrontmatter{frontmatter/abbreviations.tex}\fi
+
+  \ifndsu@includeAppendixTables
+  \chapter*{\listappendixtablename}%
+  \phantomsection
+  \addcontentsline{toc}{frontmatter}{\listappendixtablename}%
+  \ndsu@listheader{Table}{Page}%
+  \@starttoc{lat}%
+  \clearpage
+\fi
+\ifndsu@includeAppendixFigures
+  \chapter*{\listappendixfigurename}%
+  \phantomsection
+  \addcontentsline{toc}{frontmatter}{\listappendixfigurename}%
+  \ndsu@listheader{Figure}{Page}%
+  \@starttoc{laf}%
+  \clearpage
+\fi
   \ifndsu@includeSymbols\ndsu@inputoptionalfrontmatter{frontmatter/symbols.tex}\fi
   \ifndsu@includePreface\ndsu@inputoptionalfrontmatter{frontmatter/preface.tex}\fi
 }
