@@ -19,9 +19,7 @@ This does not mean the template writes or verifies the disquisition for you. You
 \section{How \LaTeX{} and Overleaf fit together}
 \label{sec:latex-overleaf}
 
-\LaTeX{} is a document preparation system. Instead of formatting a document mainly by selecting text and changing its appearance, you write plain-text source files that use commands to identify structure. A command such as \verb|\chapter{Methods}| marks a chapter. A command such as \verb|\section{Data Collection}| marks a section. Other commands identify figures, tables, equations, citations, links, and references. A compiler then processes the source files and produces the PDF.
-
-Overleaf is the web-based editing and compiling environment assumed by this template. In Overleaf, you edit the project files, set the compiler, compile the document, preview the PDF, and check the log when something goes wrong. Other local \LaTeX{} systems can be used by experienced users or support staff, but this guide is written primarily for students working in Overleaf.
+\LaTeX{} is a document preparation system. Instead of formatting a document mainly by selecting text and changing its appearance, you write plain-text source files that use commands to identify structure. A command such as \verb|\chapter{Methods}| marks a chapter. A command such as \verb|\section{Data Collection}| marks a section. Other commands identify figures, tables, equations, citations, links, and references. A compiler then processes the source files and produces the PDF. Overleaf is the web-based editing and compiling environment assumed by this template. In Overleaf, you edit the project files, set the compiler, compile the document, preview the PDF, and check the log when something goes wrong. Other local \LaTeX{} systems can be used by experienced users or support staff, but this guide is written primarily for students working in Overleaf.
 
 A few terms are useful at the beginning. A \textit{source file} is a plain-text file that contains \LaTeX{} content and commands, usually ending in \texttt{.tex}. The \textit{main file}, usually \texttt{main.tex}, starts the document build, loads the template, sets document information, and includes the other files. A \textit{compiler} is the tool that turns the source files into a PDF. This template expects LuaLaTeX unless the repository instructions say otherwise. \textit{Biber} is the bibliography processor used with the \texttt{biblatex} citation workflow. The \textit{class file}, \texttt{ndsudisq.cls}, is the template file that controls much of the document behavior. Most students use the class file but do not edit it.
 
@@ -29,6 +27,27 @@ A few terms are useful at the beginning. A \textit{source file} is a plain-text 
 \label{sec:what-you-edit}
 
 Most of your work should happen in the user-editable source files. The main file contains document information such as title, author, degree, program, committee information, date, metadata, front matter options, chapter inputs, appendix inputs, and bibliography setup. The files in \texttt{frontmatter/} contain material such as the abstract, acknowledgments, dedication, abbreviations, or other front matter used by your document. The files in \texttt{chapters/} contain the main body of the disquisition. The files in \texttt{appendices/} contain appendix material. The bibliography file, usually \texttt{references.bib}, contains the sources used by citation commands. The \texttt{figures/} folder holds images, charts, maps, screenshots, diagrams, and other visual files.
+
+\begin{figure}[htbp]
+\centering
+\ndsuincludegraphics[
+    width=0.7\linewidth, keepaspectratio
+]
+{THe graph shows the elevation of two parameters and it has a person standing right next to it}
+{figures/Graph1.jpg}
+\caption{Typical organization and use of files in the NDSU \LaTeX{} disquisition workflow.}
+\label{fig:Graph1.jpg}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\ndsuincludegraphics[
+    width=0.7\linewidth, keepaspectratio
+]
+{THe graph shows the elevation of two parameters and it has a person standing right next to it}
+{figures/Graph1.jpg}
+\caption{Typical organization and use of files in the NDSU \LaTeX{} disquisition workflow.}
+\label{fig:Graph1.jpg}
+\end{figure}
 
 You normally do not edit \texttt{ndsudisq.cls}. That file is part of the template infrastructure. It defines formatting, front matter behavior, heading behavior, caption behavior, appendix behavior, PDF metadata settings, and other document features. You also normally do not edit generated files such as logs, auxiliary files, table-of-contents files, bibliography output files, or the compiled PDF as part of ordinary writing. If the PDF does not look right, fix the source file when possible and compile again.
 

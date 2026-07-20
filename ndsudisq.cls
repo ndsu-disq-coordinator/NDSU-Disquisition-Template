@@ -262,6 +262,8 @@
 \setlength{\ndsuFloatFloatSkip}{8pt plus 2pt minus 2pt}
 \newlength{\ndsuFigureCaptionSkip}
 \setlength{\ndsuFigureCaptionSkip}{0pt}
+\newlength{\ndsuFigureBottomReserve}
+\setlength{\ndsuFigureBottomReserve}{10pt}
 \newlength{\ndsuTableCaptionSkip}
 \setlength{\ndsuTableCaptionSkip}{12pt}
 \newlength{\ndsuLongtablePreSkip}
@@ -281,6 +283,40 @@
 \setlength{\floatsep}{\ndsuFloatFloatSkip}
 \setlength{\textfloatsep}{\ndsuFloatTextSkip}
 \setlength{\intextsep}{\ndsuFloatTextSkip}
+% Ordinary in-text figures need asymmetric spacing: 24pt above the artwork and
+% the template's original 10pt below the caption.  Apply this where LaTeX
+% actually inserts an h-float, rather than padding the figure box; padding the
+% box would incorrectly travel with a deferred figure to the next page.
+\newskip\ndsu@currentFloatAboveSkip
+\newskip\ndsu@currentFloatBelowSkip
+\newcommand{\ndsu@setcurrentfloatskips}{%
+  \ndsu@currentFloatAboveSkip=\intextsep
+  \ndsu@currentFloatBelowSkip=\intextsep
+  \ifnum\@currtype=\@xxxii
+    \ndsu@currentFloatAboveSkip=24pt
+    % The figure box itself supplies the 10pt post-caption space.  Keeping the
+    % insertion skip at zero avoids doubling it for figures placed in text.
+    \ndsu@currentFloatBelowSkip=0pt
+  \fi
+}
+\patchcmd{\@addtocurcol}
+  {\advance \@reqcolroom \intextsep}
+  {\ndsu@setcurrentfloatskips\advance \@reqcolroom \ndsu@currentFloatAboveSkip}
+  {}{\ClassWarningNoLine{ndsudisq}{Could not install the figure above-spacing fit check}}
+\patchcmd{\@addtocurcol}
+  {\global \advance \@textfloatsheight 2\intextsep}
+  {\ndsu@setcurrentfloatskips
+   \global\advance\@textfloatsheight\ndsu@currentFloatAboveSkip
+   \global\advance\@textfloatsheight\ndsu@currentFloatBelowSkip}
+  {}{\ClassWarningNoLine{ndsudisq}{Could not install the figure spacing height adjustment}}
+\patchcmd{\@addtocurcol}
+  {\vskip \intextsep \box\@currbox \penalty\interlinepenalty \vskip\intextsep}
+  {\ndsu@setcurrentfloatskips
+   \vskip\ndsu@currentFloatAboveSkip \box\@currbox
+   \penalty\interlinepenalty \vskip\ndsu@currentFloatBelowSkip}
+  {}{\ClassWarningNoLine{ndsudisq}{Could not install asymmetric in-text figure spacing}}
+\AtEndEnvironment{figure}{\par\vspace{\ndsuFigureBottomReserve}}
+\AtEndEnvironment{figure*}{\par\vspace{\ndsuFigureBottomReserve}}
 % Keep figures/tables horizontally centered but top-aligned on float-only pages.
 \setlength{\@fptop}{0pt}
 \setlength{\@fpsep}{\ndsuFloatFloatSkip}
