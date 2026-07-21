@@ -259,7 +259,10 @@
 \newlength{\ndsuFloatTextSkip}
 \setlength{\ndsuFloatTextSkip}{10pt plus 2pt minus 2pt}
 \newlength{\ndsuFloatFloatSkip}
-\setlength{\ndsuFloatFloatSkip}{8pt plus 2pt minus 2pt}
+% Consecutive float boxes already include the visible caption/edge spacing they
+% need.  Extra \floatsep or \@fpsep here would double the gap between two
+% tables or two figures placed together.
+\setlength{\ndsuFloatFloatSkip}{0pt}
 \newlength{\ndsuFigureCaptionSkip}
 \setlength{\ndsuFigureCaptionSkip}{0pt}
 \newlength{\ndsuFigureBottomReserve}
@@ -289,6 +292,22 @@
 % box would incorrectly travel with a deferred figure to the next page.
 \newskip\ndsu@currentFloatAboveSkip
 \newskip\ndsu@currentFloatBelowSkip
+\newif\ifndsu@previousTableSource
+\newif\ifndsu@thisTableConsecutive
+\ndsu@previousTableSourcefalse
+\ndsu@thisTableConsecutivefalse
+\newcommand{\ndsu@begintablespacingstate}{%
+  \ifndsu@previousTableSource
+    \global\ndsu@thisTableConsecutivetrue
+  \else
+    \global\ndsu@thisTableConsecutivefalse
+  \fi
+  \global\ndsu@previousTableSourcefalse
+}
+\newcommand{\ndsu@endtablespacingstate}{%
+  \global\ndsu@previousTableSourcetrue
+  \global\ndsu@thisTableConsecutivefalse
+}
 \newcommand{\ndsu@setcurrentfloatskips}{%
   \ndsu@currentFloatAboveSkip=\intextsep
   \ndsu@currentFloatBelowSkip=\intextsep
@@ -297,6 +316,12 @@
     % The figure box itself supplies the 10pt post-caption space.  Keeping the
     % insertion skip at zero avoids doubling it for figures placed in text.
     \ndsu@currentFloatBelowSkip=0pt
+  \fi
+  \ifnum\@currtype=64
+    \ifndsu@thisTableConsecutive
+      % The preceding table already supplied the one required inter-table gap.
+      \ndsu@currentFloatAboveSkip=0pt
+    \fi
   \fi
 }
 \patchcmd{\@addtocurcol}
@@ -317,6 +342,10 @@
   {}{\ClassWarningNoLine{ndsudisq}{Could not install asymmetric in-text figure spacing}}
 \AtEndEnvironment{figure}{\par\vspace{\ndsuFigureBottomReserve}}
 \AtEndEnvironment{figure*}{\par\vspace{\ndsuFigureBottomReserve}}
+\AtBeginEnvironment{table}{\ndsu@begintablespacingstate}
+\AfterEndEnvironment{table}{\ndsu@endtablespacingstate}
+% Any real intervening paragraph means that the tables are not consecutive.
+\AddToHook{para/begin}{\global\ndsu@previousTableSourcefalse}
 % Keep figures/tables horizontally centered but top-aligned on float-only pages.
 \setlength{\@fptop}{0pt}
 \setlength{\@fpsep}{\ndsuFloatFloatSkip}

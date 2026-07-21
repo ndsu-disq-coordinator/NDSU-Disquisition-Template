@@ -26,30 +26,7 @@ A few terms are useful at the beginning. A \textit{source file} is a plain-text 
 \section{What you edit}
 \label{sec:what-you-edit}
 
-Most of your work should happen in the user-editable source files. The main file contains document information such as title, author, degree, program, committee information, date, metadata, front matter options, chapter inputs, appendix inputs, and bibliography setup. The files in \texttt{frontmatter/} contain material such as the abstract, acknowledgments, dedication, abbreviations, or other front matter used by your document. The files in \texttt{chapters/} contain the main body of the disquisition. The files in \texttt{appendices/} contain appendix material. The bibliography file, usually \texttt{references.bib}, contains the sources used by citation commands. The \texttt{figures/} folder holds images, charts, maps, screenshots, diagrams, and other visual files.
-
-\begin{figure}[htbp]
-\centering
-\ndsuincludegraphics[
-    width=0.7\linewidth, keepaspectratio
-]
-{The graph shows the elevation of two parameters and it has a person standing right next to it}
-{figures/Graph1.jpg}
-\caption{\LaTeX{} template graph with some demo bar charts}
-\label{fig:Graph1.jpg}
-\end{figure}
-\begin{figure}[htbp]
-\centering
-\ndsuincludegraphics[
-    width=0.7\linewidth, keepaspectratio
-]
-{THe graph shows the elevation of two parameters and it has a person standing right next to it}
-{figures/Graph1.jpg}
-\caption{Graph showing another demo figure for the template.}
-\label{fig:Graph1.jpg}
-\end{figure}
-
-You normally do not edit \texttt{ndsudisq.cls}. That file is part of the template infrastructure. It defines formatting, front matter behavior, heading behavior, caption behavior, appendix behavior, PDF metadata settings, and other document features. You also normally do not edit generated files such as logs, auxiliary files, table-of-contents files, bibliography output files, or the compiled PDF as part of ordinary writing. If the PDF does not look right, fix the source file when possible and compile again.
+Most of your work should happen in the user-editable source files. The main file contains document information such as title, author, degree, program, committee information, date, metadata, front matter options, chapter inputs, appendix inputs, and bibliography setup. The files in \texttt{frontmatter/} contain material such as the abstract, acknowledgments, dedication, abbreviations, or other front matter used by your document. The files in \texttt{chapters/} contain the main body of the disquisition. The files in \texttt{appendices/} contain appendix material. The bibliography file, usually \texttt{references.bib}, contains the sources used by citation commands. The \texttt{figures/} folder holds images, charts, maps, screenshots, diagrams, and other visual files. You normally do not edit \texttt{ndsudisq.cls}. That file is part of the template infrastructure. It defines formatting, front matter behavior, heading behavior, caption behavior, appendix behavior, PDF metadata settings, and other document features. You also normally do not edit generated files such as logs, auxiliary files, table-of-contents files, bibliography output files, or the compiled PDF as part of ordinary writing. If the PDF does not look right, fix the source file when possible and compile again.
 
 
 Figure~\ref{fig:project-file-organization} shows the general organization of the repository and the relationship between editable source files, template files, and generated output. Most students work mainly in the editable source files, while Overleaf and the template process those files into the generated PDF used for review and revision. A useful working habit is to make one meaningful change at a time, compile, and review the result. This is especially helpful when adding figures, tables, equations, citations, or appendices. If something fails, the source file, the compile log, and the most recent change usually provide the fastest path to diagnosis.
