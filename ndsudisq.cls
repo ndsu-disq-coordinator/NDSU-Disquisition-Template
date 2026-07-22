@@ -266,7 +266,7 @@
 \newlength{\ndsuFigureCaptionSkip}
 \setlength{\ndsuFigureCaptionSkip}{0pt}
 \newlength{\ndsuFigureBottomReserve}
-\setlength{\ndsuFigureBottomReserve}{10pt}
+\setlength{\ndsuFigureBottomReserve}{0pt}
 \newlength{\ndsuTableCaptionSkip}
 \setlength{\ndsuTableCaptionSkip}{12pt}
 \newlength{\ndsuLongtablePreSkip}
@@ -278,7 +278,7 @@
 \newlength{\ndsuTableNoteSkip}
 \setlength{\ndsuTableNoteSkip}{-14pt}
 \newlength{\ndsuNoteAfterSkip}
-\setlength{\ndsuNoteAfterSkip}{-6pt}
+\setlength{\ndsuNoteAfterSkip}{0pt}
 \newlength{\ndsuSchemaCaptionSkip}
 \setlength{\ndsuSchemaCaptionSkip}{6pt plus 1pt minus 1pt}
 \setlength{\LTpre}{\ndsuLongtablePreSkip}
@@ -290,6 +290,10 @@
 % the template's original 10pt below the caption.  Apply this where LaTeX
 % actually inserts an h-float, rather than padding the figure box; padding the
 % box would incorrectly travel with a deferred figure to the next page.
+\newskip\ndsuFigureAboveTextSkip
+    \AtBeginDocument{%
+        \ndsuFigureAboveTextSkip=\baselineskip
+    }
 \newskip\ndsu@currentFloatAboveSkip
 \newskip\ndsu@currentFloatBelowSkip
 \newif\ifndsu@previousTableSource
@@ -309,14 +313,14 @@
   \global\ndsu@thisTableConsecutivefalse
 }
 \newcommand{\ndsu@setcurrentfloatskips}{%
-  \ndsu@currentFloatAboveSkip=\intextsep
-  \ndsu@currentFloatBelowSkip=\intextsep
-  \ifnum\@currtype=\@xxxii
-    \ndsu@currentFloatAboveSkip=24pt
-    % The figure box itself supplies the 10pt post-caption space.  Keeping the
-    % insertion skip at zero avoids doubling it for figures placed in text.
-    \ndsu@currentFloatBelowSkip=0pt
-  \fi
+    \ndsu@currentFloatAboveSkip=\intextsep
+    \ndsu@currentFloatBelowSkip=\intextsep
+    \ifnum\@currtype=\@xxxii
+        \ndsu@currentFloatAboveSkip=\ndsuFigureAboveTextSkip
+        % The figure box itself supplies the 10pt post-caption space.  Keeping the
+        % insertion skip at zero avoids doubling it for figures placed in text.
+        \ndsu@currentFloatBelowSkip=\intextsep
+    \fi
   \ifnum\@currtype=64
     \ifndsu@thisTableConsecutive
       % The preceding table already supplied the one required inter-table gap.
@@ -340,6 +344,21 @@
    \vskip\ndsu@currentFloatAboveSkip \box\@currbox
    \penalty\interlinepenalty \vskip\ndsu@currentFloatBelowSkip}
   {}{\ClassWarningNoLine{ndsudisq}{Could not install asymmetric in-text figure spacing}}
+
+% The float package handles [H] floats separately from \@addtocurcol.
+% Increase only the leading space for [H] figures.
+\patchcmd{\float@endH}
+    {\@endfloatbox\vskip\intextsep}
+    {\@endfloatbox
+    \ifdefstring{\@captype}{figure}
+        {\vskip\ndsuFigureAboveTextSkip}
+        {\vskip\intextsep}
+        }
+    {}
+    {\ClassWarningNoLine{ndsudisq}
+        {Could not install [H] figure leading-spacing adjustment}
+    }
+
 \AtEndEnvironment{figure}{\par\vspace{\ndsuFigureBottomReserve}}
 \AtEndEnvironment{figure*}{\par\vspace{\ndsuFigureBottomReserve}}
 \AtBeginEnvironment{table}{\ndsu@begintablespacingstate}
@@ -350,6 +369,47 @@
 \setlength{\@fptop}{0pt}
 \setlength{\@fpsep}{\ndsuFloatFloatSkip}
 \setlength{\@fpbot}{0pt plus 1fil}
+
+% Remove the residual leading baseline from tables placed on float-only pages.
+% This correction applies only when the first float on the page is a table.
+\newskip\ndsuTableFloatPageTopCorrection
+
+\AtBeginDocument{%
+    \begingroup
+        \singlespacing
+        \global\ndsuTableFloatPageTopCorrection=.75\baselineskip
+    \endgroup
+}
+
+\newif\ifndsu@floatpagefirst
+
+% Mark the first float while LaTeX assembles a float-only page.
+\patchcmd{\@vtryfc}
+    {\global\setbox\@outputbox\vbox{}}
+    {\global\setbox\@outputbox\vbox{}%
+        \global\ndsu@floatpagefirsttrue}
+    {}
+  {\ClassWarningNoLine{ndsudisq}
+    {Could not install float-page first-float tracker}}
+
+% Pull the first float upward only when that float is a table.
+\patchcmd{\@wtryfc}
+    {\unvbox\@outputbox\vskip\@fpsep\box #1}
+    {\unvbox\@outputbox
+    \ifndsu@floatpagefirst
+        \global\ndsu@floatpagefirstfalse
+        \@tempcnta\count#1\relax
+        \divide\@tempcnta\@xxxii
+        \multiply\@tempcnta\@xxxii
+        \ifnum\@tempcnta=64\relax
+            \vskip-\ndsuTableFloatPageTopCorrection
+        \fi
+    \fi
+    \vskip\@fpsep
+    \box #1}
+    {}
+    {\ClassWarningNoLine{ndsudisq}
+        {Could not install table float-page top correction}}
 
 % Displayed math spacing.
 % These lengths affect displayed equations and similar math displays.
@@ -1332,7 +1392,7 @@
 \fi
 
 \newlength{\ndsuGeneratedListEntrySkip}
-\setlength{\ndsuGeneratedListEntrySkip}{0.5\baselineskip plus 1pt minus 1pt}
+\setlength{\ndsuGeneratedListEntrySkip}{0.4\baselineskip plus 1pt minus 1pt}
 \newcommand{\ndsu@tocentryspace}{\ndsuGeneratedListEntrySkip}
 \newcommand{\ndsu@rendertocentry}[4]{%
   \begingroup
@@ -1363,8 +1423,11 @@
   \ifnum #1>\c@tocdepth \else
     \vskip \z@ \@plus.2\p@
     {\leftskip #2\relax
-     \rightskip \@tocrmarg
-     \parfillskip -\rightskip
+    \rightskip=\@tocrmarg plus 1fil\relax
+    \parfillskip=\z@
+    \hyphenpenalty=\@M
+    \exhyphenpenalty=\@M
+    \microtypesetup{protrusion=false,expansion=false}%
      \parindent \z@
      \interlinepenalty\@M
      \leavevmode
@@ -1378,10 +1441,18 @@
         \mkern \@dotsep mu\hbox{.}\mkern \@dotsep
         mu$}\hfill
      \nobreak
-     \hb@xt@\@pnumwidth{\hfil\normalfont\normalcolor
-       \ndsu@contentslinepagebefore{#1}{#4}{#5}%
-       #5%
-       \ndsu@contentslinepageafter{#1}{#4}{#5}}%
+    \rlap{%
+      \hb@xt@\@tocrmarg{%
+        \leaders\hbox{$\m@th
+          \mkern \@dotsep mu\hbox{.}\mkern \@dotsep
+          mu$}\hfill
+        \kern\ndsu@tocpagenumgap
+        \normalfont\normalcolor
+        \ndsu@contentslinepagebefore{#1}{#4}{#5}%
+        #5%
+        \ndsu@contentslinepageafter{#1}{#4}{#5}%
+      }%
+    }%
      \par}%
   \fi}
 
@@ -1420,27 +1491,38 @@
   \ifnum #1>\c@tocdepth \else
     \vskip \z@ \@plus.2\p@
     {\leftskip #2\relax
-     \rightskip \@tocrmarg
-     \parfillskip -\rightskip
-     \parindent #2\relax
-     \interlinepenalty\@M
-     \leavevmode
-     \@tempdima #3\relax
-     \advance\leftskip \@tempdima\relax
-     \null\nobreak\hskip -\leftskip
-     \normalfont\normalcolor
-     \ndsu@contentslinetextbefore{#1}{#4}{#5}%
-     #4%
-     \ndsu@contentslinetextafter{#1}{#4}{#5}%
-     \nobreak
-     \leaders\hbox{$\m@th
+    \rightskip=\@tocrmarg plus 1fil\relax
+    \parfillskip=\z@
+    \hyphenpenalty=\@M
+    \exhyphenpenalty=\@M
+    \microtypesetup{protrusion=false,expansion=false}%
+    \parindent #2\relax
+    \interlinepenalty\@M
+    \leavevmode
+    \@tempdima #3\relax
+    \advance\leftskip \@tempdima\relax
+    \null\nobreak\hskip -\leftskip
+    \normalfont\normalcolor
+    \ndsu@contentslinetextbefore{#1}{#4}{#5}%
+    #4%
+    \ndsu@contentslinetextafter{#1}{#4}{#5}%
+    \nobreak
+    \leaders\hbox{$\m@th
         \mkern \@dotsep mu\hbox{.}\mkern \@dotsep
         mu$}\hfill
-     \nobreak
-     \hb@xt@\@pnumwidth{\hfil\normalfont\normalcolor
-       \ndsu@contentslinepagebefore{#1}{#4}{#5}%
-       #5%
-       \ndsu@contentslinepageafter{#1}{#4}{#5}}%
+    \nobreak
+    \rlap{%
+        \hb@xt@\@tocrmarg{%
+        \leaders\hbox{$\m@th
+            \mkern \@dotsep mu\hbox{.}\mkern \@dotsep
+            mu$}\hfill
+        \kern\ndsu@tocpagenumgap
+        \normalfont\normalcolor
+        \ndsu@contentslinepagebefore{#1}{#4}{#5}%
+        #5%
+        \ndsu@contentslinepageafter{#1}{#4}{#5}%
+      }%
+    }%
      \par}%
   \fi}
 \newcommand{\ndsu@dottedchapterline}[2]{\ndsu@dottedtoclineflushwrap{0}{0pt}{\ndsu@currentchaptocnumwidth}{#1}{#2}}

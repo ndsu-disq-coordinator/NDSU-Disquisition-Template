@@ -22,7 +22,7 @@ This appendix gives a compact path from opening the project to producing a revie
 The basic revision cycle is:
 
 \begin{enumerate}
-    \item Open the complete project and confirm the settings.  Open the complete project and confirm the settings. Open the complete project and confirm the settings. Open the complete project and confirm the settings. Open the complete project and confirm the settings. Open the complete project and confirm the settings. Open the complete project and confirm the settings.
+    \item Open the complete project and confirm the settings.
     \item Add or revise source content.
     \item Compile \texttt{main.tex}.
     \item Review the PDF and the log.
@@ -57,6 +57,7 @@ Wide or landscape content & Wide tables, large figures, diagrams, schemas, or ro
 \bottomrule
 \end{tabularx}
 \end{ndsudatatable}
+% \ndsutablenote{Notes may be added with ndsutablenote}
 \end{table}
 
 Keep the template structure intact. Do not edit \texttt{ndsudisq.cls} for ordinary document content.
@@ -70,10 +71,27 @@ In Overleaf, compile \texttt{main.tex}. If the PDF appears, review it before mak
 \label{sec:quick-review-output}
 
 Review the visible PDF from the beginning. Check the title page, approval page, abstract, acknowledgments, dedication if used, table of contents, generated lists, chapter headings, figures, tables, equations, citations, references, appendices, and page numbering.
-\begin{figure}[htbp]
+
+% \begin{figure}[htbp]
+% \centering
+% \ndsuincludegraphics[
+%     width=\textwidth,
+%     keepaspectratio
+% ]
+% {Infographic showing four categories of files in the NDSU LaTeX disquisition project: content files students write, setup files students complete, optional document components enabled when needed, and template or generated files that students usually leave unchanged.}
+% {figures/LaTeX disquisition project file organization.png}
+
+% \caption{Typical organization and use of files in the NDSU \LaTeX{} disquisition workflow.}
+% \label{fig:project-file-organization}
+
+% \ndsufigurenote{This diagram shows the general organization of the repository rather than every file included in the project.}
+
+% \end{figure}
+
+\begin{figure}[htb]
 \centering
 \ndsuincludegraphics[
-    width=\textwidth,
+    width=0.5\textwidth,
     keepaspectratio
 ]
 {Infographic showing four categories of files in the NDSU LaTeX disquisition project: content files students write, setup files students complete, optional document components enabled when needed, and template or generated files that students usually leave unchanged.}
