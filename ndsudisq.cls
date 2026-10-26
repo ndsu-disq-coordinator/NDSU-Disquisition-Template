@@ -2,12 +2,12 @@
 % NDSU disquisition class.
 % This file controls document structure and formatting.
 % Most users should edit main.tex and the content files rather than this class file.
-% LAST PATCH 6/15/2026
+% LAST PATCH 2026/10/14: restore approval appearance and body-list marker alignment
 
 % --- Class identity and version ---
-\NeedsTeXFormat{LaTeX2e}
-\newcommand{\ndsudisqversion}{v0.5.15}
-\newcommand{\ndsudisqdate}{2026/05/18}
+\NeedsTeXFormat{LaTeX2e}[2026-06-01]
+\newcommand{\ndsudisqversion}{v0.6.8-chapter-references-review}
+\newcommand{\ndsudisqdate}{2026/10/22}
 \newcommand{\ndsudisqdesc}{NDSU disquisition class}
 \ProvidesClass{ndsudisq}[\ndsudisqdate\space \ndsudisqdesc\space (\ndsudisqversion)]
 
@@ -19,6 +19,13 @@
 \ndsu@debugbookmarksfalse
 \newif\ifndsu@xitsfonts
 \ndsu@xitsfontsfalse
+\newif\ifndsu@draft
+\newif\ifndsu@guideLinks
+\newif\ifndsu@allowFontSubstitute
+\DeclareOption{draft}{\ndsu@drafttrue}
+\DeclareOption{final}{\ndsu@draftfalse}
+\DeclareOption{guidelinks}{\ndsu@guideLinkstrue}
+\DeclareOption{allowfontsubstitute}{\ndsu@allowFontSubstitutetrue}
 \DeclareOption{nonumbered}{\ndsu@nonumberedtrue}
 \DeclareOption{debugbookmarks}{\ndsu@debugbookmarkstrue}
 \DeclareOption{equationchapter}{\AtEndOfClass{\equationnumberingbychapter}}
@@ -26,6 +33,11 @@
 \DeclareOption{xitsfonts}{\ndsu@xitsfontstrue}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{report}}
 \ProcessOptions\relax
+% These are metadata validation modes, not package-level draft rendering modes.
+\@removeelement{draft}\@classoptionslist\@classoptionslist
+\@removeelement{final}\@classoptionslist\@classoptionslist
+\@removeelement{draft}\@raw@classoptionslist\@raw@classoptionslist
+\@removeelement{final}\@raw@classoptionslist\@raw@classoptionslist
 \LoadClass[12pt,oneside,letterpaper]{report}
 
 % --- Engine requirements and engine/font/language packages ---
@@ -43,17 +55,23 @@
   \IfFontExistsTF{XITS Math}
     {\setmathfont{XITS Math}}
     {\ClassError{ndsudisq}{The xitsfonts option requires the XITS Math font}{Install XITS Math or remove the xitsfonts option.}}
-  \ClassInfo{ndsudisq}{Using XITS/XITS Math font experiment via xitsfonts option}
+  \ifndsu@allowFontSubstitute\else
+    \ClassError{ndsudisq}{XITS paragraph-font approval has not been established}{The xitsfonts experiment also requires allowfontsubstitute after institutional approval. XITS Math equation approval alone is not paragraph approval.}%
+  \fi
+  \ClassWarningNoLine{ndsudisq}{Explicit XITS paragraph-font experiment; institutional approval remains the author's responsibility}
 \else
   \IfFontExistsTF{Times New Roman}
     {\setmainfont{Times New Roman}}
     {%
-      \setmainfont{TeX Gyre Termes}%
+      \ifndsu@allowFontSubstitute
+        \setmainfont{TeX Gyre Termes}%
+      \else
+        \ClassError{ndsudisq}{Times New Roman is required for the default paragraph scheme}{Install an appropriately licensed Times New Roman family. For an explicitly approved alternative only, select allowfontsubstitute and confirm its institutional acceptance.}%
+      \fi
       \ClassWarningNoLine{ndsudisq}{Times New Roman was not found; using TeX Gyre Termes fallback. Confirm institutional acceptance of this substitute font before submission}%
     }
 \fi
 \RequirePackage{polyglossia}
-\RequirePackage{csquotes}
 \RequirePackage{xparse}
 
 % --- Package loading by feature area ---
@@ -61,10 +79,27 @@
 \RequirePackage{setspace}
 \RequirePackage{ragged2e}
 \RequirePackage{microtype}
+\RequirePackage{lua-widow-control}
+    \lwcsetup{draft=false,
+      balanced,
+      disablecmds={
+        \@sect,
+        \@ssect,
+        \M@sect,
+        \@mem@old@ssect,
+        \ttl@straight@ii,
+        \ttl@top@ii,
+        \ttl@part@ii,
+        \@chapter,
+        \@schapter,
+        \ParseLaTeXeHeading
+      }
+    }
 \RequirePackage{indentfirst}
 \RequirePackage{pdflscape}
 \RequirePackage{eso-pic}
 \RequirePackage{graphicx}
+\setkeys{Gin}{draft=false}
 \RequirePackage{caption}
 \RequirePackage{subcaption}
 \RequirePackage{float}
@@ -75,7 +110,7 @@
 \RequirePackage{longtable}
 \RequirePackage{threeparttable}
 \RequirePackage{multirow}
-\RequirePackage{titlesec}
+% Native LaTeX heading templates preserve H1-H6 tagging; do not load titlesec.
 \RequirePackage{chngcntr}
 \RequirePackage{etoolbox}
 \IfFileExists{latex-lab-enumitem.sty}{%
@@ -88,8 +123,10 @@
 \RequirePackage{amsthm}
 \RequirePackage{fancyvrb}
 \RequirePackage{fvextra}
+\RequirePackage{csquotes}
 \RequirePackage{listings}
 \RequirePackage{needspace}
+\RequirePackage[bottom]{footmisc}
 
 \makeatletter
 
@@ -106,17 +143,45 @@
 }
 \ndsu@bodyalignmentsetup
 \AtBeginDocument{\ndsu@bodyalignmentsetup}
-\setcounter{tocdepth}{3}
+\setcounter{tocdepth}{2}
 
-% Maintainable list-spacing controls for ordinary semantic lists.
+% ------------------------------------------------------------
+% Before-list baseline alignment
+% ------------------------------------------------------------
+\newdimen\ndsu@listBeginSkip
+
+\newcommand{\ndsu@computelistbeginskip}{%
+     \ndsu@listBeginSkip=0pt
+     \ifhmode
+          \par
+     \fi
+     \ifdim\prevdepth>-1000pt
+          \ndsu@listBeginSkip=\baselineskip
+          \advance\ndsu@listBeginSkip by -\prevdepth
+          \advance\ndsu@listBeginSkip by -\ht\strutbox
+          \ifdim\ndsu@listBeginSkip<0pt
+               \ndsu@listBeginSkip=0pt
+          \fi
+     \fi
+}
+
+% ------------------------------------------------------------
+% List spacing configuration
+% Right-aligned labels reproduce the original PDF positions; retain the
+% original label widths, label separation and hanging text indentation.
+% ------------------------------------------------------------
 \newlength{\ndsuListTopSep}
-\setlength{\ndsuListTopSep}{0.25\baselineskip plus 1pt minus 1pt}
+\setlength{\ndsuListTopSep}{0pt}
+
 \newlength{\ndsuListItemSep}
-\setlength{\ndsuListItemSep}{0pt plus 1pt}
+\setlength{\ndsuListItemSep}{0pt}
+
 \newlength{\ndsuListParseSep}
 \setlength{\ndsuListParseSep}{0pt}
+
 \newlength{\ndsuListPartopSep}
 \setlength{\ndsuListPartopSep}{0pt}
+
 \newlength{\ndsuListLeftMargin}
 \setlength{\ndsuListLeftMargin}{0.5in}
 
@@ -144,114 +209,141 @@
     labelsep=\ndsuItemizeLabelSep,%
     leftmargin=\ndsuItemizeLeftMargin,%
     itemindent=0pt,%
-    align=left,%
+    align=right,%
     topsep=\ndsuListTopSep,%
     partopsep=\ndsuListPartopSep,%
     itemsep=\ndsuListItemSep,%
     parsep=\ndsuListParseSep,%
-    before={\setlength{\parskip}{0pt}}%
+    % parskip is controlled by para-vspace and list wrappers.
   }%
   \let\ndsu@original@itemize\itemize
   \let\ndsu@original@enditemize\enditemize
-  \renewenvironment{itemize}[1][]{%
-    \vspace{-1.0\baselineskip}%
-    \begin{doublespace}%
-    \setlength{\parskip}{0pt}%
-    \ifnum\@itemdepth=0
-      \ndsu@original@itemize[leftmargin=\ndsuItemizeLeftMargin,topsep=\ndsuListTopSep,partopsep=\ndsuListPartopSep,##1]%
-\setlength{\labelwidth}{\ndsuItemizeLabelWidth}%
-\setlength{\labelsep}{\ndsuItemizeLabelSep}%
-\setlength{\itemindent}{0pt}%
-\setlength{\itemsep}{\ndsuListItemSep}%
-\setlength{\parsep}{\ndsuListParseSep}%
-    \else
-      \ndsu@original@itemize[##1]%
-    \fi
-  }{%
-    \ndsu@original@enditemize
-    \end{singlespace}%
-    \vspace{-0.3\baselineskip}%
-  }%
-  \@ifpackageloaded{latex-lab-enumitem}{%
-  \setlist[enumerate,1]{%
-    label-width=\ndsuEnumerateLabelWidth,%
-    label-sep=\ndsuEnumerateLabelSep,%
-    left-margin=\ndsuEnumerateLeftMargin,%
-    item-indent=0pt,%
-    label-align=left,%
-    begin-vspace=\ndsuListTopSep,%
-    begin-extra-vspace=\ndsuListPartopSep,%
-    item-vspace=\ndsuListItemSep,%
-    para-vspace=\ndsuListParseSep%
-  }%
+
+% ------------------------------------------------------------
+% Itemize environment definitions
+% ------------------------------------------------------------
+\renewenvironment{itemize}[1][]{%
+     \ifnum\@itemdepth=0
+          \@ifpackageloaded{latex-lab-enumitem}{}{\ndsu@computelistbeginskip}
+          \ndsu@original@itemize[
+               leftmargin=\ndsuItemizeLeftMargin,
+               topsep=0pt,
+               partopsep=0pt,
+               ##1
+          ]%
+          \@ifpackageloaded{latex-lab-enumitem}{}{\vspace{\ndsu@listBeginSkip}}%
+          \setlength{\labelwidth}{\ndsuItemizeLabelWidth}%
+          \setlength{\labelsep}{\ndsuItemizeLabelSep}%
+          \setlength{\itemindent}{0pt}%
+          \setlength{\itemsep}{\ndsuListItemSep}%
+          \setlength{\parsep}{\ndsuListParseSep}%
+     \else
+          \ndsu@original@itemize[##1]%
+     \fi
+     \setlength{\parskip}{0pt}%
+}{%
+     \ndsu@original@enditemize
+}%
+
+    \@ifpackageloaded{latex-lab-enumitem}{%
+        \setlist[enumerate,1]{%
+        label-width=\ndsuEnumerateLabelWidth,%
+        label-sep=\ndsuEnumerateLabelSep,%
+        left-margin=\ndsuEnumerateLeftMargin,%
+        item-indent=0pt,%
+        label-align=right,%
+        begin-vspace=\ndsuListTopSep,%
+        begin-extra-vspace=\ndsuListPartopSep,%
+        end-vspace=0pt,%
+        end-extra-vspace=0pt,%
+        item-vspace=\ndsuListItemSep,%
+        para-vspace=\ndsuListParseSep%
+    }%
 }{%
   \setlist[enumerate,1]{%
     labelwidth=\ndsuEnumerateLabelWidth,%
     labelsep=\ndsuEnumerateLabelSep,%
     leftmargin=\ndsuEnumerateLeftMargin,%
     itemindent=0pt,%
-    align=left,%
+    align=right,%
     topsep=\ndsuListTopSep,%
     partopsep=\ndsuListPartopSep,%
     itemsep=\ndsuListItemSep,%
     parsep=\ndsuListParseSep,%
-    before={\setlength{\parskip}{0pt}}%
+    % parskip is controlled by para-vspace and list wrappers.
   }%
 }%
   \let\ndsu@original@enumerate\enumerate
   \let\ndsu@original@endenumerate\endenumerate
-  \renewenvironment{enumerate}[1][]{%
 
-\vspace{-0.2\baselineskip}%
-\begin{doublespace}%
-\setlength{\parskip}{0pt}%
-    \ifnum\@enumdepth=0
-      \ndsu@original@enumerate[leftmargin=\ndsuEnumerateLeftMargin,topsep=\ndsuListTopSep,partopsep=\ndsuListPartopSep,##1]%
-      \setlength{\labelwidth}{\ndsuEnumerateLabelWidth}%
-      \setlength{\labelsep}{\ndsuEnumerateLabelSep}%
-      \setlength{\itemindent}{0pt}%
-      \setlength{\itemsep}{\ndsuListItemSep}%
-      \setlength{\parsep}{\ndsuListParseSep}%
-    \else
-      \ndsu@original@enumerate[##1]%
-    \fi
-  }{%
-\ndsu@original@endenumerate
-\end{doublespace}%
-\vspace{-0.4\baselineskip}%
+% ------------------------------------------------------------
+% Enumerate environment definitions
+% ------------------------------------------------------------
+\renewenvironment{enumerate}[1][]{%
+     \ifnum\@enumdepth=0
+          \@ifpackageloaded{latex-lab-enumitem}{}{\ndsu@computelistbeginskip}
+          \ndsu@original@enumerate[
+               leftmargin=\ndsuEnumerateLeftMargin,
+               topsep=0pt,
+               partopsep=0pt,
+               ##1
+          ]%
+          \@ifpackageloaded{latex-lab-enumitem}{}{\vspace{\ndsu@listBeginSkip}}%
+          \setlength{\labelwidth}{\ndsuEnumerateLabelWidth}%
+          \setlength{\labelsep}{\ndsuEnumerateLabelSep}%
+          \setlength{\itemindent}{0pt}%
+          \setlength{\itemsep}{\ndsuListItemSep}%
+          \setlength{\parsep}{\ndsuListParseSep}%
+     \else
+          \ndsu@original@enumerate[##1]%
+     \fi
+     \setlength{\parskip}{0pt}%
+}{%
+     \ndsu@original@endenumerate
+}%
 
-  }%
   \setlist[description,1]{%
     leftmargin=\ndsuListLeftMargin,%
     topsep=\ndsuListTopSep,%
     partopsep=\ndsuListPartopSep,%
     itemsep=\ndsuListItemSep,%
     parsep=\ndsuListParseSep,%
-    before={\setlength{\parskip}{0pt}}%
+    % parskip is controlled by para-vspace and list wrappers.
   }%
   \setlist[itemize,2]{%
     topsep=\ndsuListTopSep,%
     partopsep=0pt,%
     itemsep=\ndsuListItemSep,%
     parsep=0pt,%
-    before={\setlength{\parskip}{0pt}}%
+    % parskip is controlled by para-vspace and list wrappers.
   }%
   \setlist[enumerate,2]{%
     topsep=\ndsuListTopSep,%
     partopsep=0pt,%
     itemsep=\ndsuListItemSep,%
     parsep=0pt,%
-    before={\setlength{\parskip}{0pt}}%
+    % parskip is controlled by para-vspace and list wrappers.
   }%
   \setlist[description,2]{%
     topsep=\ndsuListTopSep,%
     partopsep=0pt,%
     itemsep=\ndsuListItemSep,%
     parsep=0pt,%
-    before={\setlength{\parskip}{0pt}}%
+    % parskip is controlled by para-vspace and list wrappers.
   }%
 }
-\AtBeginDocument{\ndsu@installlistformatting}
+% Native tagged lists already preserve baseline glue. Their topsep alias
+% sets only begin-vspace, so explicitly clear the independent exit spacing.
+% Ordinary enumitem retains its existing symmetric topsep behavior.
+\newcommand{\ndsu@installlistboundaryspacing}{%
+  \@ifpackageloaded{latex-lab-enumitem}{%
+    \setlist*[itemize,1]{end-vspace=0pt,end-extra-vspace=0pt}%
+    \setlist*[itemize,2]{end-vspace=0pt,end-extra-vspace=0pt}%
+    \setlist*[enumerate,1]{end-vspace=0pt,end-extra-vspace=0pt}%
+    \setlist*[enumerate,2]{end-vspace=0pt,end-extra-vspace=0pt}%
+  }{}%
+}
+\AtBeginDocument{\ndsu@installlistformatting\ndsu@installlistboundaryspacing}
 
 % Maintainable non-text spacing controls.
 % Maintainers should tune these named lengths instead of adding manual \vspace
@@ -259,9 +351,11 @@
 \newlength{\ndsuFloatTextSkip}
 \setlength{\ndsuFloatTextSkip}{10pt plus 2pt minus 2pt}
 \newlength{\ndsuFloatFloatSkip}
-% Consecutive float boxes already include the visible caption/edge spacing they
-% need.  Extra \floatsep or \@fpsep here would double the gap between two
-% tables or two figures placed together.
+\AtBeginDocument{%
+  \setlength{\ndsuFloatFloatSkip}{\baselineskip}%
+  \setlength{\floatsep}{\ndsuFloatFloatSkip}%
+  \setlength{\@fpsep}{\ndsuFloatFloatSkip}%
+}
 \setlength{\ndsuFloatFloatSkip}{0pt}
 \newlength{\ndsuFigureCaptionSkip}
 \setlength{\ndsuFigureCaptionSkip}{0pt}
@@ -286,14 +380,25 @@
 \setlength{\floatsep}{\ndsuFloatFloatSkip}
 \setlength{\textfloatsep}{\ndsuFloatTextSkip}
 \setlength{\intextsep}{\ndsuFloatTextSkip}
-% Ordinary in-text figures need asymmetric spacing: 24pt above the artwork and
-% the template's original 10pt below the caption.  Apply this where LaTeX
-% actually inserts an h-float, rather than padding the figure box; padding the
-% box would incorrectly travel with a deferred figure to the next page.
+% Deferred floats meet a column boundary rather than an ordinary body baseline.
+% Restore the body-leading allowance missing from that boundary calculation.
+\AtBeginDocument{%
+  \setlength{\textfloatsep}{\ndsuFloatTextSkip}%
+  \addtolength{\textfloatsep}{\baselineskip}%
+  \addtolength{\textfloatsep}{-\topskip}%
+  \setlength{\dbltextfloatsep}{\textfloatsep}%
+}
+
+
+% Separate upper spacing for in-text figures.
 \newskip\ndsuFigureAboveTextSkip
-    \AtBeginDocument{%
-        \ndsuFigureAboveTextSkip=\baselineskip
-    }
+\AtBeginDocument{%
+  \ndsuFigureAboveTextSkip=\baselineskip
+}
+
+\newskip\ndsu@currentFloatAboveSkip
+\newskip\ndsu@currentFloatBelowSkip
+
 \newskip\ndsu@currentFloatAboveSkip
 \newskip\ndsu@currentFloatBelowSkip
 \newif\ifndsu@previousTableSource
@@ -348,8 +453,8 @@
 % The float package handles [H] floats separately from \@addtocurcol.
 % Increase only the leading space for [H] figures.
 \patchcmd{\float@endH}
-    {\@endfloatbox\vskip\intextsep}
-    {\@endfloatbox
+    {\@endfloatbox\UseTaggingSocket{float/H/end}\vskip\intextsep}
+    {\@endfloatbox\UseTaggingSocket{float/H/end}%
     \ifdefstring{\@captype}{figure}
         {\vskip\ndsuFigureAboveTextSkip}
         {\vskip\intextsep}
@@ -411,49 +516,30 @@
     {\ClassWarningNoLine{ndsudisq}
         {Could not install table float-page top correction}}
 
-% Displayed math spacing.
-% These lengths affect displayed equations and similar math displays.
-% They do not control float spacing for figures/tables or list spacing.
-
-\newlength{\ndsu@displayaboveskip}
-\setlength{\ndsu@displayaboveskip}{12pt}
-
-\newlength{\ndsu@displaybelowskip}
-\setlength{\ndsu@displaybelowskip}{0.6\baselineskip}
-
-\newlength{\ndsu@displayshortaboveskip}
-\setlength{\ndsu@displayshortaboveskip}{-4pt}
-
-\newlength{\ndsu@displayshortbelowskip}
-\setlength{\ndsu@displayshortbelowskip}{0.5\baselineskip}
+% Displayed math: one 12-point blank line above and below every display.
+\newlength{\ndsuEquationPadding}
+\setlength{\ndsuEquationPadding}{10pt}
 
 \AtBeginDocument{%
-  \setlength{\abovedisplayskip}{\ndsu@displayaboveskip}%
-  \setlength{\belowdisplayskip}{\ndsu@displaybelowskip}%
-  \setlength{\abovedisplayshortskip}{\ndsu@displayshortaboveskip}%
-  \setlength{\belowdisplayshortskip}{\ndsu@displayshortbelowskip}%
+  % Append these assignments after setspace's display-math adjustments.
+  \everydisplay\expandafter{%
+    \the\everydisplay
+    \abovedisplayskip=\ndsuEquationPadding\relax
+    \belowdisplayskip=\ndsuEquationPadding\relax
+    \abovedisplayshortskip=\ndsuEquationPadding\relax
+    \belowdisplayshortskip=\ndsuEquationPadding\relax
+  }%
 }
 
-% Thin equation spacing.
-\newlength{\ndsu@thindisplayaboveskip}
-\setlength{\ndsu@thindisplayaboveskip}{-12pt}
+% Allow blank source lines before display equations without adding an extra vertical interval to the rendered document.
+\newcommand{\ndsu@normalizedisplaystart}{%
+  \ifvmode
+    \noindent
+  \fi
+}
 
-\newlength{\ndsu@thindisplaybelowskip}
-\setlength{\ndsu@thindisplaybelowskip}{2pt}
-
-\NewDocumentEnvironment{thineq}{+b}
-  {%
-    \par
-    \begingroup
-    \setlength{\abovedisplayskip}{\ndsu@thindisplayaboveskip}%
-    \setlength{\abovedisplayshortskip}{\ndsu@thindisplayaboveskip}%
-    \setlength{\belowdisplayskip}{\ndsu@thindisplaybelowskip}%
-    \setlength{\belowdisplayshortskip}{\ndsu@thindisplaybelowskip}%
-    \begin{equation}
-    #1
-    \end{equation}%
-    \endgroup
-  }
+\BeforeBeginEnvironment{equation}{\ndsu@normalizedisplaystart}
+\BeforeBeginEnvironment{equation*}{\ndsu@normalizedisplaystart}
   {}
 
 \setlength{\footskip}{0.25in}
@@ -501,8 +587,8 @@
 }
 
 % --- Hyperref/bookmark/metadata setup ---
-\RequirePackage{hyperref}
-\hypersetup{%
+\RequirePackage[final]{hyperref}
+\hypersetup{final,%
   unicode=true,%
   bookmarks=true,%
   bookmarksopen=true,%
@@ -511,6 +597,14 @@
   pdfdisplaydoctitle=true,%
   hidelinks%
 }
+
+\RequirePackage{xcolor}
+\RequirePackage[normalem]{ulem}
+\let\ndsuOriginalHref\href
+\ifndsu@guideLinks
+  \renewcommand{\href}[2]{\ndsuOriginalHref{#1}{\textcolor{blue}{\uline{#2}}}}%
+\fi
+
 \RequirePackage{bookmark}
 \newcommand{\ndsu@bookmarktrace}[1]{%
   \ifndsu@debugbookmarks
@@ -550,6 +644,7 @@
 \RequirePackage[nameinlink,noabbrev]{cleveref}
 \renewcommand{\Hy@numberline}[1]{#1.\space}
 \pdfstringdefDisableCommands{%
+  \def\LaTeX{LATEX}\def\TeX{TEX}%
   \def\numberline#1{#1.\space}%
   \def\ndsu@appendixtocbookmarknumber#1{\ndsu@iflastsingleappendix{APPENDIX}{APPENDIX #1}}%
   \def\ndsu@tocuppercase#1{\MakeUppercase{#1}}%
@@ -567,14 +662,12 @@
 \tl_new:N \l_ndsu_title_pdf_bookmark_tl
 \cs_new_protected:Npn \ndsu_add_title_pdf_bookmark:
   {
-    \tl_set:Nx \l_ndsu_title_pdf_bookmark_tl
-      { \text_purify:n { \text_uppercase:n { \ndsutitle } } }
-    \pdfbookmark[0]{\tl_use:N \l_ndsu_title_pdf_bookmark_tl}{ndsu-disquisition-title}
+    \pdfbookmark[0]{\MakeUppercase{\ndsutitle}}{ndsu-disquisition-title}
   }
 \cs_new_eq:NN \NDSUAddTitlePdfBookmark \ndsu_add_title_pdf_bookmark:
 \ExplSyntaxOff
 \AtBeginDocument{%
-  \hypersetup{%
+  \hypersetup{final,%
     pdflang={\ndsulanguage},%
     pdftitle={\ndsutitle},%
     pdfauthor={\ndsuauthor},%
@@ -593,8 +686,8 @@
 \newcommand{\ndsumajorlabel}{Major Department}
 \newcommand{\ndsuprogram}{Program Name}
 \newcommand{\ndsudegreeoption}{}
-\newcommand{\ndsufinaldefense}{May 2026}
-\newcommand{\ndsuapprovaldate}{April 15, 2026}
+\newcommand{\ndsufinaldefense}{Month Year}
+\newcommand{\ndsuapprovaldate}{Month Day, Year}
 \newcommand{\ndsudeptchair}{Department Chair Name}
 \newcommand{\ndsucommitteechair}{Committee Chair Name}
 \newcommand{\ndsucommitteecochair}{}
@@ -609,8 +702,8 @@
 \newcommand{\disquisitionauthor}[1]{\renewcommand{\ndsuauthor}{#1}}
 \newcommand{\documenttype}[1]{\renewcommand{\ndsudocumenttype}{#1}}
 \newcommand{\degree}[1]{\renewcommand{\ndsudegree}{#1}}
-\newcommand{\majordepartmentlabel}[1]{\renewcommand{\ndsumajorlabel}{#1}}
-\newcommand{\program}[1]{\renewcommand{\ndsuprogram}{#1}}
+\newcommand{\majorlabel}[1]{\renewcommand{\ndsumajorlabel}{#1}}
+\newcommand{\major}[1]{\renewcommand{\ndsuprogram}{#1}}
 \newcommand{\degreeoption}[1]{\renewcommand{\ndsudegreeoption}{#1}}
 \newcommand{\finaldefense}[1]{\renewcommand{\ndsufinaldefense}{#1}}
 \newcommand{\approvaldate}[1]{\renewcommand{\ndsuapprovaldate}{#1}}
@@ -626,7 +719,39 @@
 \newcommand{\keywordsinfo}[1]{\renewcommand{\ndsukeywords}{#1}}
 \newcommand{\disquisitionlanguage}[1]{\renewcommand{\ndsulanguage}{#1}}
 
+% Draft retains clearly marked sample fields; final reports missing/invalid inputs.
+\newcommand{\ndsu@inputproblem}[1]{\ifndsu@draft
+ \ClassWarningNoLine{ndsudisq}{Draft input: #1}%
+ \else\ClassError{ndsudisq}{#1}{Replace the sample or invalid field. Use the explicit draft class option only for instructional or unfinished documents.}\fi}
+\ExplSyntaxOn
+\cs_generate_variant:Nn\clist_if_in:nnF{ne,nV}
+\cs_generate_variant:Nn\regex_match:nnT{nV}
+\cs_new_protected:Npn\ndsu_validate_metadata:{
+ \clist_map_inline:nn {ndsucommitteecochair,ndsucommitteeone,ndsucommitteetwo,ndsucommitteethree}{
+  \tl_set:Nx\l_tmpa_tl{\use:c{##1}}
+  \regex_match:nVT {Committee\s|Your\s}\l_tmpa_tl{\ndsu@inputproblem{Unfilled~optional~committee~field~##1}}
+ }
+ \clist_if_in:neF {Dissertation,Thesis,Paper}{\ndsudocumenttype}
+  {\ndsu@inputproblem{Invalid~document~type;~use~Dissertation,~Thesis~or~Paper}}
+ \tl_set:Nx\l_tmpa_tl{\text_uppercase:n{\ndsudegree}}
+ \clist_if_in:nVF {MASTER~OF~ARTS,MASTER~OF~SCIENCE,DOCTOR~OF~PHILOSOPHY,DOCTOR~OF~MUSICAL~ARTS,DOCTOR~OF~NURSING~PRACTICE}\l_tmpa_tl
+  {\ndsu@inputproblem{Unsupported~or~placeholder~degree}}
+ \clist_map_inline:nn {ndsutitle,ndsuauthor,ndsuprogram,ndsufinaldefense,ndsuapprovaldate,ndsucommitteechair,ndsudeptchair}{
+  \tl_set:Nx\l_tmpa_tl{\use:c{##1}}
+  \regex_match:nVT {\A\s*\Z|Your\s|SAMPLE|Month\s|Student\sName|Chair\sName|Department\sChair|Program\sName}\l_tmpa_tl
+   {\ndsu@inputproblem{Unfilled~required~field~##1}}
+ }
+}
+\AtBeginDocument{\ndsu_validate_metadata:}
+\ExplSyntaxOff
+
 % --- Front-matter inclusion switches ---
+\newif\ifndsu@includeAcknowledgments
+\newcommand{\includeacknowledgments}{\ndsu@includeAcknowledgmentstrue}
+\newif\ifndsu@includeListOfListings
+\newif\ifndsu@includeAppendixListings
+\newcommand{\includelistoflistings}{\ndsu@includeListOfListingstrue}
+\newcommand{\includeappendixlistings}{\ndsu@includeAppendixListingstrue}
 \newif\ifndsu@includeDedication
 \newif\ifndsu@includeListOfTables
 \newif\ifndsu@includeListOfFigures
@@ -659,189 +784,87 @@
 \newcommand{\includeappendixfigures}{\ndsu@includeAppendixFigurestrue}
 \newcommand{\includepreface}{\ndsu@includePrefacetrue}
 
-% --- Heading numbering, visual formatting, and appendix headings ---
+% --- Native tagged headings and stable appendix numbering ---
 \setcounter{secnumdepth}{3}
+\ifndsu@nonumbered\setcounter{secnumdepth}{0}\fi
 \renewcommand{\thechapter}{\arabic{chapter}}
 \renewcommand{\thesection}{\thechapter.\arabic{section}}
 \renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
-\newcommand{\ndsu@subheadingneedspace}{\Needspace{4\baselineskip}}
-\ifndsu@nonumbered
-  \setcounter{secnumdepth}{0}
-  \titleformat{\chapter}[block]
-    {\normalfont\bfseries\centering}
-    {CHAPTER \thechapter:\ }
-    {0pt}
-    {\MakeUppercase}
-  \titleformat{\section}[block]
-    {\normalfont\bfseries\filcenter}
-    {}
-    {0pt}
-    {}
-  \titleformat{\subsection}[block]
-    {\normalfont\bfseries}
-    {}
-    {0pt}
-    {}
-\else
-  \titleformat{\chapter}[block]
-    {\normalfont\bfseries\centering}
-    {\thechapter.\ }
-    {0pt}
-    {\MakeUppercase}
-  \titleformat{\section}[block]
-    {\normalfont\bfseries\filcenter}
-    {\thesection.\ }
-    {0pt}
-    {}
-  \titleformat{\subsection}[block]
-    {\normalfont\bfseries}
-    {\thesubsection.\ }
-    {0pt}
-    {}
-\fi
-\titleformat{\subsubsection}[block]
-  {\normalfont\bfseries\itshape}
-  {\thesubsubsection.\ }
-  {0pt}
-  {}
-\titleformat{\paragraph}[block]
-  {\normalfont\itshape}
-  {}
-  {0pt}
-  {}
-\titleformat{\subparagraph}[block]
-  {\normalfont\itshape}
-  {}
-  {0pt}
-  {}
-\titlespacing{\chapter}{0pt}{-30pt}{0pt}
-\titlespacing{\section}{0pt}{0pt}{0pt}
-\titlespacing{\subsection}{0pt}{0pt}{0pt}
-\titlespacing{\subsubsection}{0pt}{0pt}{0pt}
-\titlespacing{\paragraph}{0pt}{0pt}{0pt}
-\titlespacing{\subparagraph}{0pt}{0pt}{0pt}
-% Current tagged-PDF LaTeX builds install heading templates that bypass
-% titlesec for chapter headings. Mirror the chapter format there when present.
-\ExplSyntaxOn
-\cs_new_protected:Npn \ndsu_install_lab_chapter_heading:n #1
-  {
-    \IfInstanceExistsTF { heading } { chapter }
-      {
-        \DeclareInstance { headformat } { ndsu-chapter } { hang }
-          {
-            heading-indent = 0pt,
-            number-title-sep = 0pt,
-            title-format = \MakeUppercase {##1}
-          }
-        \DeclareInstance { heading } { chapter } { display }
-          {
-            name = chapter,
-            level = 0,
-            placement = top,
-            after-penalty-vspace = 0pt,
-            after-vspace = 0pt,
-            para-indent = true,
-            number-format = #1,
-            heading-decls = \normalfont \bfseries \centering,
-            headformat-instance = ndsu-chapter,
-            mark-cmd = \chaptermark {##1},
-            contents-extra =
-              \addtocontents { lof } { \protect \addvspace { 10pt } }
-              \addtocontents { lot } { \protect \addvspace { 10pt } }
-          }
-      }
-      { }
-  }
-\cs_new_protected:Npn \ndsu_install_standard_lab_chapter_heading:
-  {
-    \ifndsu@nonumbered
-      \ndsu_install_lab_chapter_heading:n { CHAPTER~\thechapter:\space }
-    \else
-      \ndsu_install_lab_chapter_heading:n { \thechapter.\space }
-    \fi
-  }
-\cs_new_protected:Npn \ndsu_install_appendix_lab_chapter_heading:
-  {
-    \ndsu_install_lab_chapter_heading:n { \ndsu@appendixchapterlabel }
-  }
-\cs_gset_eq:NN \ndsu@installstandardlabchapterheading
-  \ndsu_install_standard_lab_chapter_heading:
-\cs_gset_eq:NN \ndsu@installappendixlabchapterheading
-  \ndsu_install_appendix_lab_chapter_heading:
-\ExplSyntaxOff
-\ndsu@installstandardlabchapterheading
-\pretocmd{\section}{\ndsu@subheadingneedspace}{}{}
-\pretocmd{\subsection}{\ndsu@subheadingneedspace}{}{}
-\pretocmd{\subsubsection}{\ndsu@subheadingneedspace}{}{}
-\pretocmd{\paragraph}{\ndsu@subheadingneedspace}{}{}
-\pretocmd{\subparagraph}{\ndsu@subheadingneedspace}{}{}
+\newcommand{\ndsu@subheadingneedspace}{\par\Needspace{4\baselineskip}}
 \let\cleardoublepage\clearpage
-\pretocmd{\chapter}{\clearpage}{}{}
 \newif\ifndsu@appendices
-\ndsu@appendicesfalse
 \newcounter{ndsu@appendixchapters}
 \newcommand{\ndsu@lastappendixchapters}{0}
 \newcommand{\ndsu@setappendixchapters}[1]{\gdef\ndsu@lastappendixchapters{#1}}
-\newcommand{\ndsu@iflastsingleappendix}[2]{%
-  \ifnum\ndsu@lastappendixchapters=1\relax
-    #1%
-  \else
-    #2%
-  \fi
-}
-\newcommand{\ndsu@appendixchapterlabel}{%
-  \ndsu@iflastsingleappendix
-    {APPENDIX.\space}%
-    {APPENDIX~\thechapter.\space}%
-}
-\newcommand{\ndsu@appendixbookmarkchapterlabel}{%
-  \ndsu@iflastsingleappendix
-    {APPENDIX}%
-    {APPENDIX~\ndsu@saved@thechapter}%
-}
+\newcommand{\ndsu@iflastsingleappendix}[2]{\ifnum\ndsu@lastappendixchapters=1\relax#1\else#2\fi}
+\newcommand{\ndsu@appendixchapterlabel}{\ndsu@iflastsingleappendix{APPENDIX.\space}{APPENDIX~\thechapter.\space}}
+\newcommand{\ndsu@appendixbookmarkchapterlabel}{\ndsu@iflastsingleappendix{APPENDIX}{APPENDIX~\ndsu@saved@thechapter}}
 \newcommand{\ndsu@appendixtocbookmarknumber}[1]{#1}
-\newcommand{\ndsu@appendixbookmarksetup}{%
-  \let\ndsu@saved@thechapter\thechapter
-  \renewcommand{\thechapter}{\texorpdfstring{\ndsu@saved@thechapter}{\ndsu@appendixbookmarkchapterlabel}}%
+\newcommand{\ndsu@chapterlabel}{%
+  \ifndsu@appendices\ndsu@appendixchapterlabel
+  \else\ifndsu@nonumbered CHAPTER~\thechapter:\space\else\thechapter.\space\fi\fi}
+\ExplSyntaxOn
+\IfInstanceExistsTF {heading}{chapter} {} {
+  \ClassError{ndsudisq}{Native tagged heading templates are unavailable}{Use LuaLaTeX with LaTeX 2026-06-01 or newer and DocumentMetadata tagging=on.}
 }
-\newcommand{\ndsu@appendixbookmarkrestore}{%
+\DeclareInstance{headformat}{ndsu-chapter}{hang}{heading-indent=0pt,number-title-sep=0pt,title-format=\MakeUppercase{#1}}
+\DeclareInstance{heading}{chapter}{display}{name=chapter,level=0,placement=top,
+ after-penalty-vspace=0pt,after-vspace=0pt,para-indent=true,
+ number-format=\ndsu@chapterlabel,heading-decls=\normalfont\normalsize\bfseries\centering,
+ headformat-instance=ndsu-chapter,mark-cmd=\chaptermark{#1}}
+\DeclareInstance{headformat}{ndsu-subheading}{hang}{heading-indent=0pt,number-title-sep=0pt}
+\cs_new_protected:Npn \ndsu_subheading:nnnn #1#2#3#4 {
+ \DeclareInstance{heading}{#1}{display}{name=#1,level=#2,parent-name=#3,
+  before-vspace=0pt,after-vspace=0pt,after-penalty-vspace=0pt,para-indent=true,
+  number-format=\theheading.\space,heading-decls=\normalfont\normalsize #4,
+  headformat-instance=ndsu-subheading}
+}
+\ndsu_subheading:nnnn {section}{1}{chapter}{\bfseries\centering}
+\ndsu_subheading:nnnn {subsection}{2}{section}{\bfseries\raggedright}
+\ndsu_subheading:nnnn {subsubsection}{3}{subsection}{\bfseries\itshape\raggedright}
+\ndsu_subheading:nnnn {paragraph}{4}{subsubsection}{\itshape\raggedright}
+% H6 is supported as upright left-aligned display text; differs from italic H5.
+\ndsu_subheading:nnnn {subparagraph}{5}{paragraph}{\upshape\raggedright}
+\RenewDocumentCommand\section{s o m}{\ndsu@subheadingneedspace\ParseLaTeXeHeading{section}{#1}{#2}{#3}}
+\RenewDocumentCommand\subsection{s o m}{\ndsu@subheadingneedspace\ParseLaTeXeHeading{subsection}{#1}{#2}{#3}}
+\RenewDocumentCommand\subsubsection{s o m}{\ndsu@subheadingneedspace\ParseLaTeXeHeading{subsubsection}{#1}{#2}{#3}}
+\RenewDocumentCommand\paragraph{s o m}{\ndsu@subheadingneedspace\ParseLaTeXeHeading{paragraph}{#1}{#2}{#3}}
+\RenewDocumentCommand\subparagraph{s o m}{\ndsu@subheadingneedspace\ParseLaTeXeHeading{subparagraph}{#1}{#2}{#3}}
+\RenewDocumentCommand\chapter{s o m}{
+ \IfBooleanF{#1}{
+   \ndsu@startchapterreferences
+   \ifndsu@appendices
+    \stepcounter{ndsu@appendixchapters}
+    \let\ndsu@saved@thechapter\thechapter
+    \renewcommand{\thechapter}{\texorpdfstring{\ndsu@saved@thechapter}{\ndsu@appendixbookmarkchapterlabel}}
+   \fi
+ }
+ \IfNoValueTF{#2}{\tl_set:Nn\l_tmpa_tl{#3}}{\tl_set:Nn\l_tmpa_tl{#2}}
+ \tl_set:Nx\l_tmpb_tl{toc={\exp_not:N\MakeUppercase{\exp_not:V\l_tmpa_tl}},bookmark={\exp_not:N\MakeUppercase{\exp_not:V\l_tmpa_tl}}}
+ \IfBooleanT{#1}{\tl_set:Nn\l_tmpb_tl{toc={},bookmark={}}}
+ \exp_args:NnnV\ParseLaTeXeHeading{chapter}{#1}\l_tmpb_tl{#3}
+ \IfBooleanF{#1}{\ifndsu@appendices
   \let\thechapter\ndsu@saved@thechapter
-  \protected@edef\@currentlabel{\csname p@chapter\endcsname\thechapter}%
+  \protected@edef\@currentlabel{\csname p@chapter\endcsname\thechapter}
+ \fi}
 }
+\ExplSyntaxOff
 \let\ndsu@standard@appendix\appendix
 \newcommand{\appendicesmatter}{%
-  \ifndsu@appendices
-  \else
-    \clearpage
-    \ndsu@appendicestrue
-    \setcounter{ndsu@appendixchapters}{0}%
-    \ndsu@standard@appendix
-    \titleformat{\chapter}[block]{\normalfont\bfseries\centering}{\ndsu@appendixchapterlabel}{0pt}{\MakeUppercase}%
-  \fi
-}
+ \ifndsu@appendices\else
+  \clearpage\ndsu@appendicestrue\setcounter{ndsu@appendixchapters}{0}%
+  \ndsu@standard@appendix
+  % Body numbering is a choice; appendix identifiers always include a letter.
+  \ndsu@counterwithinchapter{table}\ndsu@counterwithinchapter{figure}%
+  \ndsu@counterwithinchapter{schema}\ndsu@counterwithinchapter{listing}%
+  \equationnumberingbychapter%
+ \fi}
 \renewcommand{\appendix}{\appendicesmatter}
-\pretocmd{\@chapter}{%
-  \ifndsu@appendices
-    \stepcounter{ndsu@appendixchapters}%
-    \ndsu@appendixbookmarksetup
-  \fi
-}{}{}
-\apptocmd{\@chapter}{%
-  \ifndsu@appendices
-    \ndsu@appendixbookmarkrestore
-  \fi
-}{}{}
 \AtEndDocument{%
-  \if@filesw
-    \immediate\write\@auxout{\string\ndsu@setappendixchapters{\arabic{ndsu@appendixchapters}}}%
-  \fi
-  \ifndsu@appendices
-    \ifnum\value{ndsu@appendixchapters}=\ndsu@lastappendixchapters\relax
-    \else
-      \ClassWarningNoLine{ndsudisq}{Appendix count changed from \ndsu@lastappendixchapters\space to \arabic{ndsu@appendixchapters}; rerun LuaLaTeX so appendix headings, TOC entries, and bookmarks settle}%
-    \fi
-  \fi
-}
+ \if@filesw\immediate\write\@auxout{\string\ndsu@setappendixchapters{\arabic{ndsu@appendixchapters}}}\fi
+ \ifndsu@appendices\ifnum\value{ndsu@appendixchapters}=\ndsu@lastappendixchapters\relax\else
+  \ClassWarningNoLine{ndsudisq}{Appendix count changed; rerun LuaLaTeX until headings, TOC and bookmarks settle}%
+ \fi\fi}
 
 % --- Caption, figure, decorative-image, and artifact helpers ---
 
@@ -882,16 +905,19 @@
 }%
 }
 \long\def\ndsu@makeleftcaption#1#2{%
-  \def\ndsu@tempcaptype{figure}%
-  \ifx\@captype\ndsu@tempcaptype\vspace{-\baselineskip}\fi
-  \begingroup
-    \singlespacing\normalfont\normalsize\upshape\raggedright
-    \setlength{\parindent}{0pt}%
-    \setlength{\parskip}{0pt}%
-    \noindent{\bfseries #1.}\space #2\par
-  \endgroup
+ \UseHookWithArguments{cmd/@makecaption/before}{2}{#1}{#2}%
+ \begingroup
+  \singlespacing\normalfont\normalsize\upshape\raggedright
+  \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}%
+  \UseTaggingSocket{caption/begin}{\@current@float@struct}%
+  \ifcaption@star\else\UseTaggingSocket{recordtarget}\fi%
+  \UseTaggingSocket{caption/label/begin}%
+  {\bfseries #1.}\space
+  \UseTaggingSocket{caption/label/end}%
+  \UseTaggingSocket{para/begin}#2\par
+  \UseTaggingSocket{caption/end}%
+ \endgroup
 }
-
 
 \newcommand{\ndsu@captionlabelsocketsetup}{%
   \@ifundefined{IfSocketExistsTF}{}{%
@@ -923,6 +949,12 @@
   \ndsu@captionalignmentsetup
   \ndsu@captionlabelsocketsetup
   \let\@makecaption\ndsu@makeleftcaption
+  \tagpdfsetup{float/here=true,float/new=schema,float/new=listing}%
+  \AssignStructureRole{float/figure}{Div}%
+  \AssignStructureRole{float/table}{Div}%
+  \AssignStructureRole{float/schema}{Div}%
+  \AssignStructureRole{float/listing}{Div}%
+  \AssignStructureRole{float/generic}{Div}%
 }
 % --- Counter policy for captions and float-like lists ---
 % Equations are controlled separately below with \numberwithin from amsmath.
@@ -1034,7 +1066,9 @@
 % Source-level placeholder for legacy/manual figure descriptions.
 % TODO: Remove or replace this no-op if a future tagging workflow can safely
 % attach descriptions entered separately from the image-inclusion command.
-\NewDocumentCommand{\ndsufigurealt}{ m }{}
+\NewDocumentCommand{\ndsufigurealt}{ m }{%
+ \ClassWarning{ndsudisq}{Legacy ndsufigurealt cannot attach text to an image. Use ndsuincludegraphics[options]{meaningful alt text}{file}; this description was NOT embedded}%
+}
 
 % Keep longtable body text single spaced, matching ordinary tables.
 % Make longtables use landscape pages by default.
@@ -1112,6 +1146,7 @@
 \floatstyle{plain}
 \newfloat{schema}{htbp}{los}
 \floatname{schema}{Schema}
+\floatevery{schema}{\let\caption@@make\ndsu@makeleftcaption}
 \captionsetup[schema]{justification=raggedright,singlelinecheck=false,skip=\ndsuSchemaCaptionSkip}
 \AtBeginDocument{\captionsetup[schema]{justification=raggedright,singlelinecheck=false,skip=\ndsuSchemaCaptionSkip}}
 \newcommand{\listschemaname}{LIST OF SCHEMAS}
@@ -1267,10 +1302,10 @@
   \fi
   \edef\@tocrmarg{\the\ndsu@tocrightmargin}%
 }
-\newcommand{\ndsu@dottedfloatline}[2]{\@dottedtocline{1}{0pt}{2.5em}{\normalfont #1}{\normalfont #2}}
-\newcommand{\ndsu@dottedtableline}[2]{\@dottedtocline{1}{0pt}{2.5em}{\normalfont #1}{\normalfont #2}}
-\newcommand{\ndsu@dottedequationline}[2]{\@dottedtocline{1}{0pt}{2.5em}{\normalfont #1}{\normalfont #2}}
-\newcommand{\ndsu@dottedschemaline}[2]{\@dottedtocline{1}{0pt}{2.5em}{\normalfont #1}{\normalfont #2}}
+\newcommand{\ndsu@dottedfloatline}[2]{\@dottedtocline{1}{0pt}{0.5in}{\normalfont #1}{\normalfont #2}}
+\newcommand{\ndsu@dottedtableline}[2]{\@dottedtocline{1}{0pt}{0.5in}{\normalfont #1}{\normalfont #2}}
+\newcommand{\ndsu@dottedequationline}[2]{\@dottedtocline{1}{0pt}{0.5in}{\normalfont #1}{\normalfont #2}}
+\newcommand{\ndsu@dottedschemaline}[2]{\@dottedtocline{1}{0pt}{0.5in}{\normalfont #1}{\normalfont #2}}
 
 
 \providecommand{\ndsu@tocfile}{}
@@ -1381,16 +1416,7 @@
 \cs_new_eq:NN \NDSUAddNumberedChapterTocBookmark
   \ndsu_add_chapter_toc_bookmark_uppercase_title:n
 \ExplSyntaxOff
-\ifcsname NR@chapter\endcsname
-  \patchcmd{\NR@chapter}
-    {\addcontentsline{toc}{chapter}{\protect\numberline{\thechapter}#1}}%
-    {\NDSUAddChapterTocBookmarkUppercaseTitle{#1}}%
-    {\ndsu@bookmarktrace{patch NR@chapter addcontentsline SUCCEEDED}}%
-    {\ClassWarningNoLine{ndsudisq}{NDSU TRACE patch NR@chapter addcontentsline FAILED}}%
-\else
-  \ClassWarningNoLine{ndsudisq}{NDSU TRACE NR@chapter is undefined; chapter bookmark capitalization patch was not applied}%
-\fi
-
+% Native chapter templates own TOC/bookmark construction.
 \newlength{\ndsuGeneratedListEntrySkip}
 \setlength{\ndsuGeneratedListEntrySkip}{0.4\baselineskip plus 1pt minus 1pt}
 \newcommand{\ndsu@tocentryspace}{\ndsuGeneratedListEntrySkip}
@@ -1481,7 +1507,9 @@
     \def\Hy@toclinkstart##1{}%
     \let\Hy@toclinkend\@empty
     \def\numberline##1{\ndsu@setcurrentchaptocnumwidthglobal{##1}}%
+    \SuspendTagging{ndsu-toc-measure}%
     \setbox\z@\hbox{#1}%
+    \ResumeTagging{ndsu-toc-measure}%
   \endgroup
 }
 \newcommand{\ndsu@chaptertocnumberline}[1]{%
@@ -1602,68 +1630,139 @@
 }
 
 % --- Cover page and approval page ---
+% Dimensions below use bp for physical spacing (72 bp = 1 inch).
+% Each page is built once: measuring must not typeset a second copy of tagged
+% content or bookmarks. Only the title's six major gaps may shrink, by at most
+% 4 bp each; this exceptional fit is always reported for visual review.
 \newcommand{\ndsu@centerheader}[1]{\begin{center}\bfseries #1\end{center}}
 \newlength{\ndsu@titleblocksep}
-\setlength{\ndsu@titleblocksep}{0.34in}
-\newlength{\ndsu@titlefirstsep}
-\setlength{\ndsu@titlefirstsep}{0.92in}
-\newlength{\ndsu@titlebottomsep}
-\setlength{\ndsu@titlebottomsep}{0.12in}
+\setlength{\ndsu@titleblocksep}{48bp minus 4bp}
 \newlength{\ndsu@approvalblockwidth}
-\setlength{\ndsu@approvalblockwidth}{0.855\textwidth}
+\newlength{\ndsu@approvalinsetwidth}
+\newlength{\ndsu@paragraphsize}
+\newlength{\ndsu@singleleading}
+\newlength{\ndsu@specialpageheight}
+\newlength{\ndsu@specialpageexcess}
+\newlength{\ndsu@approvalfieldwidth}
+\newlength{\ndsu@approvalfieldheight}
+\newbox\ndsu@specialpagebox
+\newbox\ndsu@approvaldatebox
+\newbox\ndsu@approvalchairbox
+
+\newcommand{\ndsu@specialpagesetup}{%
+  \normalfont\normalsize
+  \setstretch{1}% unlike \singlespacing, this adds no entry correction glue
+  \setlength{\ndsu@paragraphsize}{\f@size pt}%
+  \setlength{\ndsu@singleleading}{\baselineskip}%
+  \setlength{\parindent}{0pt}%
+  \setlength{\parskip}{0pt}%
+  \setlength{\leftskip}{0pt}%
+  \setlength{\rightskip}{0pt}%
+  \setlength{\parfillskip}{0pt plus 1fil}%
+  \microtypesetup{protrusion=false}% do not protrude beyond measured insets
+  \ndsu@nohyphenationmode
+}
+
+\newcommand{\ndsu@finishspecialpage}[2]{%
+  % Normalize depth to zero so a fitted box's total height is textheight,
+  % including the last line's descenders, rather than textheight + depth.
+  \setbox\ndsu@specialpagebox=\vbox{\unvbox\ndsu@specialpagebox\kern0pt}%
+  \setlength{\ndsu@specialpageheight}{%
+    \dimexpr\ht\ndsu@specialpagebox+\dp\ndsu@specialpagebox\relax}%
+  \setlength{\ndsu@specialpageexcess}{%
+    \dimexpr\ndsu@specialpageheight-\textheight\relax}%
+  \ifdim\ndsu@specialpageexcess>0pt
+    \ifdim\ndsu@specialpageexcess>#2\relax
+      \ClassError{ndsudisq}{#1 does not fit within one page}{%
+        The page exceeds the text area by \the\ndsu@specialpageexcess.
+        \MessageBreak Fonts and margins have not been reduced.
+        \MessageBreak Check the title, names, program option and committee entries;
+        \MessageBreak remove accidental line breaks or obtain an approved layout
+        \MessageBreak for content that cannot fit. Do not accept this output.}%
+    \else
+      \ClassWarning{ndsudisq}{#1 needs \the\ndsu@specialpageexcess\space
+        of gap compression. The six title gaps remain at least 44bp;
+        review the rendered page before acceptance}%
+      \setbox\ndsu@specialpagebox=\vbox to \textheight{%
+        \unvbox\ndsu@specialpagebox}%
+    \fi
+  \fi
+  \par\nointerlineskip\box\ndsu@specialpagebox
+}
+
+\newcommand{\makecoverpage}{%
+  \clearpage\thispagestyle{empty}%
+  \begingroup
+  \ndsu@specialpagesetup
+  \setbox\ndsu@specialpagebox=\vbox{%
+    \hsize=\textwidth\linewidth=\hsize
+    \centering
+    \phantomsection
+    \NDSUAddTitlePdfBookmark
+    \tagpdfparaOff\tagstructbegin{tag=H1}%
+    \tagmcbegin{tag=H1}%
+    {\doublespacing\MakeUppercase{\ndsutitle}\par}%
+    \tagpdfsuppressmarks{\tagmcend}\tagstructend\tagpdfparaOn%
+    \vskip\ndsu@titleblocksep
+    A \ndsudocumenttype\par
+    Submitted to the Graduate Faculty\par
+    of the\par
+    North Dakota State University\par
+    of Agriculture and Applied Science\par
+    \vskip\ndsu@titleblocksep
+    By\par
+    \vskip\ndsu@singleleading
+    \ndsuauthor\par
+    \vskip\ndsu@titleblocksep
+    In Partial Fulfillment of the Requirements\par
+    for the Degree of\par
+    \MakeUppercase{\ndsudegree}\par
+    \vskip\ndsu@titleblocksep
+    \ndsumajorlabel:\par
+    \ndsuprogram\par
+    \ifdefempty{\ndsudegreeoption}{}{\ndsudegreeoption\par}%
+    \vskip\ndsu@titleblocksep
+    \ndsufinaldefense\par
+    \vskip\ndsu@titleblocksep
+    Fargo, North Dakota\par
+  }%
+  \ndsu@finishspecialpage{Title page}{24bp}%
+  \endgroup
+  \clearpage
+}
+
+% The following blocks begin/end at their measured box edges: there is no
+% center-environment topsep, negative ex spacing, or hidden vfill between them.
+\newcommand{\ndsu@approvalblock}[3]{%
+  \par\nointerlineskip
+  \hbox to \textwidth{\hfil
+    \vbox{\hsize=#1\relax\linewidth=\hsize #2#3\par}%
+    \hfil}%
+}
+\newcommand{\ndsu@approvalcenter}[2]{%
+  \ndsu@approvalblock{#1}{\centering}{#2}%
+}
+\newcommand{\ndsu@approvalrule}[2]{%
+  \par\nointerlineskip
+  \hbox to \linewidth{\hfil\ndsuartifactcontent{\rule{#1}{#2}}\hfil}%
+}
+\newcommand{\ndsu@approvalsmallfont}{%
+  \fontsize{\dimexpr\ndsu@paragraphsize-2pt\relax}{\ndsu@paragraphsize}\selectfont
+}
+\newcommand{\ndsu@approvalnamefont}{%
+  \fontsize{\ndsu@paragraphsize}{\ndsu@singleleading}\selectfont
+}
+% Restored approval-page appearance, requested 2026-10-14.
+% Preserve repaired co-chair labels, aligned final fields and overflow checks.
 \newlength{\ndsu@approvalcommitteeskip}
 \setlength{\ndsu@approvalcommitteeskip}{0.90in}
 \newlength{\ndsu@approvalapprovedskip}
 \setlength{\ndsu@approvalapprovedskip}{0.20in}
 \newlength{\ndsu@approvallowerheight}
 \setlength{\ndsu@approvallowerheight}{5.98in}
-\newcommand{\makecoverpage}{%
-  \thispagestyle{empty}%
-  \begingroup
-  \singlespacing
-  \centering
-  \phantomsection
-  \NDSUAddTitlePdfBookmark
-  \tagstructbegin{tag=H1}%
-  \tagmcbegin{tag=H1}%
-  {\begin{doublespace}\MakeUppercase{\ndsutitle}\par\end{doublespace}}%
-  \tagpdfsuppressmarks{\tagmcend}\tagstructend%
-  \vspace{\ndsu@titlefirstsep}
-  A \ndsudocumenttype\par
-  Submitted to the Graduate Faculty\par
-  of the\par
-  North Dakota State University\par
-  of Agriculture and Applied Science\par
-  \vspace{0.668in}
-  \begin{doublespace}
-   By\par
-  \ndsuauthor\par\end{doublespace}
-
-  \vspace{\ndsu@titleblocksep}
-  \vspace{.668in}
-  In Partial Fulfillment of the Requirements\par
-  for the Degree of\par
-  \MakeUppercase{\ndsudegree}\par
-  \vspace{0.668in}
-  \vspace{\ndsu@titleblocksep}
-  \ndsumajorlabel:\par
-  \ndsuprogram\par
-  \ifstrempty{\ndsudegreeoption}{}{\ndsudegreeoption\par}%
-  \vfill
-  \ndsufinaldefense\par
-  \vspace{0.668in}
-  Fargo, North Dakota\par
-  \vspace{\ndsu@titlebottomsep}
-  \endgroup
-  \clearpage
-}
-
-\newcommand{\ndsu@signatureline}[2]{%
-  \vspace{0.02in}%
-  #1\\[-0.08in]
-  \ndsuartifactcontent{\rule{0.55\textwidth}{0.4pt}}\\[-0.02in]
-  {\fontsize{8pt}{10pt}\selectfont #2}%
-}
+\newbox\ndsu@approvallowerbox
+\newbox\ndsu@approvalheaderbox
+\setlength{\ndsu@approvalblockwidth}{0.855\textwidth}
 \newcommand{\ndsu@signatureentry}[2]{%
   \noindent
   \begin{minipage}[t]{0.58\linewidth}
@@ -1680,41 +1779,58 @@
   \ndsu@signatureentry{#1}{}%
 }
 
-\newcommand{\ndsu@approvalfield}[2]{%
-  \begin{minipage}[t]{0.42\linewidth}
-    \centering
-    #1\par%
-    \vspace{-1.5ex}
-    \ndsuartifactcontent{\rule{0.85\linewidth}{0.4pt}}\par
-    \vspace{0.10\baselineskip}
-        {\fontsize{8pt}{10pt}\selectfont #2\par}%
-  \end{minipage}%
-}
-\newcommand{\ndsu@approvaldatefield}[2]{%
-  \begin{minipage}[t]{0.42\linewidth}
-    \noindent\makebox[0.85\linewidth][c]{#1}\par
-    \vspace{-1.5ex}
-    \ndsuartifactcontent{\rule{0.85\linewidth}{0.4pt}}\par
-    \vspace{0.10\baselineskip}
-        {\fontsize{8pt}{10pt}\selectfont\makebox[0.85\linewidth][c]{#2}\par}%
-  \end{minipage}%
+\newcommand{\ndsu@approvalfields}{%
+  \setlength{\ndsu@approvalfieldwidth}{0.357\linewidth}%
+  \setbox\ndsu@approvaldatebox=\vbox{%
+    \hsize=\ndsu@approvalfieldwidth\linewidth=\hsize
+    \ndsu@approvalnamefont\centering\strut\ndsuapprovaldate\par}%
+  \setbox\ndsu@approvalchairbox=\vbox{%
+    \hsize=\ndsu@approvalfieldwidth\linewidth=\hsize
+    \ndsu@approvalnamefont\centering\strut\ndsudeptchair\par}%
+  \setlength{\ndsu@approvalfieldheight}{%
+    \dimexpr\ht\ndsu@approvaldatebox+\dp\ndsu@approvaldatebox\relax}%
+  \ifdim\dimexpr\ht\ndsu@approvalchairbox+\dp\ndsu@approvalchairbox\relax
+      >\ndsu@approvalfieldheight
+    \setlength{\ndsu@approvalfieldheight}{%
+      \dimexpr\ht\ndsu@approvalchairbox+\dp\ndsu@approvalchairbox\relax}%
+  \fi
+  \par\nointerlineskip
+  \hbox to 0.9685\linewidth{%
+    \vtop{\hsize=\ndsu@approvalfieldwidth\linewidth=\hsize
+      \vbox to \ndsu@approvalfieldheight{\unvbox\ndsu@approvaldatebox\vfil}%
+      \vskip 2bp
+      \ndsu@approvalrule{\linewidth}{0.5bp}%
+      \vskip 5.7bp\nointerlineskip
+      {\fontsize{8pt}{10pt}\selectfont\centering Date\par}}%
+    \hfil
+    \vtop{\hsize=\ndsu@approvalfieldwidth\linewidth=\hsize
+      \vbox to \ndsu@approvalfieldheight{\unvbox\ndsu@approvalchairbox\vfil}%
+      \vskip 2bp
+      \ndsu@approvalrule{\linewidth}{0.5bp}%
+      \vskip 5.7bp\nointerlineskip
+      {\fontsize{8pt}{10pt}\selectfont\centering Department Chair\par}}%
+  }%
 }
 
 \newcommand{\makeapprovalpage}{%
-  \thispagestyle{empty}%
+  \clearpage\thispagestyle{empty}%
   \begingroup
+  \ndsu@specialpagesetup
   \singlespacing
   \begin{ndsu@nohyphenation}
   \setlength{\parindent}{0pt}%
   \hyphenpenalty=10000
   \exhyphenpenalty=10000
-  \noindent\begin{minipage}[t][\dimexpr\textheight-\topskip\relax][t]{\textwidth}
+  % Measure the actual content; fixed outer heights must not hide overflow.
+  \setbox\ndsu@approvalheaderbox=\vbox{%
+  \kern\topskip
+  \noindent\begin{minipage}[t]{\textwidth}
   \vspace*{0pt}%
   
   \begin{center}
     {\fontsize{18pt}{22pt}\selectfont
     North Dakota State University\par}
-    \vspace{0.02in}
+    \vspace{\dimexpr0.02in+5pt\relax}
     {\fontsize{14pt}{18pt}\selectfont
     Graduate School\par}
   \end{center}
@@ -1725,7 +1841,7 @@
 
   \begin{center}
     {\fontsize{10pt}{12pt}\selectfont\textbf{Title}\par}
-    \vspace{0.08in}
+    \vspace{\dimexpr0.08in+5pt\relax}
 
     \begin{minipage}{\ndsu@approvalblockwidth}
       \centering
@@ -1734,10 +1850,10 @@
       \ndsuartifactcontent{\rule{\linewidth}{0.4pt}}
     \end{minipage}
 
-    \vspace{0.12in}
+    \vspace{\dimexpr0.12in+5pt\relax}
 
     {\fontsize{10pt}{12pt}\selectfont\textbf{By}\par}
-    \vspace{0.08in}
+    \vspace{\dimexpr0.08in+5pt\relax}
 
     \begin{minipage}{\ndsu@approvalblockwidth}
       \centering
@@ -1749,8 +1865,15 @@
 
   \vspace{0.12in}
 
-  \noindent\makebox[\textwidth][c]{%
-     \begin{minipage}[t][\ndsu@approvallowerheight][s]{\ndsu@approvalblockwidth}
+  \end{minipage}\par\kern0pt
+  }%
+  % Keep final fields at the bottom while allowing wrapped headings above.
+  \setlength{\ndsu@approvallowerheight}{%
+    \dimexpr\textheight-\ht\ndsu@approvalheaderbox-\dp\ndsu@approvalheaderbox\relax}%
+  % Typeset the lower block once, then stretch only its existing vfill.
+  \setbox\ndsu@approvallowerbox=\vbox{%
+    \hsize=\ndsu@approvalblockwidth\linewidth=\hsize
+    \@parboxrestore
       {\fontsize{10pt}{12pt}\selectfont
       \doublespacing
       The Supervisory Committee certifies that this \textbf{\textit{disquisition}} complies with
@@ -1769,10 +1892,12 @@
 
     \vspace{0.20in}
 
-    \ndsu@signatureentry{\ndsucommitteechair}{Chair}%
-      \ifdefempty{\ndsucommitteecochair}{}{%
+    \ifdefempty{\ndsucommitteecochair}{%
+      \ndsu@signatureentry{\ndsucommitteechair}{Chair}%
+    }{%
+      \ndsu@signatureentry{\ndsucommitteechair}{Co-chair}%
       \par\vspace{0.20in}%
-      \ndsu@signatureentry{\ndsucommitteecochair}{Co-Chair}%
+      \ndsu@signatureentry{\ndsucommitteecochair}{Co-chair}%
     }%
     \ifdefempty{\ndsucommitteeone}{}{%
       \par\vspace{0.20in}%
@@ -1794,21 +1919,31 @@
 
     \vspace{0.10in}
 
-    \noindent
-    \ndsu@approvaldatefield{\ndsuapprovaldate}{Date}%
-    \hfill
-      \ndsu@approvalfield{\ndsudeptchair}{Department Chair}%
-    \end{minipage}%
+    \ndsu@approvalfields
+    \par\kern0pt
   }%
-
-\end{minipage}%
+  \ifdim\dimexpr\ht\ndsu@approvallowerbox+\dp\ndsu@approvallowerbox\relax
+      >\ndsu@approvallowerheight
+    \ClassError{ndsudisq}{Approval page does not fit within one page}{%
+      The committee and approval fields exceed the restored layout.
+      \MessageBreak Fonts and margins have not been reduced.
+      \MessageBreak Obtain an approved layout for the longer content.}%
+  \fi
+  \setbox\ndsu@specialpagebox=\vbox{%
+    \unvbox\ndsu@approvalheaderbox
+    \nointerlineskip
+    \hbox to \textwidth{\hfil
+      \vbox to \ndsu@approvallowerheight{\unvbox\ndsu@approvallowerbox}%
+      \hfil}%
+  }%
+  \ndsu@finishspecialpage{Approval page}{0pt}%
   \end{ndsu@nohyphenation}
   \endgroup
   \clearpage
 }
 
 % --- Front matter/main matter/references ---
-\newcommand{\ndsuprefatoryheading}[1]{\chapter*{\MakeUppercase{#1}}\phantomsection\addcontentsline{toc}{frontmatter}{\texorpdfstring{\MakeUppercase{#1}}{\MakeUppercase{#1}}}}
+\newcommand{\ndsuprefatoryheading}[1]{\chapter*{\MakeUppercase{#1}}\addcontentsline{toc}{frontmatter}{\texorpdfstring{\MakeUppercase{#1}}{\MakeUppercase{#1}}}}
 \newcommand{\frontmattersetup}{\pagenumbering{roman}\ndsu@nohyphenationmode}
 \newcommand{\ndsu@inputrequiredfrontmatter}[1]{%
   \InputIfFileExists{#1}{}{%
@@ -1835,70 +1970,85 @@
   \ndsu@listheader{Equation}{Page}%
   \vspace{\ndsu@loeafterheaderskip}%
 }
+% Empty list suppression uses settled previous-pass counts. Rerun when counts change.
+\newcommand{\ndsu@setlistcount}[2]{\expandafter\gdef\csname ndsu@previous@#1\endcsname{#2}}
+\newcommand{\ndsu@itemlist}[3]{%
+ \ifnum\csname ndsu@previous@#1\endcsname>0\relax
+  \chapter*{#2}\addcontentsline{toc}{frontmatter}{#2}%
+  \ndsu@listheader{#3}{Page}\@starttoc{#1}\clearpage
+ \else
+  \begingroup\let\contentsline\@gobblefour\@starttoc{#1}\endgroup
+ \fi}
+\newcommand{\ndsu@initlistcount}[1]{%
+ \expandafter\gdef\csname ndsu@previous@#1\endcsname{0}%
+ \expandafter\newcount\csname ndsu@current@#1\endcsname}
+\forcsvlist{\ndsu@initlistcount}{lot,lof,loe,los,lol,lat,laf,lal}
+\AtBeginDocument{%
+ \let\ndsu@countedaddcontentsline\addcontentsline
+ \renewcommand{\addcontentsline}[3]{%
+  \edef\ndsu@destination{#1}%
+  \ifndsu@appendices
+   \ifdefstring{\ndsu@destination}{lot}{\def\ndsu@destination{lat}}{}%
+   \ifdefstring{\ndsu@destination}{lof}{\def\ndsu@destination{laf}}{}%
+   \ifdefstring{\ndsu@destination}{lol}{\def\ndsu@destination{lal}}{}%
+  \fi
+  \ifcsname ndsu@current@\ndsu@destination\endcsname
+   \global\advance\csname ndsu@current@\ndsu@destination\endcsname by1\relax
+  \fi
+  \ifdefstring{\ndsu@destination}{lal}{%
+   \ifndsu@appendices\ndsu@countedaddcontentsline{lal}{#2}{#3}%
+   \else\ndsu@countedaddcontentsline{#1}{#2}{#3}\fi
+  }{\ndsu@countedaddcontentsline{#1}{#2}{#3}}%
+ }}
+\newcommand{\ndsu@writelistcount}[1]{%
+ \ifnum\csname ndsu@previous@#1\endcsname=\csname ndsu@current@#1\endcsname\else
+  \ClassWarningNoLine{ndsudisq}{List #1 changed; rerun LuaLaTeX until front matter settles}%
+ \fi
+ \if@filesw\immediate\write\@auxout{\string\ndsu@setlistcount{#1}{\the\csname ndsu@current@#1\endcsname}}\fi}
+\AtEndDocument{\forcsvlist{\ndsu@writelistcount}{lot,lof,loe,los,lol,lat,laf,lal}}
+\providecommand{\l@listing}[2]{\ndsu@rendertocentry{\ndsu@dottedfloatline}{\ndsu@floatlistnumberline}{#1}{#2}}
+
 \newcommand{\makefrontmatter}{%
   \frontmattersetup
   \makecoverpage
   \makeapprovalpage
   \ndsu@inputrequiredfrontmatter{frontmatter/abstract.tex}%
-  \ndsu@inputrequiredfrontmatter{frontmatter/acknowledgments.tex}%
+  \ifndsu@includeAcknowledgments\ndsu@inputoptionalfrontmatter{frontmatter/acknowledgments.tex}\fi
   \ifndsu@includeDedication\ndsu@inputoptionalfrontmatter{frontmatter/dedication.tex}\fi
+  
+  \ifndsu@includePreface\ndsu@inputoptionalfrontmatter{frontmatter/preface.tex}\fi
+  
   \tableofcontents
   \clearpage
-  \ifndsu@includeListOfTables
-    \chapter*{LIST OF TABLES}%
-    \phantomsection
-    \addcontentsline{toc}{frontmatter}{LIST OF TABLES}%
-    \ndsu@listheader{Table}{Page}%
-    \@starttoc{lot}%
-    \clearpage
-  \fi
-  \ifndsu@includeListOfFigures
-    \chapter*{LIST OF FIGURES}%
-    \phantomsection
-    \addcontentsline{toc}{frontmatter}{LIST OF FIGURES}%
-    \ndsu@listheader{Figure}{Page}%
-    \@starttoc{lof}%
-    \clearpage
-  \fi
-  \ifndsu@includeListOfEquations
-    \chapter*{\listequationname}%
-    \phantomsection
-    \addcontentsline{toc}{frontmatter}{\listequationname}%
-    \ndsu@equationlistheader%
-    \@starttoc{loe}%
-    \clearpage
-  \fi
-  \ifndsu@includeListOfSchemas
-    \chapter*{\listschemaname}%
-    \phantomsection
-    \addcontentsline{toc}{frontmatter}{\listschemaname}%
-    \ndsu@listheader{Schema}{Page}%
-    \@starttoc{los}%
-    \clearpage
-  \fi
+  \ifndsu@includeListOfTables\ndsu@itemlist{lot}{LIST OF TABLES}{Table}\fi
+  \ifndsu@includeListOfFigures\ndsu@itemlist{lof}{LIST OF FIGURES}{Figure}\fi
+  \ifndsu@includeListOfEquations\ndsu@itemlist{loe}{\listequationname}{Equation}\fi
+  \ifndsu@includeListOfSchemas\ndsu@itemlist{los}{\listschemaname}{Schema}\fi
+  \ifndsu@includeListOfListings\ndsu@itemlist{lol}{LIST OF LISTINGS}{Listing}\fi
   \ifndsu@includeAbbreviations\ndsu@inputoptionalfrontmatter{frontmatter/abbreviations.tex}\fi
 
-  \ifndsu@includeAppendixTables
-  \chapter*{\listappendixtablename}%
-  \phantomsection
-  \addcontentsline{toc}{frontmatter}{\listappendixtablename}%
-  \ndsu@listheader{Table}{Page}%
-  \@starttoc{lat}%
-  \clearpage
-\fi
-\ifndsu@includeAppendixFigures
-  \chapter*{\listappendixfigurename}%
-  \phantomsection
-  \addcontentsline{toc}{frontmatter}{\listappendixfigurename}%
-  \ndsu@listheader{Figure}{Page}%
-  \@starttoc{laf}%
-  \clearpage
-\fi
-  \ifndsu@includeSymbols\ndsu@inputoptionalfrontmatter{frontmatter/symbols.tex}\fi
-  \ifndsu@includePreface\ndsu@inputoptionalfrontmatter{frontmatter/preface.tex}\fi
+\ifndsu@includeSymbols\ndsu@inputoptionalfrontmatter{frontmatter/symbols.tex}\fi
+
+    \ifndsu@includeAppendixTables\ndsu@itemlist{lat}{\listappendixtablename}{Table}\fi
+  \ifndsu@includeAppendixFigures\ndsu@itemlist{laf}{\listappendixfigurename}{Figure}\fi
+  \ifndsu@includeAppendixListings\ndsu@itemlist{lal}{LIST OF APPENDIX LISTINGS}{Listing}\fi
 }
 \newcommand{\mainmattersetup}{\ndsu@normalhyphenationmode\clearpage\pagenumbering{arabic}\setcounter{page}{1}}
 
+% Track chapter citations as segments within one shared bibliography section.
+% Native tagged chapter headings bypass biblatex's legacy chapter-head hooks.
+\newcommand{\ndsu@startchapterreferences}{%
+  \@ifpackageloaded{biblatex}{\endrefsegment\refsegment}{}%
+}
+\NewDocumentCommand{\printchapterreferences}{ O{References} }{%
+  \@ifpackageloaded{biblatex}{%
+    \ifnum\value{refsegment}>0\relax
+      \printbibliography[heading=ndsuchapterreferences,segment=\therefsegment,title={#1}]%
+    \else
+      \ClassError{ndsudisq}{No current chapter bibliography segment}{Place \string\printchapterreferences\space at the end of a numbered chapter, before the next chapter.}%
+    \fi
+  }{\ClassError{ndsudisq}{\string\printchapterreferences\space requires biblatex}{Load biblatex and add a bibliography resource in the preamble.}}%
+}
 \newcommand{\ndsureferencesname}{REFERENCES}
 \newcommand{\referencesheading}[1]{\renewcommand{\ndsureferencesname}{#1}}
 \newcommand{\ndsu@referencesheading}[1]{%
@@ -1908,7 +2058,11 @@
 }
 \AtBeginDocument{%
   \@ifpackageloaded{biblatex}{%
-    \defbibheading{ndsureferences}[\ndsureferencesname]{\ndsu@referencesheading{##1}}%
+    \defbibheading{ndsureferences}[\ndsureferencesname]{\ndsu@referencesheading{#1}}%
+    \defbibheading{ndsuchapterreferences}[References]{%
+      \subsection*{#1}%
+      \addcontentsline{toc}{subsection}{#1}%
+    }%
     \setlength{\bibhang}{0.5in}%
   }{}%
 }
@@ -1930,7 +2084,7 @@
 \newlength{\ndsuAbbrevItemSep}
 \setlength{\ndsuAbbrevLabelWidth}{1.45in}
 \setlength{\ndsuAbbrevLabelSep}{0.05in}
-\setlength{\ndsuAbbrevItemSep}{0pt plus 1pt}
+\setlength{\ndsuAbbrevItemSep}{\ndsuGeneratedListEntrySkip}
 \NewDocumentEnvironment{ndsuabbreviations}{ O{3.0in} }
   {%
     \par
@@ -1938,7 +2092,7 @@
     \setlength{\ndsuAbbrevLabelWidth}{#1}%
     \setlength{\parindent}{0pt}%
     \setlength{\parskip}{0pt}%
-    \setstretch{1.667}\selectfont
+    \setstretch{1}\selectfont
   }
   {%
     \par
@@ -1961,9 +2115,13 @@
 \newcommand{\ndsusym}[2]{\ndsuabbr{#1}{#2}}
 
 \newlength{\ndsu@codebeforeskip}
-\setlength{\ndsu@codebeforeskip}{2pt}
 \newlength{\ndsu@codeafterskip}
-\setlength{\ndsu@codeafterskip}{6pt}
+
+\AtBeginDocument{%
+  \setlength{\ndsu@codebeforeskip}{0.33\baselineskip}%
+  \setlength{\ndsu@codeafterskip}{0.5\baselineskip}%
+}
+
 \newlength{\ndsuCodeCaptionSkip}
 \setlength{\ndsuCodeCaptionSkip}{4pt}
 \newlength{\ndsu@codetitleskip}
@@ -1974,6 +2132,14 @@
 \setlength{\ndsu@codelistingxleftmargin}{1.75em}
 \newlength{\ndsu@codelistingframexleftmargin}
 \setlength{\ndsu@codelistingframexleftmargin}{1.75em}
+
+% Line-number formatting for numbered code listings
+\renewcommand{\theFancyVerbLine}{%
+  \normalfont
+  \fontsize{8pt}{12pt}\selectfont
+  \arabic{FancyVerbLine}%
+}
+
 \providecommand{\listlistingname}{LIST OF LISTINGS}
 \@ifundefined{c@listing}{%
   \newfloat{listing}{htbp}{lol}%
@@ -1991,7 +2157,11 @@
 \Crefname{listing}{Listing}{Listings}
 \newcommand{\ndsu@codelistingcaption}[1]{%
   \captionsetup{type=listing}%
+  % A boxed listing caption needs single leading, not a transition blank line.
+  \let\ndsu@savedSingleSpacing\singlespacing
+  \def\singlespacing{\setstretch{\setspace@singlespace}}%
   \captionof{listing}{#1}%
+  \let\singlespacing\ndsu@savedSingleSpacing
    \par\nobreak\vspace{\ndsuCodeCaptionSkip}%
 }
 \newcommand{\ndsu@codeverbatimlistparameters}{%
@@ -2008,20 +2178,56 @@
     \begin{Verbatim}[fontsize=\small,belowskip=0pt,listparameters={\ndsu@codeverbatimlistparameters},#1]%
   }
   {\end{Verbatim}\par\addvspace{\ndsu@codeafterskip}}
+% Typeset once: preserve caption counters and tagged content while measuring.
+\newbox\ndsu@codebox
+\newcommand{\ndsu@placecodebox}{%
+  \ifdim\dimexpr\ht\ndsu@codebox+\dp\ndsu@codebox\relax>\textheight
+    \Needspace{6\baselineskip}% Truly long listings may span pages.
+    \addvspace{\ndsu@codebeforeskip}%
+    \unvbox\ndsu@codebox
+    \par\addvspace{\ndsu@codeafterskip}%
+  \else
+    \begin{listing}[htbp]% Allow subsequent prose to fill the current page.
+      \box\ndsu@codebox
+    \end{listing}
+  \fi
+}
+% Supply a note before the listing so its height participates in pagination.
+\newcommand{\ndsu@listingnote}{}
+\newcommand{\nextcodelistingnote}[1]{\gdef\ndsu@listingnote{#1}}
 \newenvironment{ndsucodelisting}[1][]{%
   \VerbatimEnvironment
   \par
-  
-  \Needspace{6\baselineskip}%
-  \addvspace{\ndsu@codebeforeskip}%
+  \setbox\ndsu@codebox=\vbox\bgroup
+  \hsize=\linewidth
   \ndsu@codelistingcaption{#1}%
   \setstretch{1}%
-  \begin{Verbatim}[fontsize=\small,numbers=left,numbersep=\ndsu@codenumbersep,xleftmargin=\ndsu@codelistingxleftmargin,frame=single,breaklines=true,breakanywhere=true,listparameters={\ndsu@codeverbatimlistparameters}]%
+  \begin{Verbatim}[fontsize=\small,numbers=left,numbersep=\ndsu@codenumbersep,xleftmargin=\ndsu@codelistingxleftmargin,frame=single,breaklines=true,breakanywhere=true,breaksymbolleft={},breakanywheresymbolpre={},breakanywheresymbolpost={},listparameters={\ndsu@codeverbatimlistparameters}]%
 }{%
   \end{Verbatim}%
   \par
-  
-  \addvspace{\ndsu@codeafterskip}%
+  \ifx\ndsu@listingnote\@empty\else
+    \ndsucodenote{\ndsu@listingnote}%
+  \fi
+  \egroup
+  \ndsu@placecodebox
+  \global\let\ndsu@listingnote\@empty
+  \par
+}
+
+% fvextra wraps source lines in implementation parboxes. Keep those boxes
+% inside one explicitly tagged source-code line, without prose subparagraphs.
+\let\ndsu@fvextra@breakline\FV@ListProcessLine@Break
+\def\FV@ListProcessLine@Break#1{%
+  \hbox to \hsize{%
+    \tagpdfparaOff
+    \AssignTaggingSocketPlug{parbox/before}{noop}%
+    \AssignTaggingSocketPlug{parbox/after}{noop}%
+    \AssignTaggingSocketPlug{para/restore}{noop}%
+    \UseTaggingSocket{struct-mc}{tag=\UseStructureName{block/verbatim/codeline}}{%
+      \ndsu@fvextra@breakline{#1}%
+    }%
+  }\FV@bgcoloroverlap\baselineskip\z@\lineskip\z@
 }
 
 \newcommand{\ndsucodenote}[1]{\ndsunote{#1}}
@@ -2032,4 +2238,61 @@
 \AtEndOfClass{\usechaptercaptions}
 
 % --- End-of-class cleanup ---
+% Longtable builds captions in spanning cells rather than through @makecaption.
+% The primary caption belongs to the Table. Repeated continuation captions
+% are artifacts, as the table already has its complete accessible caption.
+% Keep the caption outside the row-indexed native longtable finalizer,
+% then restore it before the first retained row.
+
+\ExplSyntaxOn
+\tl_new:N\g_ndsu_lt_caption_table_tl
+\tl_new:N\g_ndsu_lt_caption_kid_tl
+\tl_new:N\g_ndsu_lt_caption_row_tl
+\cs_new_protected:Npn\ndsu@saveLTCaption{
+  \tl_gset_eq:NN\g_ndsu_lt_caption_table_tl\g__tbl_struct_table_tl
+  \seq_gpop_right:cN{g__tag_struct_kids_\g__tbl_struct_table_tl _seq}\g_ndsu_lt_caption_kid_tl
+  \tl_gset:Ne\g_ndsu_lt_caption_row_tl{
+    \pdf_object_ref_indexed:nn{__tag/struct}{\seq_item:Nn\g__tbl_struct_rows_seq{-1}}
+  }
+}
+\cs_generate_variant:Nn\seq_gremove_all:Nn{cV}
+\cs_new_protected:Npn\ndsu@restoreLTCaption{
+  \tl_if_empty:NF\g_ndsu_lt_caption_kid_tl{
+    \seq_gremove_all:cV{g__tag_struct_kids_\g_ndsu_lt_caption_table_tl _seq}\g_ndsu_lt_caption_row_tl
+    \seq_gput_left:cV{g__tag_struct_kids_\g_ndsu_lt_caption_table_tl _seq}\g_ndsu_lt_caption_kid_tl
+    \tl_gclear:N\g_ndsu_lt_caption_kid_tl
+  }
+}
+\ExplSyntaxOff
+\AfterEndEnvironment{longtable}{\ndsu@restoreLTCaption}
+
+\newif\ifndsu@ltcaptionseen
+\BeforeBeginEnvironment{longtable}{\global\ndsu@ltcaptionseenfalse}
+\long\def\ndsu@LTmakecaption#1#2#3{%
+  \LT@mcol\LT@cols{@{}l@{}}{%
+    \AssignTaggingSocketPlug{parbox/before}{noop}%
+    \AssignTaggingSocketPlug{parbox/after}{noop}%
+    \hbox to\z@{\parbox[t]\LTcapwidth{%
+      \setstretch{1}\normalfont\normalsize\raggedright
+      \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}%
+      \def\@captype{table}%
+      \ifndsu@ltcaptionseen
+        \tagpdfparaOff\tagmcbegin{artifact}%
+        #1{\textbf{#2.}\space}#3\par\tagmcend
+      \else
+        \global\ndsu@ltcaptionseentrue
+        \UseTaggingSocket{caption/begin}{\csname g__tbl_struct_table_tl\endcsname}%
+        #1{\UseTaggingSocket{caption/label/begin}%
+          \textbf{#2.}\space\UseTaggingSocket{caption/label/end}}%
+        \UseTaggingSocket{para/begin}#3\par
+        \UseTaggingSocket{caption/end}%
+        \ndsu@saveLTCaption%
+      \fi
+      \vskip\baselineskip
+    }\hss}%
+  }%
+}
+
+\AtBeginDocument{\let\LT@makecaption\ndsu@LTmakecaption}
+
 \makeatother

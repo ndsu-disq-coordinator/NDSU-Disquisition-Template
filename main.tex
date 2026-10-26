@@ -1,42 +1,63 @@
 % main.tex
-% NDSU disquisition template. LAST PATCH: 6/15/2026
-% Edit this file and the content files listed below. Most users should not edit
-% ndsudisq.cls or other template support files.
+% NDSU disquisition template. LAST PATCH: 9/4/2026
+% Edit this file and the content files listed below. Most users should not edit ndsudisq.cls or other template support files.
 
-% Leave this block before \documentclass. It requests PDF metadata and tagging
-% support. Validate the final PDF before making accessibility or PDF/UA claims.
+% Leave this \DocumentMetadata block before \documentclass. It requests PDF metadata and tagging support. Validate the final PDF before making accessibility or PDF/UA claims.
 \DocumentMetadata{
-  tagging=on,
-  pdfstandard=ua-1,
-  lang=en-US,
-  tagging-setup={
-    math/alt/use
-  }
+    tagging=on,
+    pdfversion=1.7,
+    pdfstandard=ua-1,
+    lang=en-US,
+    tagging-setup={
+        math/alt/use
+    }
 }
 
-\documentclass{ndsudisq}
+% Draft mode permits the guide's intentional placeholders. Replace them and
+% switch to [final] for submission checks; a successful build is not certification.
+\documentclass[draft]{ndsudisq}
 \usepackage{unicode-math}
 \usepackage{amsmath}
 \usepackage{tcolorbox}
+\usepackage{hyperref}
 \usepackage{fancyvrb}
+\usepackage[bottom]{footmisc}
 
-% Bibliography setup.
+% Bibliography setup. The class tracks citations separately for each chapter.
+% Keep one shared refsection; do not set refsection=chapter or refsegment=chapter.
 \usepackage[backend=biber,style=authoryear]{biblatex}
 \addbibresource{references.bib}
 
-% -----------------------------------------------------------------------------
-% Document information
-% -----------------------------------------------------------------------------
-% Replace these values with your own disquisition information.
+% ---------------------------------------------------------------------------
+%
+% Document information. Replace these content with your own disquisition information.
+% ---------------------------------------------------------------------------
+%
+%% On the title page, your disquisition title will be in ALL CAPS. On the Disquisition Approval page, the title will be in Title Case. When you copy your title to your ETD in ProQuest, place the title in Title Case.
 \disquisitiontitle{Your Disquisition Title}
+
+%% Your name should match your name in Campus Connection. Contact Bison OneStop if you need to change your name in Campus Connection.
 \disquisitionauthor{Your Name}
-\documenttype{Dissertation [Thesis / Paper]}
-\degree{NAME OF DEGREE (e.g., Doctor of Philosophy)}
-\majordepartmentlabel{Major Department}
-\program{Your Department or Program}
+
+%% Valid document types are Dissertation, Thesis, or Paper.
+\documenttype{Dissertation}
+
+%% Most doctoral students will earn a Doctor of Philosophy. Master's students will earn either a Master of Science or Master of Arts.
+\degree{NAME OF DEGREE}
+
+%% You may list either your Major Department or Major Program, but not both. If you prefer to list your Major Program, change the label in the text accordingly: "Major Program".
+\majorlabel{Major Department}
+
+%% Provide the name of your department or program, which should align with your choice for \majorlabel above. Many departments share a name with their program; for example, "Electrical and Computer Engineering" is both a department and a program.
+\major{Your Department or Program Name}
+
+%% If your degree has an option, provide the name of the option from your department or program handbook. For example, the Master of Science degree awarded from the Health, Nutrition, and Exercise Science program has an option for "Exercise Science". Very few degrees have an option.
 \degreeoption{}
+
+%% The date of your final defense should match the date provided on your Report of Final Defense. For example, "January 2051".
 \finaldefense{Month Year}
 
+%% Your approval date is when the Graduate School signed off on your Report of Final Defense. You will likely have an email from your Academic Support Specialist with this date; it may also be available on your Report in DocuSign.
 \approvaldate{Month Day, Year}
 \departmentchair{Department Chair Name}
 \committeechair{Committee Chair Name}
@@ -45,23 +66,25 @@
 \committeetwo{Committee Member Two}
 \committeethree{Committee Member Three}
 
-% PDF metadata.
+% PDF metadata. Replace the subject and keywords with your own. Do not change the language of the PDF; disquisitions published by NDSU should be in English. You are welcome to include non-English language content, but it should be tagged appropriately.
 \subjectinfo{Disquisition}
 \keywordsinfo{NDSU, disquisition, thesis, dissertation}
 \disquisitionlanguage{en-US}
 
-% -----------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 % Front matter options
-% -----------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 % Uncomment only the sections and lists your document uses.
+\includeacknowledgments
 \includededication
 \includelistoftables
 \includelistoffigures
+\includelistoflistings
 % \includelistofequations
 % \includelistofschemas
 \includeabbreviations
 \includeappendixtables
-\includeappendixfigures
+% \includeappendixfigures
 % \includepreface
 
 % Numbering options. Leave these settings unless instructed otherwise.
@@ -73,9 +96,10 @@
 \makefrontmatter
 \mainmattersetup
 
-% -----------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+%
 % Main content
-% -----------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 % Replace, add, or remove chapter files here.
 \input{chapters/chapter-01-introduction.tex}
 \input{chapters/chapter-02-adding-content.tex}
@@ -83,14 +107,17 @@
 \input{chapters/chapter-04-digital-accessibility.tex}
 %\input{chapters/chapter-05-pdf-review-remediation.tex}
 
+% Optional whole-document list (includes chapters without local reference lists).
+% Add \printchapterreferences at the end of any chosen chapter file.
 \printreferences
 
-% -----------------------------------------------------------------------------
+%--------------------------------------------------------------------------
+%
 % Appendices
-% -----------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 % Replace, add, or remove appendix files here.
 \appendicesmatter
 \input{appendices/appendix-a-quick-start.tex}
-% \input{appendices/appendix-b-common-problems-fixes.tex}
+\input{appendices/appendix-b-common-problems-fixes.tex}
 
 \end{document}

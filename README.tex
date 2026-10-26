@@ -2,7 +2,7 @@
 
 This project provides a LaTeX class for building an NDSU-style thesis or dissertation with consistent page layout, front matter, headings, captions, lists, references, and PDF metadata. Word templates are available on our website: https://www.ndsu.edu/cfwriters/disquisitions/templates-forms
 
-This template is maintained by the NDSU Center for Writers and the Disquisition Coordinator and is compliant with the formatting and accessibility requirements outlined in the NDSU Graduate School Publication Guidelines, including WCAG 2.1 AA. We recommend using our templates to expedite your publication review process; however, using this template does not guarantee your disquisition will be accepted without review or commensurate revisions. More information about the publication review process and our policies can be found on our website: https://www.ndsu.edu/cfwriters/disquisitions/graduate-school-publication-review-policies
+This template is maintained by the NDSU Center for Writers and the Disquisition Coordinator to support document preparation and review. The supplied source and any repaired build require verification against the current formatting and accessibility requirements. Neither this README nor a successful compilation establishes WCAG, Section 508, or PDF/UA conformance. Acceptance also depends on the author's content and the completed review. More information about the publication review process and our policies can be found on our website: https://www.ndsu.edu/cfwriters/disquisitions/graduate-school-publication-review-policies
 
 If you have received this template from your department, advisor, or colleague, we recommend downloading a new template from our website, as the template may be out-of-date or non-conformant; additionally, the Center for Writers offers only limited support for documents created with non-CFW templates.
 
@@ -13,7 +13,35 @@ The class file, `ndsudisq.cls`, owns the document structure and formatting rules
 ## First Steps
 
 1. Add `ndsudisq.cls` to your LaTeX project.
-2. Use `\documentclass{ndsudisq}` in `main.tex`.
+2. Keep the `\DocumentMetadata` block before `\documentclass`. Start with `\documentclass[draft]{ndsudisq}` while the guide's intentional placeholders remain.
 3. Fill in the title, author, degree, committee, and date metadata.
 4. Add front matter and chapter content.
 5. Compile with LuaLaTeX, and use Biber if using `biblatex`.
+6. Replace the guide content and all placeholders, select only the front matter and lists your document uses, then change `[draft]` to `[final]` for submission checks. Address diagnostics and review the generated PDF; final mode is not an accessibility certification.
+
+## Author settings
+
+Use `\documenttype{Dissertation}`, `\documenttype{Thesis}`, or `\documenttype{Paper}` and the correct permitted degree, name, program and dates. Use `\majorlabel` for the Major Department/Major Program label and `\major` for its official name. Metadata and displayed identity must describe the same document.
+
+Acknowledgments are optional. The guide enables them with `\includeacknowledgments`; remove that command when the section is not used. The guide also enables `\includelistoflistings` because it contains a numbered code listing. Enable appendix figure lists only when appendix figures are present; this guide refers readers to the full-size diagram in Chapter 1 instead of repeating a reduced copy.
+
+Use `\url{address}` for a visible address or `\href{destination}{descriptive text}` for a meaningful-text link. Default links are black and unadorned. Check that visible addresses and link destinations agree.
+
+## Build dependencies and reproducibility
+
+The source requires LuaLaTeX with LaTeX 2026-06-01 or newer and a tagging stack that supports the supplied `\DocumentMetadata` configuration, fontspec, biblatex/Biber, and the packages declared in `ndsudisq.cls`. In particular, `lua-widow-control.sty` must be installed; the initial local reproduction stopped because that package was unavailable. This statement records that audit blocker and is not a claim about later repair validation.
+
+The selected validation target is PDF 1.7 with PDF/UA-1 metadata and `math/alt/use`. Those settings request output features; output tags, character mapping, reading order, fonts and relevant conformance criteria still need inspection. Record the exact TeX distribution, engine, package versions, font source and build log for each review. Confirm the Overleaf compiler and TeX Live selection rather than assuming they match a local installation. Times New Roman availability/licensing must also be checked for the chosen host.
+
+From the project root, a typical command is `latexmk -lualatex -interaction=nonstopmode -halt-on-error -file-line-error main.tex`. This is a build recipe, not evidence that the current source has passed. Biber is required for the bibliography; rerun until citations, references, lists and appendix counts settle. Fix missing dependencies explicitly rather than silently replacing them or skipping tagging features.
+
+## Regression fixtures
+
+Compile the seven `.tex` files in `tests/` from the project root, with their output directory set to `tests`, for example `lualatex -interaction=nonstopmode -halt-on-error -output-directory=tests tests/math-tagging-fixture.tex`. The six supplied tests and the added heading-level fixture use current metadata setters and the same PDF 1.7/PDF/UA-1 target as the main file. They are synthetic draft inputs, not student submissions or proof of compliance.
+
+`tests/check-list-of-schemas.sh` creates a bounded synthetic document in a temporary directory and compares the schema-list switch enabled/disabled. `tests/check-toc-hyperlinks.sh` builds the TOC fixture and inspects navigation data. The scripts require their declared command-line dependencies and a working TeX environment. Their assertions cover only the named behavior; rendered layout and semantic inspection remain separate. Repair validation results belong in the accompanying evidence report, not in an unconditional claim in this README.
+
+
+## October 2026 audit repair
+
+See REPAIR-NOTES.txt for the tested environment, new author switches, longtable header-row guidance and review limits. On Windows, build.ps1 runs the documented LuaLaTeX/Biber sequence. The accompanying repair report records the actual build and regression results.

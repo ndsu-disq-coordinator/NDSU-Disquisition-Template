@@ -1,0 +1,21 @@
+# Generated LaTeX files; retain PDF source figures.
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.loe
+*.los
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.xdv
+/main.pdf
+/main-*.pdf
+/.DS_Store
+/Thumbs.db

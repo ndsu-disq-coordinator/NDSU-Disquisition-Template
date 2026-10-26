@@ -1,0 +1,102 @@
+NDSU DISQUISITION TEMPLATE — AUDIT REPAIR
+13 October 2026 | Class v0.6.0-audit
+
+This is a repaired copy of the supplied source ZIP. It has not replaced or
+been published as an institutional release. The original inputs are unchanged.
+
+BUILD
+Use main.tex with LuaLaTeX and Biber. This repair requires LaTeX 2026-06-01
+or newer because it uses the native tagged heading templates and tagging
+sockets tested in that release. Tested locally with MiKTeX 26.5,
+LuaHBTeX 1.25.7, LaTeX 2026-06-01 and Biber 2.21. A clean build requires
+the class's declared packages, including lua-widow-control and ulem.
+Times New Roman must be available; font files are not distributed here.
+
+In PowerShell, run ./build.ps1, or use latexmk -lualatex main.tex.
+The equivalent sequence is LuaLaTeX, Biber, then three LuaLaTeX passes.
+Rerun if the log still reports changing references, lists or appendix counts.
+Overleaf compatibility depends on its selected TeX release and available fonts;
+this local validation does not establish an Overleaf build.
+
+AUTHOR SETTINGS
+main.tex deliberately uses [draft] because it is an instructional guide with
+visible placeholders. This mode permits placeholder warnings while keeping
+images and links active. Complete all fields and use [final] for a submission.
+Final mode checks required fields and supported document/degree choices.
+It does not certify the contents or accessibility of an author's document.
+
+Acknowledgments are opt-in via includeacknowledgments. Numbered code listings
+can be listed with includelistoflistings; appendix listings use
+includeappendixlistings. Requested lists with no entries are suppressed after
+the auxiliary data settles. Body caption numbering may be continuous, but
+appendix items retain letter prefixes. Ordinary hyperlinks use the document
+text color; the explicit guidelinks class option provides the guide decoration.
+
+Use ndsuincludegraphics with a meaningful description. The old ndsufigurealt
+command now diagnoses that it cannot attach text instead of silently discarding
+it. Display equation descriptions must immediately precede the matching display.
+
+LONG TABLES
+The primary longtable caption is tagged as a Caption owned by the Table.
+Redundant continuation captions are artifacts. Define column headings in the
+longtable first-head/head sections using its standard endfirsthead/endhead
+commands. The tested tagging stack identifies these header rows automatically.
+For other table forms, use ndsutableheaders to identify the actual header rows.
+Check header associations in the final PDF.
+
+TITLE AND APPROVAL PAGES
+Normal title gaps are 48 bp. A near-limit title may compress the six gaps by
+at most 4 bp each with a review warning. Fonts and margins do not shrink.
+A larger overflow gives an error. Extremely long unbreakable words can still
+generate TeX's horizontal overflow warning and require author correction.
+
+VALIDATION BOUNDARY
+The output target is PDF 1.7 with PDF/UA-1 metadata. Semantic, layout, reference,
+font, navigation and negative-control checks are recorded in the accompanying
+repair report and evidence. Automated checks and visual review do not replace
+formal PDF/UA validation, assistive-technology testing or institutional review.
+No PAC/Acrobat/veraPDF certification or screen-reader acceptance is claimed.
+
+CHANGES
+Native H1-H6 headings; correctly owned captions and floats in source order;
+unique example labels and corrected equation descriptions; complete LaTeX
+bookmark text; title/approval geometry, typography and co-chair labels;
+half-inch item-list title inset; optional front matter and empty-list handling;
+appendix counters; distinct deep heading styles; explicit font substitution
+and placeholder checks; safer legacy-alt behavior; readable figure reuse;
+consistent metadata target and documented limits; repaired regression APIs.
+Integration tests also repaired wrapped code tagging, schema/longtable captions,
+draft rendering, and the unrelated broken examples in the accessibility chapter.
+
+APPROVAL APPEARANCE RESTORATION - 14 October 2026
+Class v0.6.1-approval-review restores the prior approval page's generous spacing,
+wide certification block, uppercase committee label and shorter signature rules.
+Co-chair labels, aligned/wrapping final fields and explicit overflow rejection
+remain supported. Footer fields use the available page height rather than
+allowing a fixed-height box to hide overflow. Other repaired class behavior is
+retained. This requested appearance is not a new certification of the older
+layout against every requirement. Full manual review is still pending.
+
+The self-contained public bundle omits developer-only regression fixtures and
+maintainer notes. In the development workspace these live under
+ development/upstream/tests/ and development/upstream/docs/.
+Stage-Template.ps1 recreates the original test layout for development builds.
+
+BODY-LIST INDENTATION RESTORATION - 14 October 2026
+Class v0.6.2-layout-review restores the original rendered bullet/number positions
+by right-aligning first-level markers in their existing label boxes. Original
+measurements remain: 0.5 inch base inset, 2em label width, 0.35em label separation,
+and a text inset equal to their sum. First and continuation lines retain the
+same hanging alignment. The tagged-list compatibility repairs are retained.
+This change concerns body itemize/enumerate lists, not prefatory item lists,
+the table of contents, abbreviation lists, or the restored approval page.
+Full manual review remains pending.
+
+BODY-LIST BOUNDARY SPACING - 14 October 2026
+Class v0.6.3-list-spacing-review removes the legacy pre-list correction when
+using native tagged lists and explicitly clears their independent exit spacing.
+The native list keys are appended so existing indentation/paragraph settings
+remain intact. Ordinary enumitem retains its existing behavior. This restores
+normal double-spaced baselines at both boundaries of bulleted and numbered
+lists, including the two explicitly configured nesting levels. Full manual
+review remains pending.

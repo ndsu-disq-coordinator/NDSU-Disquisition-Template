@@ -2,6 +2,10 @@
 \label{app:quick-start}
 
 This appendix gives a compact path from opening the project to producing a reviewable PDF. It assumes that you are using Overleaf, compiling \texttt{main.tex}, and using LuaLaTeX unless the repository instructions say otherwise.
+
+Equation~\ref{eq:quick-state-update} repeats the state-update example to illustrate an independently labeled appendix equation. Here \(s_t\) is the state, \(u_t\) the control input, and \(\Delta t\) the time step.
+\equationlistentry{Appendix state update example}
+\mathalt{The next state s sub t plus one equals the matrix with first row one, delta t and second row zero, one, multiplied by s sub t, plus the column vector with entries one half delta t squared and delta t, multiplied by u sub t.}
 \begin{equation}
       s_{t+1}
     =
@@ -16,7 +20,7 @@ This appendix gives a compact path from opening the project to producing a revie
       \Delta t
     \end{bmatrix}
     u_t
-\label{eq:state-cost-example}
+\label{eq:quick-state-update}
 \end{equation}
 
 The basic revision cycle is:
@@ -41,15 +45,15 @@ Open the full project in Overleaf, not just one \texttt{.tex} file. Confirm that
 \label{sec:quick-revise-source}
 
 Start with the most visible placeholders in \texttt{main.tex}: title, author, degree, program or department, committee information, date, subject, keywords, and language if needed. Then revise the front matter files. If you use optional front matter such as a dedication or abbreviations page, make sure the matching file exists and the corresponding option is enabled in \texttt{main.tex}. Add chapter, appendix, figure, table, equation, citation, and link content in the source files. 
+Table~\ref{tab:quick-source-review-checks} summarizes two checks for this quick-start workflow.
 \begin{table}[htbp]
 \caption{Source checks before compiling a review PDF.}
-\label{tab:source-review-checks}
+\label{tab:quick-source-review-checks}
 \begin{ndsudatatable}[headers={1}]
 \begin{tabularx}{\textwidth}{L{1.55in}XX}
 \toprule
 \textbf{Source check} & \textbf{Example} & \textbf{What to fix before review} \\
 \midrule
-
 
 Links & External links and internal cross-references & Use meaningful link text and confirm that cross-references point to the intended figure, table, equation, chapter, or appendix. \\
 
@@ -72,37 +76,7 @@ In Overleaf, compile \texttt{main.tex}. If the PDF appears, review it before mak
 
 Review the visible PDF from the beginning. Check the title page, approval page, abstract, acknowledgments, dedication if used, table of contents, generated lists, chapter headings, figures, tables, equations, citations, references, appendices, and page numbering.
 
-% \begin{figure}[htbp]
-% \centering
-% \ndsuincludegraphics[
-%     width=\textwidth,
-%     keepaspectratio
-% ]
-% {Infographic showing four categories of files in the NDSU LaTeX disquisition project: content files students write, setup files students complete, optional document components enabled when needed, and template or generated files that students usually leave unchanged.}
-% {figures/LaTeX disquisition project file organization.png}
-
-% \caption{Typical organization and use of files in the NDSU \LaTeX{} disquisition workflow.}
-% \label{fig:project-file-organization}
-
-% \ndsufigurenote{This diagram shows the general organization of the repository rather than every file included in the project.}
-
-% \end{figure}
-
-\begin{figure}[htb]
-\centering
-\ndsuincludegraphics[
-    width=0.5\textwidth,
-    keepaspectratio
-]
-{Infographic showing four categories of files in the NDSU LaTeX disquisition project: content files students write, setup files students complete, optional document components enabled when needed, and template or generated files that students usually leave unchanged.}
-{figures/LaTeX disquisition project file organization.png}
-
-\caption{Typical organization and use of files in the NDSU \LaTeX{} disquisition workflow.}
-\label{fig:project-file-organization}
-
-\ndsufigurenote{This diagram shows the general organization of the repository rather than every file included in the project.}
-
-\end{figure}
+Refer to Figure~\ref{fig:project-file-organization} in Chapter~\ref{chap:start-here} for the full-size diagram of the project files. Keep text within figures readable at the final page size; reducing a detailed infographic to fit a small space can make its labels difficult to read.
 
 Also review the log for unresolved citations, unresolved references, missing files, duplicate labels, broken links, or overfull boxes that affect the visible PDF.
 

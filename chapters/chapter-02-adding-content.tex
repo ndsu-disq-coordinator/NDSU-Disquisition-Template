@@ -2,6 +2,21 @@
 \label{chap:preparing-source}
 
 By the time you are preparing a disquisition, much of the difficult intellectual work is already behind you. This chapter focuses on the document task that remains: placing your content into the template in a clear, structured way. The goal is not to make you a \LaTeX{} expert. The goal is to help you work comfortably enough with the source files that the template can apply consistent formatting and produce a PDF that is easier to review.
+
+The following examples show a cost function and a discrete state update. In the cost function, \(s\) is a state vector, \(Q\) weights the state, \(u\) is a control input, \(\rho\) weights the input, and \(T\) is the final time.
+\equationlistentry{Quadratic cost function}
+\mathalt{J equals the integral from zero to T of s transpose Q s plus rho times u squared, with respect to t.}
+\begin{equation}
+  J =
+    \int_0^T
+      \left(s^\mathsf{T} Qs + \rho u^2\right)
+    \,dt
+  \label{eq:stress-long}
+\end{equation}
+
+In Equation~\ref{eq:state-cost-example}, \(\Delta t\) is the time step, \(s_t\) is the current state, and \(u_t\) is the current control input.
+\equationlistentry{Discrete state update}
+\mathalt{The next state s sub t plus one equals the matrix with first row one, delta t and second row zero, one, multiplied by s sub t, plus the column vector with entries one half delta t squared and delta t, multiplied by u sub t.}
 \begin{equation}
   s_{t+1}
     =
@@ -24,7 +39,7 @@ This chapter explains the basic structure of the source files and introduces the
 \section{Document information, front matter, and chapters}
 \label{sec:document-information}
 
-Most students begin by replacing the sample document information in \texttt{main.tex}. Depending on the repository version and the requirements of your program, this may include the disquisition title, author name, degree, program or department, committee information, date or term, and PDF metadata. The template controls the placement and formatting of this information. Your responsibility is to supply accurate content and remove placeholder text before final review.
+Most students begin by replacing the sample document information in \texttt{main.tex}. Depending on the repository version and the requirements of your program,this may include the disquisition title, author name, degree, program or department, committee information, date or term, and PDF metadata. The template controls the placement and formatting of this information. Your responsibility is to supply accurate content and remove placeholder text before final review.
 
 Front matter files are stored in \texttt{frontmatter/}. These files may include the abstract, acknowledgments, dedication, abbreviations, or other introductory material. Some front matter sections are optional and are controlled by switches in \texttt{main.tex}. If a section is not needed, disable the corresponding switch rather than manually deleting the template structure.
 
@@ -40,7 +55,7 @@ Figures, tables, equations, citations, and links are easiest to manage when they
 
 Store images in the repository's \texttt{figures/} folder or in the image location expected by the project. Meaningful figures should have captions and descriptions. The caption identifies the figure for all readers. The description or alternative text explains the purpose or important information contained in the image. A typical figure pattern in this template looks like this:
 \begin{ndsucodelisting}[Figure code example]
-\begin{figure}[htbp]
+\begin{figure}[htb]
 \centering
 
 \ndsuincludegraphics[
@@ -62,15 +77,11 @@ The exact image, caption, and description should match the content of your disqu
 
 Tables should present structured information rather than visual layout. Keep tables as simple as the content allows, use clear headers, and avoid screenshots of tables when possible. A screenshot is an image, not structured table data. Very wide or complicated tables may need to be simplified, split into smaller parts, or moved to an appendix.
 
-Equations should use \LaTeX{} math rather than images of equations. Use inline math when notation belongs inside a sentence (e.g., a short equation like $e = mc^2$). Inline notation is useful for brief definitions, but longer or more important equations should usually be displayed and numbered when you need to refer to them later. Equation~\ref{eq:state-cost-example} expands the inline state update into a compact display equation. It is included to demonstrate equation numbering, matrices, fractions, Greek letters, superscripts, subscripts, an integral, and a List of Equations entry when that list is enabled. In your own disquisition, use nearby prose to explain what the variables mean and why the equation matters for your argument. Complex mathematical content may need additional review after the PDF is generated. 
-\begin{thineq}
-    E = mc^2
-\end{thineq}
+Equations should use \LaTeX{} math rather than images of equations. Use inline math when notation belongs inside a sentence (e.g., a short equation like $e = mc^2$). Inline notation is useful for brief definitions, but longer or more important equations should usually be displayed and numbered when you need to refer to them later. Equations~\ref{eq:stress-long} and~\ref{eq:state-cost-example} demonstrate a cost integral and a matrix state update. Together they illustrate equation numbering, matrices, fractions, Greek letters, superscripts, subscripts, and List of Equations entries when that list is enabled. In your own disquisition, use nearby prose to explain what the variables mean and why the equation matters for your argument. Complex mathematical content may need additional review after the PDF is generated.
 
-\equationlistentry{Example state update and cost function}
-\mathalt{The next state s sub t plus one equals a two by two transition matrix times the current state s sub t plus a two element input vector times u sub t. The cost J of s equals the integral from zero to T of s transpose Q s plus rho times u squared, with respect to t.}
+Citations and references depend on two parts working together: a bibliography entry in \texttt{references.bib} and a citation command in the chapter text. The template uses the \texttt{biblatex} workflow with Biber. If a citation appears as question marks or does not update, check the citation key, the bibliography entry, and the compile log before changing unrelated source files. Use descriptive link text rather than bare URLs or repeated phrases such as ``click here.''
 
-Citations and references depend on two parts working together: a bibliography entry in \texttt{references.bib} and a citation command in the chapter text. The template uses the \texttt{biblatex} workflow with Biber. If a citation appears as question marks or does not update, check the citation key, the bibliography entry, and the compile log before changing unrelated source files. Use descriptive link text rather than bare URLs or repeated phrases such as ``click here.'' A reader should be able to understand where a link goes from the linked text itself.
+A reader should be able to understand where a link goes from the linked text itself.
 
 
 
